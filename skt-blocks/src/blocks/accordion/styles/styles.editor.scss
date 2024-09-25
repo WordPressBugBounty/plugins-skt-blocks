@@ -1,0 +1,30 @@
+[data-type="skt-blocks/accordion"] {
+  .block-editor-inner-blocks > .block-editor-block-list__layout > .wp-block {
+    width: auto;
+    padding-left: 0;
+    padding-right: 0;
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+  .block-editor-inner-blocks > .block-editor-block-list__layout {
+    display: block;
+  }
+  .skt-blocks-accordion-layout-grid
+    .block-editor-inner-blocks
+    > .block-editor-block-list__layout {
+    display: grid;
+  }
+  .skt-blocks-accordion-layout-grid.skt-blocks-accordion-equal-height
+    .block-editor-inner-blocks
+    > .block-editor-block-list__layout {
+    .block-editor-block-list__block,
+    .skt-blocks-accordion-item__outer-wrap,
+    .skt-blocks-accordion-item__wrapper,
+    .skt-blocks-accordion-item {
+      height: 100%;
+    }
+  }
+}
+.wp-block-cover .skt-blocks-accordion-item__outer-wrap {
+  color: #333;
+}

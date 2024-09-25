@@ -1,0 +1,12 @@
+.skt-blocks-expand--more {
+  .skt-blocks-expand-less-text,
+  .skt-blocks-expand-more-toggle-text {
+    display: none;
+  }
+  .skt-blocks-expand-more-text {
+    display: block !important;
+  }
+  .skt-blocks-expand-less-toggle-text {
+    display: inline-block !important;
+  }
+}

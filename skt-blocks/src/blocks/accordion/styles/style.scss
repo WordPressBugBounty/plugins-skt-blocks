@@ -1,0 +1,18 @@
+.wp-block-skt-blocks-accordion {
+  &.skt-blocks-accordion-layout-accordion
+    .skt-blocks-accordion-item__outer-wrap
+    .skt-blocks-accordion-titles-button {
+    cursor: pointer;
+  }
+}
+.skt-blocks-accordion-layout-grid.skt-blocks-accordion-equal-height
+  .skt-blocks-accordion__wrap {
+  .skt-blocks-accordion-item__outer-wrap,
+  .skt-blocks-accordion-item__wrapper,
+  .skt-blocks-accordion-item {
+    height: 100%;
+  }
+}
+.wp-block-cover .skt-blocks-accordion-item__outer-wrap {
+  color: #333;
+}

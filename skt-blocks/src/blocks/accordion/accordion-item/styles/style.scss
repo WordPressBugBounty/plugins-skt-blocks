@@ -1,0 +1,84 @@
+.wp-block-skt-blocks-accordion-item {
+  &.skt-blocks-accordion-item__outer-wrap
+    .skt-blocks-accordion-item:focus,
+  &.skt-blocks-accordion-item__outer-wrap
+    .skt-blocks-accordion-item:active {
+    outline: thin dotted;
+  }
+  .skt-blocks-accordion-titles-button {
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    .skt-blocks-accordion-icon-wrap {
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .skt-blocks-title {
+      width: 100%;
+      margin-top: 0px;
+      margin-bottom: 0px;
+    }
+  }
+
+  .skt-blocks-icon svg,
+  .skt-blocks-icon-active svg {
+    width: 15px;
+    height: 15px;
+    font-size: 15px;
+  }
+
+  .skt-blocks-accordion-content span {
+    display: inline-block;
+  }
+
+  .skt-blocks-accordion-content p {
+    margin: 0;
+  }
+
+  &.skt-blocks-accordion-item__outer-wrap
+    .skt-blocks-accordion-item
+    .skt-blocks-icon-active,
+  &.skt-blocks-accordion-item__outer-wrap
+    .skt-blocks-accordion-item.skt-blocks-accordion-item-active
+    .skt-blocks-icon {
+    display: none;
+    width: 0;
+    padding: 0;
+    height: 0;
+    margin: 0;
+  }
+
+  &.skt-blocks-accordion-item__outer-wrap
+    .skt-blocks-accordion-item
+    .skt-blocks-icon,
+  &.skt-blocks-accordion-item__outer-wrap
+    .skt-blocks-accordion-item.skt-blocks-accordion-item-active
+    .skt-blocks-icon-active {
+    display: inline-block;
+    width: auto;
+    height: auto;
+  }
+}
+
+.skt-blocks-accordion-layout-grid
+  .skt-blocks-accordion-item__outer-wrap
+  .skt-blocks-accordion-item
+  .skt-blocks-icon,
+.skt-blocks-accordion-layout-grid
+  .skt-blocks-accordion-item__outer-wrap
+  .skt-blocks-accordion-item.skt-blocks-accordion-item-active
+  .skt-blocks-icon-active {
+  display: none;
+}
+
+.skt-blocks-accordion-layout-grid
+  .skt-blocks-accordion-item__outer-wrap
+  .skt-blocks-accordion-item
+  span.skt-blocks-icon-active.skt-blocks-accordion-icon-wrap,
+.skt-blocks-accordion-layout-grid
+  .skt-blocks-accordion-item__outer-wrap
+  .skt-blocks-accordion-item.skt-blocks-accordion-item-active
+  .skt-blocks-icon-active {
+  display: none;
+}

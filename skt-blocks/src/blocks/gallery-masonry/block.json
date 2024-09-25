@@ -1,0 +1,10 @@
+{
+  "name": "skt-blocks/gallery-masonry",
+  "category": "skt_blocks",
+  "attributes": {
+    "gridSize": {
+      "type": "string",
+      "default": "xlrg"
+    }
+  }
+}

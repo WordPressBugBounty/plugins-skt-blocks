@@ -1,0 +1,88 @@
+.skt-blocks-accordion-layout-accordion
+  .skt-blocks-accordion-item__outer-wrap
+  .skt-blocks-accordion-titles-button {
+  cursor: pointer;
+}
+
+[data-type="skt-blocks/accordion-item"]
+  .skt-blocks-accordion-item__outer-wrap {
+  .skt-blocks-accordion-titles-button {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    .skt-blocks-accordion-icon-wrap {
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .skt-blocks-title {
+      width: 100%;
+      margin-top: 0px;
+      margin-bottom: 0px;
+    }
+  }
+  .skt-blocks-accordion-content p {
+    margin: 0;
+  }
+  .skt-blocks-accordion-content {
+    border-width: 0px;
+    span {
+      display: inline-block;
+    }
+  }
+  .skt-blocks-accordion-item
+    .skt-blocks-icon-active,
+  .skt-blocks-accordion-item.skt-blocks-accordion-item-active
+    .skt-blocks-icon {
+    display: none;
+  }
+  .skt-blocks-accordion-item
+    .skt-blocks-icon,
+  .skt-blocks-accordion-item.skt-blocks-accordion-item-active
+    .skt-blocks-icon-active {
+    display: inline-block;
+  }
+  &.skt-blocks-accordion__active
+    .skt-blocks-accordion-item__wrapper
+    .skt-blocks-accordion-item {
+    .skt-blocks-accordion-content {
+      display: block;
+    }
+    .skt-blocks-icon {
+      display: none;
+    }
+    .skt-blocks-icon-active {
+      display: inline-block;
+    }
+  }
+}
+
+.skt-blocks-accordion-layout-grid
+  [data-type="skt-blocks/accordion-item"]
+  .skt-blocks-accordion-item__outer-wrap.skt-blocks-accordion__active
+  .skt-blocks-accordion-item__wrapper
+  .skt-blocks-accordion-item
+  .skt-blocks-icon-active {
+  display: none;
+}
+
+.skt-blocks-accordion-layout-grid
+  [data-type="skt-blocks/accordion-item"]
+  .skt-blocks-accordion-item__outer-wrap.skt-blocks-accordion__active
+  .skt-blocks-accordion-item__wrapper
+  .skt-blocks-accordion-item
+  .skt-blocks-icon {
+  display: none;
+}
+
+.skt-blocks-accordion-layout-grid
+  [data-type="skt-blocks/accordion-item"]
+  .skt-blocks-accordion-item__outer-wrap
+  .skt-blocks-accordion-item
+  .skt-blocks-icon,
+.skt-blocks-accordion-layout-grid
+  [data-type="skt-blocks/accordion-item"]
+  .skt-blocks-accordion-item__outer-wrap
+  .skt-blocks-accordion-item.skt-blocks-accordion-item-active
+  .skt-blocks-icon-active {
+  display: none;
+}

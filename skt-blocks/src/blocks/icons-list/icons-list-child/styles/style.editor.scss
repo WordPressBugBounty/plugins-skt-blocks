@@ -1,0 +1,25 @@
+.skt-blocks-icon-list__wrap > .block-editor-inner-blocks {
+  width: 100%;
+}
+
+.wp-block.block-editor-block-list__block[data-type="skt-blocks/icons-list-child"] {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.skt-blocks-icon-list__layout-vertical {
+  .skt-blocks-icon-list__wrap .block-list-appender {
+    margin-top: 28px;
+    width: 60px;
+  }
+}
+
+.skt-blocks-icon-list__layout-horizontal {
+  .skt-blocks-icon-list__wrap .block-list-appender {
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: 20px;
+    width: 52px;
+    height: 52px;
+  }
+}

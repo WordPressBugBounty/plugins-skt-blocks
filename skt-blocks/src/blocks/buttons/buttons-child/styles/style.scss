@@ -1,0 +1,67 @@
+.skt-blocks-buttons__wrap
+  .skt-blocks-button__wrapper
+  .skt-blocks-buttons-repeater
+  a.skt-blocks-button__link {
+  display: inline-block;
+}
+
+.skt-blocks-button__icon {
+  font-size: inherit;
+  display: flex;
+  align-items: center;
+  width: 15px;
+  color: #333;
+
+  svg {
+    fill: currentColor;
+    width: inherit;
+    height: inherit;
+  }
+}
+
+.skt-blocks-button__icon-position-after {
+  margin-left: 8px;
+}
+
+.skt-blocks-button__icon-position-before {
+  margin-right: 8px;
+}
+
+.skt-blocks-buttons__outer-wrap
+  .skt-blocks-button__wrapper
+  div {
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.skt-blocks-button__effect-lift:hover {
+  transform: translateY(-10%);
+}
+
+.skt-blocks-button__effect-scale:hover {
+  transform: scale(1.03);
+}
+
+.skt-blocks-button__effect-lift-scale:hover {
+  transform: scale(1.03) translateY(-10%);
+}
+
+.skt-blocks-button__effect-scale-more:hover {
+  transform: scale(1.13);
+}
+
+.skt-blocks-button__effect-lift-scale-more:hover {
+  transform: scale(1.13) translateY(-10%);
+}
+
+.skt-blocks-button__effect- {
+}
+
+.skt-blocks-button__link_child {
+  text-decoration: none;
+}
+
+.skt-blocks-buttons-repeater
+  .skt-blocks-button__icon {
+  cursor: auto;
+}
