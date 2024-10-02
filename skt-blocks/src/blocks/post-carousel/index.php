@@ -316,7 +316,7 @@ function skt_blocks_render_block_core_latest_posts2( $attributes ) {
 		)
 	);
 
-	$settings = json_encode( $slick_options );
+	$settings = wp_json_encode( $slick_options );
 
 	/* Setup the query */
 	$carousel_query = new WP_Query(
@@ -329,7 +329,6 @@ function skt_blocks_render_block_core_latest_posts2( $attributes ) {
 			'offset'              => $attributes['offset'],
 			'post_type'           => $attributes['postType'],
 			'ignore_sticky_posts' => 1,
-			'post__not_in'        => array( $post->ID ), // Exclude the current post from the carousel.
 		)
 	);
 
@@ -1260,5 +1259,6 @@ function skt_blocks_get_comments_info( $object, $field_name, $request ) {
 
     $num = get_comments_number( $object['id'] );
 
+    /* translators: %d: number of comments */
     return sprintf( _n( '%d comment', '%d comments', $num, 'skt-blocks' ), $num );
 }

@@ -12,7 +12,7 @@ function skt_blocks_add_google_fonts() {
             }
 
             $fonts_url = sprintf( 'https://fonts.bunny.net/css?family=%s', implode( rawurlencode( '|' ), $google_fonts ) .'&display=swap');
-            wp_enqueue_style( 'skt-blocks-bunny-fonts', $fonts_url );
+			wp_enqueue_style( 'skt-blocks-bunny-fonts', $fonts_url, array(), '1.0.0' ); // Set a version string
         }
     }
 }

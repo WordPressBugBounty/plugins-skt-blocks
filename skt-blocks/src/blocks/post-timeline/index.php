@@ -34,7 +34,6 @@ function skt_blocks_post_timeline_render_latest_posts( $attributes ) {
 		'offset'              => $attributes['offset'],
 		'post_type'           => $attributes['postType'],
 		'ignore_sticky_posts' => 1,
-		'post__not_in'        => array( get_the_ID() ), // Exclude the current post from the grid.
 	);
 
 	if ( isset( $attributes['categories'] ) && '' !== $attributes['categories'] ) {

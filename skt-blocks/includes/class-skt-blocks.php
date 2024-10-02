@@ -79,26 +79,38 @@ class Skt_Blocks {
         add_action( 'wp_enqueue_scripts', array( $this, 'load_dashicons_front_end' ) );
 
 	}
+	
+public function post_pagination() {
+    // Verify the AJAX nonce
+    check_ajax_referer('responsive_block_editor_ajax_nonce', 'nonce');
 
-	/**
-	 * Sends the Post pagination markup to edit.js
-	 *
-	 * @since 1.0.0
-	 */
-	public function post_pagination() {
-		check_ajax_referer( 'responsive_block_editor_ajax_nonce', 'nonce' );
+    // Check if attributes are set
+    if ( isset( $_POST['attributes'] ) ) {
+        // Sanitize the attributes input
+        $attributes = sanitize_text_field(wp_unslash( $_POST['attributes'] ));
+        // Ensure $attributes is an array (or appropriate type)
+        if ( is_array( $attributes ) ) {
+            // Sanitize each attribute (assuming it's an associative array)
+            $sanitized_attributes = array_map( 'sanitize_text_field', $attributes );
 
-		if ( isset( $_POST['attributes'] ) ) {
+            // Fetch the query based on the sanitized attributes
+            $query = $this->get_query( $sanitized_attributes, 'grid' );
 
-			$query = $this->get_query( $_POST['attributes'], 'grid' );
+            // Render the pagination markup
+            $pagination_markup = $this->render_pagination( $query, $sanitized_attributes );
 
-			$pagination_markup = $this->render_pagination( $query, $_POST['attributes'] );
-
-			wp_send_json_success( $pagination_markup );
-		}
-
-		wp_send_json_error( ' No attributes recieved' );
-	}
+            // Send JSON response with success
+            wp_send_json_success( $pagination_markup );
+        } else {
+            // Handle the case where attributes are not an array
+            wp_send_json_error('Invalid attributes format');
+        }
+    } else {
+        // If attributes are not set, send an error response
+        wp_send_json_error('No attributes received');
+    }
+}
+	
 
 	/**
 	 * Renders the post post pagination on server.
@@ -256,10 +268,6 @@ class Skt_Blocks {
 			'paged'               => 1,
 		);
 
-		if ( $attributes['excludeCurrentPost'] ) {
-			$query_args['post__not_in'] = array( get_the_ID() );
-		}
-
 		if ( isset( $attributes['categories'] ) && '' !== $attributes['categories'] ) {
 			$query_args['tax_query'][] = array(
 				'taxonomy' => ( isset( $attributes['taxonomyType'] ) ) ? $attributes['taxonomyType'] : 'category',
@@ -408,9 +416,9 @@ class Skt_Blocks {
 								</div>
 								<div class="skt-blocks-welcome-feature-text">
 									<h4>
-										<?php
-											/* translators: %s: search term */
-											$title = sprintf( __( '%s', 'skt-blocks' ), $single_feature[0] );
+                                        <?php
+                                        	/* translators: %s: search term */
+											$title = sprintf( __( '%s Feature', 'skt-blocks' ), $single_feature[0] );
 											echo esc_html( $title );
 										?>
 									</h4>
@@ -446,10 +454,14 @@ class Skt_Blocks {
 		}
 
 		delete_transient( 'skt_blocks_activation_redirect' );
-
-		if ( is_network_admin() || isset( $_GET['activate-multi'] ) ) {
-			return;
-		}
+		  if ( sanitize_text_field(wp_unslash(isset( $_POST['object_type_nonce'] ))) && wp_verify_nonce( sanitize_text_field(wp_unslash($_POST['object_type_nonce'], 'object_type_nonce_action' ))) ) {
+            $object_type = sanitize_text_field(wp_unslash(! empty( $_REQUEST['object_type'] ) ?  $_REQUEST['object_type']  : ''));
+        } else {
+            if ( is_network_admin() || isset( $_GET['activate-multi'] ) ) {
+				return;
+			}
+        }
+		
 
 		wp_safe_redirect( admin_url( 'admin.php?page=skt_blocks' ) );
 
@@ -691,10 +703,16 @@ class Skt_Blocks {
 			'skt_blocks',
 			'skt-blocks',
 		);
+		
+		  if ( sanitize_text_field(wp_unslash(isset( $_POST['object_type_nonce'] ))) && wp_verify_nonce( sanitize_text_field(wp_unslash($_POST['object_type_nonce'], 'object_type_nonce_action' ))) ) {
+            $object_type = sanitize_text_field(wp_unslash(! empty( $_REQUEST['object_type'] ) ?  $_REQUEST['object_type']  : ''));
+        } else {
+            if ( empty( $_GET['page'] ) || ! in_array( $_GET['page'], $skt_blocks_pages, true ) ) {
+				return;
+			}
+        }
 
-		if ( empty( $_GET['page'] ) || ! in_array( $_GET['page'], $skt_blocks_pages, true ) ) {
-			return;
-		}
+		
 
 		remove_all_actions( 'admin_notices' );
 	}

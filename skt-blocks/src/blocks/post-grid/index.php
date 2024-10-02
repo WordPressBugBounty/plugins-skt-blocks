@@ -32,7 +32,6 @@ function skt_blocks_render_block_core_latest_posts( $attributes ) {
 		'offset'              => $attributes['offset'],
 		'post_type'           => $attributes['postType'],
 		'ignore_sticky_posts' => 1,
-		'post__not_in'        => array( $post->ID ), // Exclude the current post from the grid.
 		'paged'               => 1,
 	);
 
@@ -338,7 +337,7 @@ margin-bottom: ' . $attributes['rowGapMobile'] . 'px;
 			if ( isset( $attributes['displayPostTitle'] ) && $attributes['displayPostTitle'] ) {
 
 				if ( isset( $attributes['postTitleTag'] ) ) {
-					$post_title_tag = $attributes['postTitleTag'];
+					$post_title_tag = sanitize_key($attributes['postTitleTag']);
 				} else {
 					$post_title_tag = 'h2';
 				}
@@ -475,12 +474,17 @@ margin-bottom: ' . $attributes['rowGapMobile'] . 'px;
 
 		/* Post grid section title */
 		if ( isset( $attributes['displaySectionTitle'] ) && $attributes['displaySectionTitle'] && ! empty( $attributes['sectionTitle'] ) ) {
-			if ( isset( $attributes['sectionTitleTag'] ) ) {
-				$section_title_tag = $attributes['sectionTitleTag'];
-			} else {
-				$section_title_tag = 'h2';
-			}
-
+		// Define allowed tags
+		$allowed_tags = array( 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'span' );
+		
+		// Check if 'sectionTitleTag' is set and valid
+		if ( isset( $attributes['sectionTitleTag'] ) && in_array( $attributes['sectionTitleTag'], $allowed_tags, true ) ) {
+			$section_title_tag = sanitize_key( $attributes['sectionTitleTag'] );
+		} else {
+			$section_title_tag = 'h2'; // Default to 'h2' if no valid tag is provided
+		}
+	
+		// Escape the section title content
 			$section_title = '<' . esc_attr( $section_title_tag ) . ' class="skt-blocks-post-grid-section-title">' . esc_html( $attributes['sectionTitle'] ) . '</' . esc_attr( $section_title_tag ) . '>';
 		} else {
 			$section_title = null;

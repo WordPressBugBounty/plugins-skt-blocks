@@ -1,10 +1,10 @@
 === SKT Blocks - Gutenberg based Page Builder ===
 Contributors: sonalsinha21
-Tags: blocks, gutenberg, gutenberg blocks, page builder, WordPress blocks, blocks, editor, block
+Tags: gutenberg blocks, page builder, WordPress blocks, blocks, editor
 Requires at least: 5.0
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.6
+Stable tag: 1.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,6 +75,47 @@ e.g.
 6. Post-TimeLine Block
 
 == Changelog ==
+= 1.7 =
+ *  Resolved Patchstack vulnerable to Cross Site Scripting (XSS) Issue And Plugin Check (PCP) issue.
+ 
+ 	We are making changes in the below files:
+ 
+	wp-content\plugins\skt-blocks\includes\class-skt-blocks.php
+
+	Line Number : 90
+	Line Number : 93
+	Line Number : 95
+	Line Number : 411
+	Line Number : 458
+	Line Number : 698
+	
+	wp-content\plugins\skt-blocks\src\blocks\post-carousel\index.php
+	
+	Line Number : 332
+	Line Number : 1259
+	
+	wp-content\plugins\skt-blocks\src\blocks\post-grid\index.php
+	
+	Line Number : 35
+	Line Number : 340
+	Line Number : 476
+	
+	wp-content\plugins\skt-blocks\src\blocks\post-timeline\index.php
+	
+	Line Number : 35
+	
+	wp-content\plugins\skt-blocks\src\blocks\image-slider\index.php
+	
+	Line Number : 10
+	
+	wp-content\plugins\skt-blocks\src\utils\fonts.php
+	
+	Line Number : 14
+	
+	wp-content\plugins\skt-blocks\skt-blocks.php
+	
+	Line Number : 8
+ 
 = 1.6 =
  *  Compatibility with WordPress 6.6
 

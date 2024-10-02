@@ -6,7 +6,8 @@ function skt_blocks_image_slider_add_frontend_assets() {
 			'skt_blocks-image-slider-front-script',
             SKT_BLOCKS_URL . '/dist/js/vendors/flickity.js',
 			array(),
-			SKT_BLOCKS_VER
+			SKT_BLOCKS_VER,
+			true
 		);
 
 		wp_enqueue_script(
