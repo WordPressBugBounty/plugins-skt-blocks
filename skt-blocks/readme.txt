@@ -4,7 +4,7 @@ Tags: gutenberg blocks, page builder, WordPress blocks, blocks, editor
 Requires at least: 5.0
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.7
+Stable tag: 1.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,8 +75,11 @@ e.g.
 6. Post-TimeLine Block
 
 == Changelog ==
+= 1.8 =
+ * Resolved the Cross Site Scripting (XSS) issue on Post Carousel block.
+
 = 1.7 =
- *  Resolved Patchstack vulnerable to Cross Site Scripting (XSS) Issue And Plugin Check (PCP) issue.
+ * Resolved Patchstack vulnerable to Cross Site Scripting (XSS) Issue And Plugin Check (PCP) issue.
  
  	We are making changes in the below files:
  

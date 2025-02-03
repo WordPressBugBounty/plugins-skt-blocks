@@ -30,7 +30,7 @@ add_action( 'wp_enqueue_scripts', 'skt_blocks_post_carousel_add_frontend_assets'
 add_action( 'the_post', 'skt_blocks_post_carousel_add_frontend_assets' );
 
 /**
- * Generate Testimonical Carousel script dynamically
+ * Generate Testimonical Carousels script dynamically
  */
 function post_carousel_generate_script() {
 	global $post;
@@ -687,7 +687,7 @@ $buttonTarget = $attributes['buttonTarget']? "_blank" : null;
 		} else {
 			$section_tag = 'section';
 		}
-$imgopacity = $attributes["opacity"]/100;
+		$imgopacity = $attributes["opacity"]/100;
 		$styles =
             '<style type="text/css">.skt-blocks-block-post-carousel-image-background img {
                 opacity: '.$imgopacity.';
@@ -748,7 +748,7 @@ $imgopacity = $attributes["opacity"]/100;
 		/* Output the post markup */
 		$block_content = sprintf(
 			'<%1$s class="%2$s" data-carouselid="%7$s">%3$s<div class="%4$s" %6$s>%5$s</div>'.$styles.'</%1$s>',
-			$section_tag,
+			esc_attr( $section_tag ),
 			esc_attr( $class ),
 			$section_title,
 			esc_attr( $carousel_class ),
