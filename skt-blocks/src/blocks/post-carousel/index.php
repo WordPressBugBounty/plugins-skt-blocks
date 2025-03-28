@@ -5,8 +5,7 @@
  * @since   1.0.0
  * @package SKT Blocks
  */
-
-/**
+ /**
  * Add Frontend assets.
  *
  * @param Array $attributes Attributes.
@@ -754,7 +753,7 @@ $buttonTarget = $attributes['buttonTarget']? "_blank" : null;
 			esc_attr( $carousel_class ),
 			$post_carousel_markup,
 			'data-slick=' . $settings,
-            $attributes['block_id']
+            esc_attr( $attributes['block_id'] )
 		);
 		return $block_content;
 	}

@@ -481,7 +481,7 @@ margin-bottom: ' . $attributes['rowGapMobile'] . 'px;
 		if ( isset( $attributes['sectionTitleTag'] ) && in_array( $attributes['sectionTitleTag'], $allowed_tags, true ) ) {
 			$section_title_tag = sanitize_key( $attributes['sectionTitleTag'] );
 		} else {
-			$section_title_tag = 'h2'; // Default to 'h2' if no valid tag is provided
+			$section_title_tag = 'h2';
 		}
 	
 		// Escape the section title content
@@ -508,7 +508,7 @@ margin-bottom: ' . $attributes['rowGapMobile'] . 'px;
 		/* Output the post markup */
 		$block_content = sprintf(
 			'<%1$s class="%2$s">%3$s<div class="%4$s">%5$s</div>%6$s</%1$s>',
-			$section_tag,
+			esc_attr( $section_tag ),
 			esc_attr( $class ),
 			$section_title,
 			esc_attr( $grid_class ),
