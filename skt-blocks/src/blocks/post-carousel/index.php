@@ -486,19 +486,19 @@ $buttonTarget = $attributes['buttonTarget']? "_blank" : null;
 
 				/* Output the featured image */
 				$post_carousel_markup .= sprintf(
-					'<div class="skt-blocks-block-post-carousel-image-'.$attributes['imagePosition'].'"><a href="%1$s" rel="bookmark" aria-hidden="true" tabindex="-1">%2$s</a></div>',
+					'<div class="skt-blocks-block-post-carousel-image-'.esc_attr( $attributes['imagePosition'] ).'"><a href="%1$s" rel="bookmark" aria-hidden="true" tabindex="-1">%2$s</a></div>',
 					esc_url( get_permalink( $post_id ) ),
 					wp_get_attachment_image( $post_thumb_id, $post_thumb_size )
 				);
 			}
-            $alignStyle="text-align:".$attributes["blockAlign"];
+            $alignStyle="text-align:".esc_attr( $attributes["blockAlign"] );
 
 			/* Wrap the text content */
 			$post_carousel_markup .= sprintf(
-				'<div class="skt-blocks-block-post-carousel-text-wrap" style="' . safecss_filter_attr( $content_padding_wrapper_style ) . ';'.$alignStyle.'">'
+				'<div class="skt-blocks-block-post-carousel-text-wrap" style="' . safecss_filter_attr( $content_padding_wrapper_style ) . ';'.esc_attr( $alignStyle ).'">'
 			);
 				$post_carousel_markup .= sprintf(
-					'<header class="skt-blocks-block-post-carousel-header" style="'.$alignStyle.'">'
+					'<header class="skt-blocks-block-post-carousel-header" style="'.esc_attr( $alignStyle ).'">'
 				);
 
 					/* Get the post title */
@@ -519,7 +519,7 @@ $buttonTarget = $attributes['buttonTarget']? "_blank" : null;
 				}
 
 				$post_carousel_markup .= sprintf(
-					'<%3$s class="skt-blocks-block-post-carousel-title" style="'.$titleSpace.'"><a href="%1$s" rel="bookmark" style="'.$titleColor.';">%2$s</a></%3$s>',
+					'<%3$s class="skt-blocks-block-post-carousel-title" style="'.esc_attr( $titleSpace ).'"><a href="%1$s" rel="bookmark" style="'.esc_attr( $titleColor ).';">%2$s</a></%3$s>',
 					esc_url( get_permalink( $post_id ) ),
 					esc_html( $title ),
 					esc_attr( $post_title_tag )
@@ -529,13 +529,13 @@ $buttonTarget = $attributes['buttonTarget']? "_blank" : null;
 			if ( isset( $attributes['postType'] ) && 'post' === $attributes['postType'] ) {
 				/* Wrap the byline content */
 				$post_carousel_markup .= sprintf(
-					'<div class="skt-blocks-block-post-carousel-byline" style="'.$dateSpace.';'.$metaColor.'">'
+					'<div class="skt-blocks-block-post-carousel-byline" style="'.esc_attr( $dateSpace ).';'.esc_attr( $metaColor ).'">'
 				);
 
 				/* Get the post author */
 				if ( isset( $attributes['displayPostAuthor'] ) && $attributes['displayPostAuthor'] ) {
 					$post_carousel_markup .= sprintf(
-						'<div class="skt-blocks-block-post-carousel-author" itemprop="author" itemtype="https://schema.org/Person"><a class="skt-blocks-text-link" href="%2$s" itemprop="url" rel="author" style="'.$metaColor.';"><span itemprop="name">%1$s</span></a></div>',
+						'<div class="skt-blocks-block-post-carousel-author" itemprop="author" itemtype="https://schema.org/Person"><a class="skt-blocks-text-link" href="%2$s" itemprop="url" rel="author" style="'.esc_attr( $metaColor ).';"><span itemprop="name">%1$s</span></a></div>',
 						esc_html( get_the_author_meta( 'display_name', get_the_author_meta( 'ID' ) ) ),
 						esc_html( get_author_posts_url( get_the_author_meta( 'ID' ) ) )
 					);
@@ -544,7 +544,7 @@ $buttonTarget = $attributes['buttonTarget']? "_blank" : null;
 				/* Get the post date */
 				if ( isset( $attributes['displayPostDate'] ) && $attributes['displayPostDate'] ) {
 						$post_carousel_markup .= sprintf(
-							'<time datetime="%1$s" class="skt-blocks-block-post-carousel-date" itemprop="datePublished" style="'.$dateColor.';">%2$s</time>',
+							'<time datetime="%1$s" class="skt-blocks-block-post-carousel-date" itemprop="datePublished" style="'.esc_attr( $dateColor ).';">%2$s</time>',
 							esc_attr( get_the_date( 'c', $post_id ) ),
 							esc_html( get_the_date( '', $post_id ) )
 						);
@@ -579,7 +579,7 @@ $buttonTarget = $attributes['buttonTarget']? "_blank" : null;
 
 			/* Wrap the excerpt content */
 			$post_carousel_markup .= sprintf(
-				'<div class="skt-blocks-block-post-carousel-excerpt" style="' . safecss_filter_attr( $excerpt_style ) . ';'.$alignStyle. ';'.$contentColor.';'.$excerptSpace.'">'
+				'<div class="skt-blocks-block-post-carousel-excerpt" style="' . safecss_filter_attr( $excerpt_style ) . ';'.esc_attr( $alignStyle ). ';'.esc_attr( $contentColor ).';'.esc_attr( $excerptSpace ).'">'
 			);
 
 			/* Get the excerpt */
@@ -621,7 +621,7 @@ $buttonTarget = $attributes['buttonTarget']? "_blank" : null;
 			/* Get the read more link */
 			if ( isset( $attributes['displayPostLink'] ) && $attributes['displayPostLink'] ) {
 				$post_carousel_markup .= sprintf(
-					'<p style="'.$ctaSpace.'"><a class="skt-blocks-block-post-carousel-more-link skt-blocks-text-link" href="%1$s" target="'.$buttonTarget.'"rel="bookmark" style="'.$ctaStyles.'">%2$s <span class="screen-reader-text">%3$s</span></a></p>',
+					'<p style="'.$ctaSpace.'"><a class="skt-blocks-block-post-carousel-more-link skt-blocks-text-link" href="%1$s" target="'.esc_attr( $buttonTarget ).'"rel="bookmark" style="'.esc_attr( $ctaStyles ).'">%2$s <span class="screen-reader-text">%3$s</span></a></p>',
 					esc_url( get_permalink( $post_id ) ),
 					esc_html( $attributes['readMoreText'] ),
 					esc_html( $title )
@@ -689,58 +689,58 @@ $buttonTarget = $attributes['buttonTarget']? "_blank" : null;
 		$imgopacity = $attributes["opacity"]/100;
 		$styles =
             '<style type="text/css">.skt-blocks-block-post-carousel-image-background img {
-                opacity: '.$imgopacity.';
+                opacity: '.esc_attr( $imgopacity ).';
             }.skt-blocks-block-post-carousel-excerpt p{
-                margin-bottom: '.$attributes["excerptSpace"].'px;
+                margin-bottom: '.esc_attr( $attributes["excerptSpace"] ).'px;
             }
             ul.slick-dots li button:before, ul.slick-dots li.slick-active button:before{
-                color: '.$attributes["arrowDotsColor"].';
+                color: '.esc_attr( $attributes["arrowDotsColor"] ).';
                 
             }
             .skt-blocks-block-post-carousel-more-link{
-                color: '.$attributes["ctaColor"].';
-                background-color: '.$attributes["ctaBackColor"].';
-                border-color: '.$attributes["ctaBorderColor"].';
+                color: '.esc_attr( $attributes["ctaColor"] ).';
+                background-color: '.esc_attr( $attributes["ctaBackColor"] ).';
+                border-color: '.esc_attr( $attributes["ctaBorderColor"] ).';
             }.skt-blocks-block-post-carousel-more-link:hover{
-                color: '.$attributes["ctaHoverColor"].';
-                background-color: '.$attributes["ctaHoverBackColor"].';
-                border-color: '.$attributes["ctaHoverBorderColor"].';
+                color: '.esc_attr( $attributes["ctaHoverColor"] ).';
+                background-color: '.esc_attr( $attributes["ctaHoverBackColor"] ).';
+                border-color: '.esc_attr( $attributes["ctaHoverBorderColor"] ).';
             }
             .responsive-post-slick-carousel .slick-arrow{
-                border-radius: '.$attributes["arrowBorderRadius"].'px;
+                border-radius: '.esc_attr( $attributes["arrowBorderRadius"] ).'px;
             }
             .slick-slide{
-            margin-bottom: '.$attributes["rowGap"].'px;
+            margin-bottom: '.esc_attr( $attributes["rowGap"] ).'px;
             }
             .skt-blocks-block-post-carousel-taxonomy a{
-            color: '.$attributes["metaColor"].';
+            color: '.esc_attr( $attributes["metaColor"] ).';
             }
-            .responsive-post-slick-carousel-'.$attributes['block_id'].' .slick-slide>div:first-child{
-                        margin-left: '.($attributes["columnGap"]/2).'px;
-                        margin-right: '.($attributes["columnGap"]/2) .'px;
+            .responsive-post-slick-carousel-'.esc_attr( $attributes['block_id'] ).' .slick-slide>div:first-child{
+                        margin-left: '.(esc_attr( $attributes["columnGap"] )/2).'px;
+                        margin-right: '.(esc_attr( $attributes["columnGap"] )/2) .'px;
                       }
             @media(min-width:767px){
                       .skt-blocks-block-post-carousel-text-wrap{
-                          padding: '.$attributes["contentPadding"].'px;
+                          padding: '.esc_attr( $attributes["contentPadding"] ).'px;
                       }
                     }
             @media(max-width:767px){
                       .skt-blocks-block-post-carousel-text-wrap{
-                          padding: '.$attributes["contentPaddingMobile"].'px;
+                          padding: '.esc_attr( $attributes["contentPaddingMobile"] ).'px;
                       }
                     }
                     @media (min-width:976px){
-			    .responsive-post-slick-carousel-'.$attributes['block_id'].' .skt-blocks-block-post-carousel-header .skt-blocks-block-post-carousel-title{
-			        font-size:' . $attributes['titleFontSize'] . 'px;
+			    .responsive-post-slick-carousel-'.esc_attr( $attributes['block_id'] ).' .skt-blocks-block-post-carousel-header .skt-blocks-block-post-carousel-title{
+			        font-size:' . esc_attr( $attributes['titleFontSize'] ) . 'px;
 			    }
 			}@media (max-width:976px){
-			    .responsive-post-slick-carousel-'.$attributes['block_id'].' .skt-blocks-block-post-carousel-header .skt-blocks-block-post-carousel-title {
-			        font-size:' . $attributes['titleFontSizeTablet'] . 'px;
+			    .responsive-post-slick-carousel-'.esc_attr( $attributes['block_id'] ).' .skt-blocks-block-post-carousel-header .skt-blocks-block-post-carousel-title {
+			        font-size:' . esc_attr( $attributes['titleFontSizeTablet'] ) . 'px;
 			    }
 			}@media (max-width:767px){
-			    .responsive-post-slick-carousel-'.$attributes['block_id'].' .skt-blocks-block-post-carousel-header .skt-blocks-block-post-carousel-title
+			    .responsive-post-slick-carousel-'.esc_attr( $attributes['block_id'] ).' .skt-blocks-block-post-carousel-header .skt-blocks-block-post-carousel-title
 			     {
-			        font-size:' . $attributes['titleFontSizeMobile'] . 'px;
+			        font-size:' . esc_attr( $attributes['titleFontSizeMobile'] ) . 'px;
 			    }
 			}
             </style>';
