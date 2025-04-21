@@ -80,38 +80,26 @@ class Skt_Blocks {
 
 	}
 	
-public function post_pagination() {
-    // Verify the AJAX nonce
-    check_ajax_referer('responsive_block_editor_ajax_nonce', 'nonce');
-
-    // Check if attributes are set
-    if ( isset( $_POST['attributes'] ) ) {
-        // Sanitize the attributes input
-        $attributes = sanitize_text_field(wp_unslash( $_POST['attributes'] ));
-        // Ensure $attributes is an array (or appropriate type)
-        if ( is_array( $attributes ) ) {
-            // Sanitize each attribute (assuming it's an associative array)
-            $sanitized_attributes = array_map( 'sanitize_text_field', $attributes );
-
-            // Fetch the query based on the sanitized attributes
-            $query = $this->get_query( $sanitized_attributes, 'grid' );
-
-            // Render the pagination markup
-            $pagination_markup = $this->render_pagination( $query, $sanitized_attributes );
-
-            // Send JSON response with success
-            wp_send_json_success( $pagination_markup );
-        } else {
-            // Handle the case where attributes are not an array
-            wp_send_json_error('Invalid attributes format');
-        }
-    } else {
-        // If attributes are not set, send an error response
-        wp_send_json_error('No attributes received');
-    }
-}
+	public function post_pagination() {
+	    check_ajax_referer('responsive_block_editor_ajax_nonce', 'nonce');
+	    if ( isset( $_POST['attributes'] ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+	        $attributes = wp_unslash( $_POST['attributes'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+	        if ( is_string( $attributes ) ) {
+	            $attributes = json_decode( $attributes, true );
+	        }
+	        if ( is_array( $attributes ) ) {
+	            $sanitized_attributes = array_map( 'sanitize_text_field', $attributes );
+	            $query = $this->get_query( $sanitized_attributes, 'grid' );
+	            $pagination_markup = $this->render_pagination( $query, $sanitized_attributes );
+	            wp_send_json_success( $pagination_markup );
+	        } else {
+	            wp_send_json_error('Invalid attributes format');
+	        }
+	    } else {
+	        wp_send_json_error('No attributes received');
+	    }
+	}
 	
-
 	/**
 	 * Renders the post post pagination on server.
 	 *
@@ -335,11 +323,10 @@ public function post_pagination() {
 	 * @access public
 	 */
 	public function skt_blocks_getting_started() {
-
 		?>
 		<div class="skt-blocks-admin-page skt-blocks-welcome">
 			<div class="skt-blocks-welcome-container">
-				<div class="skt-blocks-welcome-block skt-blocks-welcome-block-first">					 
+				<div class="skt-blocks-welcome-block skt-blocks-welcome-block-first"> 
 					<div class="skt-blocks-welcome-block-inner">
 						<h3><?php echo esc_html__( 'Welcome to Skt Blocks', 'skt-blocks' ); ?></h3>
 						<p class="skt-blocks-subtitle">

@@ -32,6 +32,7 @@ function skt_blocks_render_block_core_latest_posts( $attributes ) {
 		'offset'              => $attributes['offset'],
 		'post_type'           => $attributes['postType'],
 		'ignore_sticky_posts' => 1,
+		'post__not_in'        => array( $post->ID ),
 		'paged'               => 1,
 	);
 
@@ -483,7 +484,7 @@ margin-bottom: ' . $attributes['rowGapMobile'] . 'px;
 		} else {
 			$section_title_tag = 'h2';
 		}
-	
+		
 		// Escape the section title content
 			$section_title = '<' . esc_attr( $section_title_tag ) . ' class="skt-blocks-post-grid-section-title">' . esc_html( $attributes['sectionTitle'] ) . '</' . esc_attr( $section_title_tag ) . '>';
 		} else {
@@ -498,11 +499,10 @@ margin-bottom: ' . $attributes['rowGapMobile'] . 'px;
 		}
 
 		$main_class = new Skt_Blocks();
-
 		$paginations_markup = '';
 
 		if( $attributes['postPagination'] ) {
-			$paginations_markup = '<div class="skt-blocks-post-pagination-wrap" style="text-align:' . $attributes['paginationAlignment'] . '" >' . $main_class->render_pagination( $grid_query, $attributes ) . '</div>';
+			$paginations_markup = '<div class="skt-blocks-post-pagination-wrap" style="text-align:' . esc_attr( $attributes['paginationAlignment'] ) . '" >' . $main_class->render_pagination( $grid_query, $attributes ) . '</div>';
 		}
 
 		/* Output the post markup */
