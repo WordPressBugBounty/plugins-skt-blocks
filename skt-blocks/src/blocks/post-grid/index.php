@@ -142,101 +142,101 @@ function skt_blocks_render_block_core_latest_posts( $attributes ) {
 
 	$global_styles = '
 		<style type="text/css">
-			.block-id-' . $attributes['postGridBlockId'] . '.skt-blocks-block-post-grid .skt-blocks-block-post-grid-image img {
-				border-radius: ' . $attributes['imageBorderRadius'] . 'px;
+			.block-id-' . esc_attr( $attributes['postGridBlockId'] ) . '.skt-blocks-block-post-grid .skt-blocks-block-post-grid-image img {
+				border-radius: ' . esc_attr( $attributes['imageBorderRadius'] ) . 'px;
 			}
-			.block-id-' . $attributes['postGridBlockId'] . '.skt-blocks-block-post-grid header .skt-blocks-block-post-grid-title {
-				margin-bottom: ' . $attributes['titleBottomSpacing'] . 'px;
+			.block-id-' . esc_attr( $attributes['postGridBlockId'] ) . '.skt-blocks-block-post-grid header .skt-blocks-block-post-grid-title {
+				margin-bottom: ' . esc_attr( $attributes['titleBottomSpacing'] ) . 'px;
 			}
-			.block-id-' . $attributes['postGridBlockId'] . '.skt-blocks-block-post-grid .skt-blocks-block-post-grid-byline {
-				margin-bottom: ' . $attributes['metaBottomSpacing'] . 'px;
+			.block-id-' . esc_attr( $attributes['postGridBlockId'] ) . '.skt-blocks-block-post-grid .skt-blocks-block-post-grid-byline {
+				margin-bottom: ' . esc_attr( $attributes['metaBottomSpacing'] ) . 'px;
 			}
-			.block-id-' . $attributes['postGridBlockId'] . '.skt-blocks-block-post-grid .skt-blocks-block-post-grid-text .skt-blocks-block-post-grid-excerpt a{
-				margin-top: ' . $attributes['readMoreTopSpacing'] . 'px;
+			.block-id-' . esc_attr( $attributes['postGridBlockId'] ) . '.skt-blocks-block-post-grid .skt-blocks-block-post-grid-text .skt-blocks-block-post-grid-excerpt a{
+				margin-top: ' . esc_attr( $attributes['readMoreTopSpacing'] ) . 'px;
 			}
-			.block-id-' . $attributes['postGridBlockId'] . '.skt-blocks-block-post-grid .skt-blocks-post-pagination-wrap > * {
-			    border:' . $attributes['paginationBorderWidth'] . 'px solid ' . $attributes['paginationBorderColor'] . ';
+			.block-id-' . esc_attr( $attributes['postGridBlockId'] ) . '.skt-blocks-block-post-grid .skt-blocks-post-pagination-wrap > * {
+			    border:' . esc_attr( $attributes['paginationBorderWidth'] ) . 'px solid ' . esc_attr( $attributes['paginationBorderColor'] ) . ';
 			    background-color:' . ( $attributes['paginationLayout'] == 'filled' ? $attributes['paginationBorderColor'] : 'transparent' ) . ';
-			    border-radius:' . $attributes['paginationBorderRadius'] . 'px;
-			    color:' . $attributes['paginationTextColor'] . ' !important;
+			    border-radius:' . esc_attr( $attributes['paginationBorderRadius'] ) . 'px;
+			    color:' . esc_attr( $attributes['paginationTextColor'] ) . ' !important;
 			    margin-right:10px;
 			    padding:0.5em;
 			}
-			.block-id-' . $attributes['postGridBlockId'] . '.skt-blocks-block-post-grid .skt-blocks-post-pagination-wrap > *:last-child {
+			.block-id-' . esc_attr( $attributes['postGridBlockId'] ) . '.skt-blocks-block-post-grid .skt-blocks-post-pagination-wrap > *:last-child {
 			    margin-right:0;
 			}
-			.block-id-' . $attributes['postGridBlockId'] . '.skt-blocks-block-post-grid .skt-blocks-post-pagination-wrap > span {
+			.block-id-' . esc_attr( $attributes['postGridBlockId'] ) . '.skt-blocks-block-post-grid .skt-blocks-post-pagination-wrap > span {
 			    border:'  . ( $attributes['paginationBorderWidth'] . 'px solid ' . $attributes['paginationActiveBorderColor'] ) . ';
 			    background-color:' . ( $attributes['paginationLayout'] == 'filled' ? $attributes['paginationActiveBorderColor'] : 'transparent' ) . ';
-			    color:' . $attributes['paginationTextActiveColor'] . '!important;
+			    color:' . esc_attr( $attributes['paginationTextActiveColor'] ) . '!important;
 			}
 
-			.block-id-' . $attributes['postGridBlockId'] . '.skt-blocks-block-post-grid .skt-blocks-post-grid-items article, .page-template-gutenberg-fullwidth .block-id-' . $attributes['postGridBlockId'] . '.skt-blocks-block-post-grid .skt-blocks-post-grid-items article {
+			.block-id-' . esc_attr( $attributes['postGridBlockId'] ) . '.skt-blocks-block-post-grid .skt-blocks-post-grid-items article, .page-template-gutenberg-fullwidth .block-id-' . esc_attr( $attributes['postGridBlockId'] ) . '.skt-blocks-block-post-grid .skt-blocks-post-grid-items article {
 			    padding:' . ( $attributes['layout'] === 'boxed'? $attributes['contentPadding'] ? $attributes['contentPadding'] : "0" : "0" ) . 'px;
 			}
 
-.block-id-' . $attributes['postGridBlockId'] . '.skt-blocks-block-post-grid .skt-blocks-block-post-grid-text {
-text-align: ' . $attributes['textAlignment'] . ';
+.block-id-' . esc_attr( $attributes['postGridBlockId'] ) . '.skt-blocks-block-post-grid .skt-blocks-block-post-grid-text {
+text-align: ' . esc_attr( $attributes['textAlignment'] ) . ';
 padding:' . ( $attributes['layout'] === 'content'? $attributes['contentPadding'] ? $attributes['contentPadding'] : "0" : "0" ) . 'px;
 }
 			@media (max-width:768px){
-			    .block-id-' . $attributes['postGridBlockId'] . '.skt-blocks-block-post-grid .skt-blocks-post-grid-items article {
+			    .block-id-' . esc_attr( $attributes['postGridBlockId'] ) . '.skt-blocks-block-post-grid .skt-blocks-post-grid-items article {
 			        padding:' . ( $attributes['layout'] === 'boxed'? $attributes['mobileContentPadding'] ? $attributes['mobileContentPadding'] : "0" : "0" ) . 'px;
-			        text-align: ' . $attributes['textAlignment'] . ';
+			        text-align: ' . esc_attr( $attributes['textAlignment'] ) . ';
 			    }
 			}@media (min-width:976px){
-			    .block-id-' . $attributes['postGridBlockId'] . '.skt-blocks-block-post-grid header .skt-blocks-block-post-grid-title{
-			        font-size:' . $attributes['titleFontSize'] . 'px;
+			    .block-id-' . esc_attr( $attributes['postGridBlockId'] ) . '.skt-blocks-block-post-grid header .skt-blocks-block-post-grid-title{
+			        font-size:' . esc_attr( $attributes['titleFontSize'] ) . 'px;
 			    }
-			    .block-id-' . $attributes['postGridBlockId'] . '.skt-blocks-block-post-grid .skt-blocks-post-grid-item {
-margin-bottom: ' . $attributes['rowGap'] . 'px;
+			    .block-id-' . esc_attr( $attributes['postGridBlockId'] ) . '.skt-blocks-block-post-grid .skt-blocks-post-grid-item {
+margin-bottom: ' . esc_attr( $attributes['rowGap'] ) . 'px;
 }
 			}@media (max-width:976px){
-			    .block-id-' . $attributes['postGridBlockId'] . '.skt-blocks-block-post-grid header .skt-blocks-block-post-grid-title {
-			        font-size:' . $attributes['titleFontSizeTablet'] . 'px;
+			    .block-id-' . esc_attr( $attributes['postGridBlockId'] ) . '.skt-blocks-block-post-grid header .skt-blocks-block-post-grid-title {
+			        font-size:' . esc_attr( $attributes['titleFontSizeTablet'] ) . 'px;
 			    }
-			    .block-id-' . $attributes['postGridBlockId'] . '.skt-blocks-block-post-grid .skt-blocks-post-grid-item {
-margin-bottom: ' . $attributes['rowGapTablet'] . 'px;
+			    .block-id-' . esc_attr( $attributes['postGridBlockId'] ) . '.skt-blocks-block-post-grid .skt-blocks-post-grid-item {
+margin-bottom: ' . esc_attr( $attributes['rowGapTablet'] ) . 'px;
 }
 			}@media (max-width:767px){
-			    .block-id-' . $attributes['postGridBlockId'] . '.skt-blocks-block-post-grid header .skt-blocks-block-post-grid-title
+			    .block-id-' . esc_attr( $attributes['postGridBlockId'] ) . '.skt-blocks-block-post-grid header .skt-blocks-block-post-grid-title
 			     {
-			        font-size:' . $attributes['titleFontSizeMobile'] . 'px;
+			        font-size:' . esc_attr( $attributes['titleFontSizeMobile'] ) . 'px;
 			    }
-			    .block-id-' . $attributes['postGridBlockId'] . '.skt-blocks-block-post-grid .skt-blocks-post-grid-item {
-margin-bottom: ' . $attributes['rowGapMobile'] . 'px;
+			    .block-id-' . esc_attr( $attributes['postGridBlockId'] ) . '.skt-blocks-block-post-grid .skt-blocks-post-grid-item {
+margin-bottom: ' . esc_attr( $attributes['rowGapMobile'] ) . 'px;
 }
 			    .skt-blocks-block-post-grid .is-list article {
 			        grid-template-columns: ' . ( $attributes['stackonMobile'] ? "1fr" : "1fr 1fr" ) . '
 			    }
 			}
-			.block-id-' . $attributes['postGridBlockId'] . '.skt-blocks-block-post-grid header .skt-blocks-block-post-grid-title a
+			.block-id-' . esc_attr( $attributes['postGridBlockId'] ) . '.skt-blocks-block-post-grid header .skt-blocks-block-post-grid-title a
 			     {
-			        color:' . $attributes['titleColor'] . ';
+			        color:' . esc_attr( $attributes['titleColor'] ) . ';
 			    }
-			    .block-id-' . $attributes['postGridBlockId'] . ' .skt-blocks-block-post-grid-more-link, .block-id-' . $attributes['postGridBlockId'] . ' .read-more a{
+			    .block-id-' . esc_attr( $attributes['postGridBlockId'] ) . ' .skt-blocks-block-post-grid-more-link, .block-id-' . esc_attr( $attributes['postGridBlockId'] ) . ' .read-more a{
 			        display: '.($attributes['displayPostLink']? "block" : "none").';
 			    }
 			   
-			.block-id-' . $attributes['postGridBlockId'] . ' .skt-blocks-block-post-grid-more-link, .block-id-' . $attributes['postGridBlockId'] . ' .read-more a
+			.block-id-' . esc_attr( $attributes['postGridBlockId'] ) . ' .skt-blocks-block-post-grid-more-link, .block-id-' . esc_attr( $attributes['postGridBlockId'] ) . ' .read-more a
 			     {
-			        color:' . $attributes['readMoreLinkColor'] . ';
-			        font-size:' . $attributes['continueFontSize'] . 'px;
-			        font-weight:' . $attributes['continueFontWeight'] . ';
-			        line-height:' . $attributes['continueLineHeight'] . ';
-			        text-transform:' . $attributes['continueTextTransform'] . ';
+			        color:' . esc_attr( $attributes['readMoreLinkColor'] ) . ';
+			        font-size:' . esc_attr( $attributes['continueFontSize'] ) . 'px;
+			        font-weight:' . esc_attr( $attributes['continueFontWeight'] ) . ';
+			        line-height:' . esc_attr( $attributes['continueLineHeight'] ) . ';
+			        text-transform:' . esc_attr( $attributes['continueTextTransform'] ) . ';
 			    }
-			.block-id-' . $attributes['postGridBlockId'] . '.skt-blocks-block-post-grid header .skt-blocks-block-post-grid-title a:hover
+			.block-id-' . esc_attr( $attributes['postGridBlockId'] ) . '.skt-blocks-block-post-grid header .skt-blocks-block-post-grid-title a:hover
 			     {
-			        color:' . $attributes['titleHoverColor'] . ';
+			        color:' . esc_attr( $attributes['titleHoverColor'] ) . ';
 			    }
-			    .block-id-' . $attributes['postGridBlockId'] . '.skt-blocks-block-post-grid article
+			    .block-id-' . esc_attr( $attributes['postGridBlockId'] ) . '.skt-blocks-block-post-grid article
 			     {
-			        box-shadow: ' . $attributes['boxShadowHOffset'] . 'px ' . $attributes['boxShadowVOffset'] . 'px ' . $attributes['boxShadowBlur'] . 'px ' . $attributes['boxShadowSpread'] . 'px ' . $attributes['boxShadowColor'] . ' ' . $boxShadowPositionCSS . ';
+			        box-shadow: ' . esc_attr( $attributes['boxShadowHOffset'] ) . 'px ' . esc_attr( $attributes['boxShadowVOffset'] ) . 'px ' . esc_attr( $attributes['boxShadowBlur'] ) . 'px ' . esc_attr( $attributes['boxShadowSpread'] ) . 'px ' . esc_attr( $attributes['boxShadowColor'] ) . ' ' . esc_attr( $boxShadowPositionCSS ) . ';
 			    }
 		.block-id-' . $attributes['postGridBlockId'] . '.skt-blocks-block-post-grid article:hover
 			     {
-			        box-shadow: ' . $attributes['hoverboxShadowHOffset'] . 'px ' . $attributes['hoverboxShadowVOffset'] . 'px ' . $attributes['hoverboxShadowBlur'] . 'px ' . $attributes['hoverboxShadowSpread'] . 'px ' . $attributes['hoverboxShadowColor'] . ' ' . $hoverboxShadowPositionCSS . ';
+			        box-shadow: ' . esc_attr( $attributes['hoverboxShadowHOffset'] ) . 'px ' . esc_attr( $attributes['hoverboxShadowVOffset'] ) . 'px ' . esc_attr( $attributes['hoverboxShadowBlur'] ) . 'px ' . esc_attr( $attributes['hoverboxShadowSpread'] ) . 'px ' . esc_attr( $attributes['hoverboxShadowColor'] ) . ' ' . esc_attr( $hoverboxShadowPositionCSS ) . ';
 			    }
 		
 		</style>';
@@ -475,10 +475,7 @@ margin-bottom: ' . $attributes['rowGapMobile'] . 'px;
 
 		/* Post grid section title */
 		if ( isset( $attributes['displaySectionTitle'] ) && $attributes['displaySectionTitle'] && ! empty( $attributes['sectionTitle'] ) ) {
-		// Define allowed tags
 		$allowed_tags = array( 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'span' );
-		
-		// Check if 'sectionTitleTag' is set and valid
 		if ( isset( $attributes['sectionTitleTag'] ) && in_array( $attributes['sectionTitleTag'], $allowed_tags, true ) ) {
 			$section_title_tag = sanitize_key( $attributes['sectionTitleTag'] );
 		} else {
@@ -493,9 +490,14 @@ margin-bottom: ' . $attributes['rowGapMobile'] . 'px;
 
 		/* Post grid section tag */
 		if ( isset( $attributes['sectionTag'] ) ) {
-			$section_tag = $attributes['sectionTag'];
+		    $allowed_tags = array( 'section', 'div', 'article', 'main' );
+		    if ( in_array( $attributes['sectionTag'], $allowed_tags, true ) ) {
+		        $section_tag = $attributes['sectionTag'];
+		    } else {
+		        $section_tag = 'section';
+		    }
 		} else {
-			$section_tag = 'section';
+		    $section_tag = 'section';
 		}
 
 		$main_class = new Skt_Blocks();

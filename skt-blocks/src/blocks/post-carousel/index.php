@@ -621,7 +621,7 @@ $buttonTarget = $attributes['buttonTarget']? "_blank" : null;
 			/* Get the read more link */
 			if ( isset( $attributes['displayPostLink'] ) && $attributes['displayPostLink'] ) {
 				$post_carousel_markup .= sprintf(
-					'<p style="'.$ctaSpace.'"><a class="skt-blocks-block-post-carousel-more-link skt-blocks-text-link" href="%1$s" target="'.esc_attr( $buttonTarget ).'"rel="bookmark" style="'.esc_attr( $ctaStyles ).'">%2$s <span class="screen-reader-text">%3$s</span></a></p>',
+					'<p style="'.esc_attr( $ctaSpace ).'"><a class="skt-blocks-block-post-carousel-more-link skt-blocks-text-link" href="%1$s" target="'.esc_attr( $buttonTarget ).'"rel="bookmark" style="'.esc_attr( $ctaStyles ).'">%2$s <span class="screen-reader-text">%3$s</span></a></p>',
 					esc_url( get_permalink( $post_id ) ),
 					esc_html( $attributes['readMoreText'] ),
 					esc_html( $title )
