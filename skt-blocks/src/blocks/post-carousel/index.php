@@ -619,6 +619,11 @@ $buttonTarget = $attributes['buttonTarget']? "_blank" : null;
 			}
 
 			/* Get the read more link */
+			/**
+			 *
+			 * @since 2.2
+			 * @param $ctaSpace resolved escaping issue at $ctaSpace.
+			 */
 			if ( isset( $attributes['displayPostLink'] ) && $attributes['displayPostLink'] ) {
 				$post_carousel_markup .= sprintf(
 					'<p style="'.esc_attr( $ctaSpace ).'"><a class="skt-blocks-block-post-carousel-more-link skt-blocks-text-link" href="%1$s" target="'.esc_attr( $buttonTarget ).'"rel="bookmark" style="'.esc_attr( $ctaStyles ).'">%2$s <span class="screen-reader-text">%3$s</span></a></p>',
@@ -682,7 +687,12 @@ $buttonTarget = $attributes['buttonTarget']? "_blank" : null;
 
 		/* Post carousel section tag */
 		if ( isset( $attributes['sectionTag'] ) ) {
-			$section_tag = $attributes['sectionTag'];
+			$allowed_tags = array( 'section', 'div', 'article', 'main' );
+		    if ( in_array( $attributes['sectionTag'], $allowed_tags, true ) ) {
+		        $section_tag = $attributes['sectionTag'];
+		    } else {
+		        $section_tag = 'section';
+		    }
 		} else {
 			$section_tag = 'section';
 		}
@@ -745,6 +755,11 @@ $buttonTarget = $attributes['buttonTarget']? "_blank" : null;
 			}
             </style>';
 		/* Output the post markup */
+		/**
+		 *
+		 * @since 2.3
+		 * @param $section_tag resolved escaping issue at $section_tag.
+		 */
 		$block_content = sprintf(
 			'<%1$s class="%2$s" data-carouselid="%7$s">%3$s<div class="%4$s" %6$s>%5$s</div>'.$styles.'</%1$s>',
 			esc_attr( $section_tag ),

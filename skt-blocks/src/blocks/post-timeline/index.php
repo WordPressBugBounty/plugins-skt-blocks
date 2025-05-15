@@ -594,7 +594,12 @@ function skt_blocks_post_timeline_render_latest_posts( $attributes ) {
 
 		/* Post grid section tag */
 		if ( isset( $attributes['sectionTag'] ) ) {
-			$section_tag = $attributes['sectionTag'];
+			$allowed_tags = array( 'section', 'div', 'article', 'main' );
+		    if ( in_array( $attributes['sectionTag'], $allowed_tags, true ) ) {
+		        $section_tag = $attributes['sectionTag'];
+		    } else {
+		        $section_tag = 'section';
+		    }
 		} else {
 			$section_tag = 'section';
 		}
@@ -695,9 +700,14 @@ function skt_blocks_post_timeline_render_latest_posts( $attributes ) {
             </style>';
 
 		/* Output the post markup */
+		/**
+		 *
+		 * @since 2.3
+		 * @param $section_tag resolved escaping issue at $section_tag.
+		 */
 		$block_content = sprintf(
 			'<%1$s class="%2$s %3$s">%4$s %5$s' . $styles . '</%1$s>',
-			$section_tag,
+			esc_attr( $section_tag ),
 			esc_attr( $class ),
 			esc_attr( $sec_classes ),
 			$section_title,

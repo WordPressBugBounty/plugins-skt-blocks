@@ -508,6 +508,11 @@ margin-bottom: ' . esc_attr( $attributes['rowGapMobile'] ) . 'px;
 		}
 
 		/* Output the post markup */
+		/**
+		 *
+		 * @since 2.3
+		 * @param $section_tag resolved escaping issue at $section_tag.
+		 */
 		$block_content = sprintf(
 			'<%1$s class="%2$s">%3$s<div class="%4$s">%5$s</div>%6$s</%1$s>',
 			esc_attr( $section_tag ),
