@@ -501,8 +501,8 @@ $buttonTarget = $attributes['buttonTarget']? "_blank" : null;
 					'<header class="skt-blocks-block-post-carousel-header" style="'.esc_attr( $alignStyle ).'">'
 				);
 
-					/* Get the post title */
-					$title = get_the_title( $post_id );
+			/* Get the post title */
+			$title = get_the_title( $post_id );
             $comments = get_comments_number( $post_id );
             if(0 == $comments)
                 $comments = "No";
@@ -511,13 +511,17 @@ $buttonTarget = $attributes['buttonTarget']? "_blank" : null;
 			}
 
 			if ( isset( $attributes['displayPostTitle'] ) && $attributes['displayPostTitle'] ) {
-
-				if ( isset( $attributes['postTitleTag'] ) ) {
-					$post_title_tag = $attributes['postTitleTag'];
+				$allowed_tags = [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'div', 'span' ];
+				if ( isset( $attributes['postTitleTag'] ) && in_array( $attributes['postTitleTag'], $allowed_tags, true ) ) {
+				    $post_title_tag = $attributes['postTitleTag'];
 				} else {
-					$post_title_tag = 'h2';
+				    $post_title_tag = 'h2';
 				}
-
+				/**
+				 *
+				 * @since 2.4
+				 * @param $post_title_tag resolved escaping issue at $post_title_tag on line \plugins\skt-blocks\src\blocks\post-carousel\index.php : Line: 522
+				 */
 				$post_carousel_markup .= sprintf(
 					'<%3$s class="skt-blocks-block-post-carousel-title" style="'.esc_attr( $titleSpace ).'"><a href="%1$s" rel="bookmark" style="'.esc_attr( $titleColor ).';">%2$s</a></%3$s>',
 					esc_url( get_permalink( $post_id ) ),
