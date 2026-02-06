@@ -2,9 +2,9 @@
 Contributors: sonalsinha21
 Tags: gutenberg blocks, page builder, WordPress blocks, blocks, editor
 Requires at least: 5.0
-Tested up to: 6.8
+Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.5
+Stable tag: 2.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,6 +75,9 @@ e.g.
 6. Post-TimeLine Block
 
 == Changelog ==
+= 2.6 =
+ * Issue Resolved Review Google API key secret detected in src/utils/build.js#L22 and Compatibility with WordPress 6.9
+
 = 2.5 =
  * Issue Resolved (Pointed by Reviewer): Authenticated (Contributor+) Stored XSS Vulnerability on Post Carousel block.
 

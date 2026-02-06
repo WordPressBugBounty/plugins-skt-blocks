@@ -19,7 +19,7 @@ const createFontEntry = (fontData) => {
 };
 
 request(
-  "https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyDS1XfK5O1n2KXV3a1sonEffs966tQt54g",
+  "https://www.googleapis.com/webfonts/v1/webfonts?key=",
   { json: true },
   (err, res, body) => {
     if (err) {

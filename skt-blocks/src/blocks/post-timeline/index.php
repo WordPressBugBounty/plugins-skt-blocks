@@ -434,7 +434,7 @@ function skt_blocks_post_timeline_render_latest_posts( $attributes ) {
 			}
 
 			if ( ! $excerpt ) {
-				$excerpt = null;
+				$excerpt = '';
 			}
 
 			if ( isset( $attributes['displayPostExcerpt'] ) && $attributes['displayPostExcerpt'] ) {

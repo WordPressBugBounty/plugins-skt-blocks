@@ -615,7 +615,7 @@ $buttonTarget = $attributes['buttonTarget']? "_blank" : null;
 			}
 
 			if ( ! $excerpt ) {
-				$excerpt = null;
+				$excerpt = '';
 			}
 
 			if ( isset( $attributes['displayPostExcerpt'] ) && $attributes['displayPostExcerpt'] ) {
