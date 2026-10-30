@@ -47,12 +47,19 @@ const save = ({ attributes, className }) => {
     align,
     width,
     customWidth,
+    hideDesktop,
+    hideTablet,
+    hideMobile,
       isSmallImage,
   } = attributes;
 
   const classes = classnames(className, {
     "has-responsive-height": responsiveHeight,
     [`align${align}`]: align,
+    "skt-slider-hide": hideDesktop || hideTablet || hideMobile,
+    "skt-hide-desktop": hideDesktop,
+    "skt-hide-tablet": hideTablet,
+    "skt-hide-mobile": hideMobile,
   });
 
   let imgopacity = iconBackgroundOpacity / 100;

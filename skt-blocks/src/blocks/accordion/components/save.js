@@ -10,6 +10,15 @@ import generateCSS from "../../../generateCSS";
 import generateCSSUnit from "../../../generateCSSUnit";
 import { hexToRgba } from "../../../utils/index.js";
 
+
+const isSetVal = (v) => v !== undefined && v !== null && v !== "";
+const marginRules = (v, h) => ({
+  "margin-top": isSetVal(v) ? v + "px !important" : undefined,
+  "margin-bottom": isSetVal(v) ? v + "px !important" : undefined,
+  "margin-left": isSetVal(h) ? h + "px !important" : undefined,
+  "margin-right": isSetVal(h) ? h + "px !important" : undefined,
+});
+
 function styling(props) {
   const {
     block_id,
@@ -67,6 +76,10 @@ function styling(props) {
     titleBackgroundColorOpacity,
     marginV,
     marginH,
+    marginVTablet,
+    marginHTablet,
+    marginVMobile,
+    marginHMobile,
     titleSecondaryBackgroundColor,
     titleGradientDegree,
     titleBgGradient,
@@ -237,6 +250,7 @@ function styling(props) {
   };
 
   tablet_selectors = {
+    " ": marginRules(marginVTablet, marginHTablet),
     " .skt-blocks-accordion-titles-button": {
       "padding-top": generateCSSUnit(
         vtitlePaddingTablet,
@@ -286,6 +300,7 @@ function styling(props) {
   };
 
   mobile_selectors = {
+    " ": marginRules(marginVMobile, marginHMobile),
     " .skt-blocks-accordion-titles-button": {
       "padding-top": generateCSSUnit(
         vtitlePaddingMobile,
@@ -404,6 +419,9 @@ export default function save(props) {
     block_id,
     schema,
     equalHeight,
+    hideDesktop,
+    hideTablet,
+    hideMobile,
       titleTextColor,
     titleActiveTextColor,
     titleBackgroundColor,
@@ -424,7 +442,13 @@ export default function save(props) {
         `skt-blocks-accordion-layout-${props.attributes.layout}`,
         `skt-blocks-accordion-expand-first-${props.attributes.expandFirstItem}`,
         `skt-blocks-accordion-inactive-other-${props.attributes.inactiveOtherItems}`,
-        equalHeightClass
+        equalHeightClass,
+        {
+          "skt-accordion-hide": hideDesktop || hideTablet || hideMobile,
+          "skt-hide-desktop": hideDesktop,
+          "skt-hide-tablet": hideTablet,
+          "skt-hide-mobile": hideMobile,
+        }
       )}
     >
       <Style>{styling(props)}</Style>

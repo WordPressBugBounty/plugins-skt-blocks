@@ -575,3 +575,22 @@ a.skt-blocks-infbox__link-to-all {
   width: 100%;
   transition: 0.3s ease;
 }
+
+/* --- Info Block: device visibility (frontend). Classes default off, so
+   existing blocks are unaffected. Breakpoints match editor: tablet <=1024px,
+   mobile <=767px. --- */
+.skt-blocks-infobox__outer-wrap.skt-hide-desktop {
+	@media (min-width: 1025px) {
+		display: none !important;
+	}
+}
+.skt-blocks-infobox__outer-wrap.skt-hide-tablet {
+	@media (min-width: 768px) and (max-width: 1024px) {
+		display: none !important;
+	}
+}
+.skt-blocks-infobox__outer-wrap.skt-hide-mobile {
+	@media (max-width: 767px) {
+		display: none !important;
+	}
+}

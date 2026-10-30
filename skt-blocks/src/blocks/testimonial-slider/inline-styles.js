@@ -50,6 +50,20 @@ function TestimonialStyle( props ) {
 		rowGap,
 		columnGap,
 		contentPadding,
+		rowGapTablet,
+		rowGapMobile,
+		columnGapTablet,
+		columnGapMobile,
+		contentPaddingTablet,
+		contentPaddingMobile,
+		descSpaceTablet,
+		descSpaceMobile,
+		nameSpaceTablet,
+		nameSpaceMobile,
+		imgHrPaddingTablet,
+		imgHrPaddingMobile,
+		imgVrPaddingTablet,
+		imgVrPaddingMobile,
 		backgroundColor,
 		backgroundImage,
 		backgroundPosition,
@@ -176,10 +190,34 @@ function TestimonialStyle( props ) {
 		}
 	}
 
+	// Safe px helpers for responsive spacing: emit a value only when the
+	// tablet/mobile attribute is actually set (a number). When unset the property
+	// is dropped, so the device falls back to the desktop rule via the CSS
+	// cascade. Guards against NaN ("NaNpx") / null output.
+	const uPx = ( v ) =>
+		( typeof v === "number" && ! isNaN( v ) ) ? generateCSSUnit( v, "px" ) : undefined
+	const uHalfPx = ( v ) =>
+		( typeof v === "number" && ! isNaN( v ) ) ? generateCSSUnit( v / 2, "px" ) : undefined
+
 	var mobile_selectors = {
+		" .skt-blocks-testimonial__wrap": {
+			"padding-left" : uHalfPx( columnGapMobile ),
+			"padding-right" : uHalfPx( columnGapMobile ),
+			"margin-bottom" : uPx( rowGapMobile ),
+		},
+		" .skt-blocks-testimonial__wrap .skt-blocks-tm__image-content": {
+			"padding-left" : uPx( imgHrPaddingMobile ),
+			"padding-right" : uPx( imgHrPaddingMobile ),
+			"padding-top" : uPx( imgVrPaddingMobile ),
+			"padding-bottom" : uPx( imgVrPaddingMobile ),
+		},
+		" .skt-blocks-tm__content": {
+			"padding" : uPx( contentPaddingMobile ),
+		},
 		" .skt-blocks-tm__desc": {
 			"font-size" : generateCSSUnit( descFontSizeMobile, descFontSizeType ),
 			"line-height": generateCSSUnit( descLineHeightMobile, descLineHeightType ),
+			"margin-bottom": uPx( descSpaceMobile ),
 		},
 		" .skt-blocks-tm__company": {
 			"font-size" : generateCSSUnit( companyFontSizeMobile, companyFontSizeType ),
@@ -188,13 +226,26 @@ function TestimonialStyle( props ) {
 		" .skt-blocks-tm__author-name": {
 			"font-size" : generateCSSUnit( nameFontSizeMobile, nameFontSizeType ),
 			"line-height": generateCSSUnit( nameLineHeightMobile, nameLineHeightType ),
+			"margin-bottom": uPx( nameSpaceMobile ),
 		},
 	}
 
 	var tablet_selectors = {
+		" .skt-blocks-testimonial__wrap": {
+			"padding-left" : uHalfPx( columnGapTablet ),
+			"padding-right" : uHalfPx( columnGapTablet ),
+			"margin-bottom" : uPx( rowGapTablet ),
+		},
+		" .skt-blocks-testimonial__wrap .skt-blocks-tm__image-content": {
+			"padding-left" : uPx( imgHrPaddingTablet ),
+			"padding-right" : uPx( imgHrPaddingTablet ),
+			"padding-top" : uPx( imgVrPaddingTablet ),
+			"padding-bottom" : uPx( imgVrPaddingTablet ),
+		},
 		" .skt-blocks-tm__desc": {
 			"font-size" : generateCSSUnit( descFontSizeTablet, descFontSizeType ),
 			"line-height": generateCSSUnit( descLineHeightTablet, descLineHeightType ),
+			"margin-bottom": uPx( descSpaceTablet ),
 		},
 		" .skt-blocks-tm__company": {
 			"font-size" : generateCSSUnit( companyFontSizeTablet, companyFontSizeType ),
@@ -203,9 +254,11 @@ function TestimonialStyle( props ) {
 		" .skt-blocks-tm__author-name": {
 			"font-size" : generateCSSUnit( nameFontSizeTablet, nameFontSizeType ),
 			"line-height": generateCSSUnit( nameLineHeightTablet, nameLineHeightType ),
+			"margin-bottom": uPx( nameSpaceTablet ),
 		},
 		" .skt-blocks-tm__content": {
 			"text-align" : "center",
+			"padding" : uPx( contentPaddingTablet ),
 		},
 	}
 

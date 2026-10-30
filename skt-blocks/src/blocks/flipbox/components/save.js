@@ -93,6 +93,9 @@ export default class Save extends Component {
       imageOpacity,
       backImageOpacity,
       blockId,
+      hideDesktop,
+      hideTablet,
+      hideMobile,
     } = this.props.attributes;
 
     var boxShadowPositionCSS = boxShadowPosition;
@@ -104,7 +107,46 @@ export default class Save extends Component {
     const classes = classnames({
       [`has-text-align-${contentAlign}`]: contentAlign,
       [`block-${blockId}`]: blockId,
+      "skt-flipbox-hide": hideDesktop || hideTablet || hideMobile,
+      "skt-hide-desktop": hideDesktop,
+      "skt-hide-tablet": hideTablet,
+      "skt-hide-mobile": hideMobile,
     });
+
+    // Tablet / Mobile overrides, only emitted when a value was set, so
+    // existing blocks keep exactly the same markup.
+    const attrs = this.props.attributes;
+    const respRules = (sfx) => {
+      const g = (b) => attrs[b + sfx];
+      const isSet = (v) => v !== undefined && v !== null && v !== "";
+      const out = [];
+      const add = (sel, prop, base, unit) => {
+        const v = g(base);
+        if (isSet(v)) out.push(`.block-${blockId}${sel}{${prop}:${v}${unit} !important;}`);
+      };
+      add("", "margin-top", "topMargin", "px");
+      add("", "margin-bottom", "bottomMargin", "px");
+      [["front", ""], ["back", "back"]].forEach(([side, pre]) => {
+        const sel = ` .flip-box-${side}`;
+        add(sel, "padding-top", pre + "topPadding", "px");
+        add(sel, "padding-bottom", pre + "bottomPadding", "px");
+        add(sel, "padding-left", pre + "leftPadding", "px");
+        add(sel, "padding-right", pre + "rightPadding", "px");
+        add(sel, "border-width", "borderWidth", "px");
+        add(sel, "border-radius", "borderRadius", "px");
+        const ib = pre ? "backIconSize" : "iconSize";
+        add(`${sel} > div`, "width", ib, "px");
+        add(`${sel} > div`, "height", ib, "px");
+        add(`${sel} > div svg`, "width", ib, "px");
+        add(`${sel} > div svg`, "height", ib, "px");
+      });
+      return out.join("");
+    };
+    const tabletCss = respRules("Tablet");
+    const mobileCss = respRules("Mobile");
+    const responsiveCss =
+      (tabletCss ? `@media (max-width: 1024px){${tabletCss}}` : "") +
+      (mobileCss ? `@media (max-width: 767px){${mobileCss}}` : "");
 
     const innerClasses = classnames(
       "wp-block-skt-blocks-flipbox__inner",
@@ -130,6 +172,7 @@ export default class Save extends Component {
 
     return [
       <Fragment>
+        {responsiveCss && <Style>{responsiveCss}</Style>}
         <Style>
           {`
             .block-${blockId} .wp-block-skt-blocks-flipbox-item__button.wp-block-button__link {

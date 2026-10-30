@@ -658,3 +658,15 @@ i.fipicon-angle-left:before {
   border: 1px solid #f5f5f5;
   color: #424242;
 }
+
+
+// Keep the list visible/selectable in the editor even when it is hidden on the
+// current device. Editor only.
+.editor-styles-wrapper {
+  .skt-blocks-icon-list__outer-wrap.skt-hide-desktop,
+  .skt-blocks-icon-list__outer-wrap.skt-hide-tablet,
+  .skt-blocks-icon-list__outer-wrap.skt-hide-mobile {
+    display: block !important;
+    opacity: 0.55;
+  }
+}

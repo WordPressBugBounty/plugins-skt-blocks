@@ -1,0 +1,63 @@
+.wp-block-skt-blocks-skt-section {
+	// Ensure an empty section still has a clickable area in the editor.
+	min-height: 40px;
+
+	// The editor may render the block list either ON the section element itself
+	// (the section also gets the .block-editor-block-list__layout class) or in a
+	// child wrapper. Cover BOTH: make whichever element is the block-list a flex
+	// container that mirrors the inline flex settings on the section.
+	> .block-editor-block-list__layout,
+	.block-editor-block-list__layout {
+		display: flex;
+		flex-direction: inherit;
+		flex-wrap: inherit;
+		align-items: inherit;
+		justify-content: inherit;
+		column-gap: inherit;
+		row-gap: inherit;
+		width: 100%;
+	}
+
+	// WordPress centers child blocks in the editor via automatic left/right
+	// margins (and its layout rules can be more specific than ours), which hides
+	// flex alignment. Force-reset those margins on the inner blocks. !important
+	// is needed to beat the core editor layout styles.
+	> *,
+	&.block-editor-block-list__layout > *,
+	> .block-editor-block-list__layout > *,
+	.block-editor-block-list__layout > * {
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+	}
+
+	// Subtle outline for an empty section so it's easy to see while editing.
+	.block-editor-block-list__layout:empty {
+		outline: 1px dashed rgba(0, 0, 0, 0.15);
+		outline-offset: -1px;
+		min-height: 30px;
+	}
+}
+
+// Never actually hide sections inside the editor (otherwise the user cannot
+// select/edit a block set to hide on the current device). Show them dimmed
+// instead. Scoped to .editor-styles-wrapper so it only affects the editor,
+// with higher specificity so it wins over the frontend hide rules.
+.editor-styles-wrapper {
+	.wp-block-skt-blocks-skt-section.skt-hide-desktop,
+	.wp-block-skt-blocks-skt-section.skt-hide-tablet,
+	.wp-block-skt-blocks-skt-section.skt-hide-mobile {
+		display: flex !important;
+		opacity: 0.55;
+	}
+}
+
+// Never make sections sticky inside the editor (it interferes with editing).
+.editor-styles-wrapper {
+	.wp-block-skt-blocks-skt-section.skt-sticky-always,
+	.wp-block-skt-blocks-skt-section.skt-sticky-desktop,
+	.wp-block-skt-blocks-skt-section.skt-sticky-tablet,
+	.wp-block-skt-blocks-skt-section.skt-sticky-mobile {
+		position: relative !important;
+		top: auto !important;
+	}
+}

@@ -103,3 +103,76 @@
   .alignfull.wp-block-skt-blocks-divider {
   max-width: 100vw !important;
 }
+
+// Responsive visibility (Desktop >=1025, Tablet 768-1024, Mobile <=767).
+@media (max-width: 767px) {
+  .skt-blocks-block-spacer.skt-hide-mobile {
+    display: none !important;
+  }
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+  .skt-blocks-block-spacer.skt-hide-tablet {
+    display: none !important;
+  }
+}
+@media (min-width: 1025px) {
+  .skt-blocks-block-spacer.skt-hide-desktop {
+    display: none !important;
+  }
+}
+
+// Responsive Vertical Margin / Divider Height / Divider Width.
+// Values come from CSS variables on the block. Mobile falls back to Tablet,
+// then Desktop. Tablet <=1024px, Mobile <=767px.
+@media (max-width: 1024px) {
+  .skt-blocks-block-spacer.has-dv-margin-tablet .skt-blocks-divider-content {
+    margin-top: var(--skt-dv-margin-tablet) !important;
+    margin-bottom: var(--skt-dv-margin-tablet) !important;
+  }
+  .skt-blocks-block-spacer.has-dv-height-tablet:not(.dots):not(.asterisks)
+    .skt-blocks-divider-content
+    hr {
+    height: var(--skt-dv-height-tablet) !important;
+    border-radius: calc(var(--skt-dv-height-tablet) / 2);
+  }
+  .skt-blocks-block-spacer.has-dv-height-tablet.basic
+    .skt-blocks-divider-content
+    hr {
+    border-radius: 0;
+  }
+  .skt-blocks-block-spacer.has-dv-height-tablet .rgbl-divider__dot {
+    height: var(--skt-dv-height-tablet) !important;
+    width: var(--skt-dv-height-tablet) !important;
+    font-size: calc(var(--skt-dv-height-tablet) * 1.8) !important;
+  }
+  .skt-blocks-block-spacer.has-dv-width-tablet .skt-blocks-divider-content hr,
+  .skt-blocks-block-spacer.has-dv-width-tablet .rgbl-divider__dots {
+    width: var(--skt-dv-width-tablet) !important;
+  }
+}
+@media (max-width: 767px) {
+  .skt-blocks-block-spacer.has-dv-margin-mobile .skt-blocks-divider-content {
+    margin-top: var(--skt-dv-margin-mobile) !important;
+    margin-bottom: var(--skt-dv-margin-mobile) !important;
+  }
+  .skt-blocks-block-spacer.has-dv-height-mobile:not(.dots):not(.asterisks)
+    .skt-blocks-divider-content
+    hr {
+    height: var(--skt-dv-height-mobile) !important;
+    border-radius: calc(var(--skt-dv-height-mobile) / 2);
+  }
+  .skt-blocks-block-spacer.has-dv-height-mobile.basic
+    .skt-blocks-divider-content
+    hr {
+    border-radius: 0;
+  }
+  .skt-blocks-block-spacer.has-dv-height-mobile .rgbl-divider__dot {
+    height: var(--skt-dv-height-mobile) !important;
+    width: var(--skt-dv-height-mobile) !important;
+    font-size: calc(var(--skt-dv-height-mobile) * 1.8) !important;
+  }
+  .skt-blocks-block-spacer.has-dv-width-mobile .skt-blocks-divider-content hr,
+  .skt-blocks-block-spacer.has-dv-width-mobile .rgbl-divider__dots {
+    width: var(--skt-dv-width-mobile) !important;
+  }
+}

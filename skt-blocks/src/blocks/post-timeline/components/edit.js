@@ -7,6 +7,7 @@ import pickBy from "lodash/pickBy";
 import moment from "moment";
 import classnames from "classnames";
 import Inspector from "./inspector";
+import { inherited, previewSuffix } from "./responsive-utils";
 import PostGridImage from "./image";
 import AlignClass from ".././align-classes";
 import ContentTmClasses from ".././classes";
@@ -110,6 +111,10 @@ class LatestPostsBlock extends Component {
 
     // Get the post title tag
     const PostTag = attributes.postTitleTag ? attributes.postTitleTag : "h3";
+
+    // Effective value for the device selected in the editor preview.
+    const previewSfx = previewSuffix(this.props.deviceType);
+    const eff = (b) => inherited(this.props.attributes, b, previewSfx);
 
     var content_align_class = AlignClass(this.props.attributes, 0); // Get classname for layout alignment
     var day_align_class = DayAlignClass(this.props.attributes, 0); // Get classname for day alignment.
@@ -233,23 +238,23 @@ class LatestPostsBlock extends Component {
 		.wp-block-skt-blocks-post-timeline-${
       attributes.block_id
     } .skt-blocks-timeline__center-block .skt-blocks-timeline__marker {
-			margin-left: ${generateCSSUnit(attributes.horSpace, "px")};
-			margin-right: ${generateCSSUnit(attributes.horSpace, "px")};
+			margin-left: ${generateCSSUnit(eff("horSpace"), "px")};
+			margin-right: ${generateCSSUnit(eff("horSpace"), "px")};
 		}
 		.wp-block-skt-blocks-post-timeline-${
       attributes.block_id
     } .skt-blocks-timeline__left-block .skt-blocks-timeline__day-new {
-			margin-left: ${generateCSSUnit(attributes.horSpace, "px")};
+			margin-left: ${generateCSSUnit(eff("horSpace"), "px")};
 		}
 		.wp-block-skt-blocks-post-timeline-${
       attributes.block_id
     } .skt-blocks-timeline__right-block .skt-blocks-timeline__day-new {
-			margin-left: ${generateCSSUnit(attributes.horSpace, "px")};
+			margin-left: ${generateCSSUnit(eff("horSpace"), "px")};
 		}
 		.wp-block-skt-blocks-post-timeline-${
       attributes.block_id
     } .skt-blocks-timeline__field.skt-blocks-timeline__field-wrap {
-			margin-bottom: ${generateCSSUnit(attributes.verSpace, "px")};
+			margin-bottom: ${generateCSSUnit(eff("verSpace"), "px")};
 		}
 		.wp-block-skt-blocks-post-timeline-${
       attributes.block_id
@@ -319,7 +324,16 @@ class LatestPostsBlock extends Component {
             this.props.className,
             `wp-block-skt-blocks-post-timeline-${attributes.block_id}`,
             "skt-blocks-block-post-timeline",
-            ...ContentTmClasses(this.props.attributes)
+            ...ContentTmClasses(this.props.attributes),
+            {
+              "skt-timeline-hide":
+                attributes.hideDesktop ||
+                attributes.hideTablet ||
+                attributes.hideMobile,
+              "skt-hide-desktop": attributes.hideDesktop,
+              "skt-hide-tablet": attributes.hideTablet,
+              "skt-hide-mobile": attributes.hideMobile,
+            }
           )}
         >
           {attributes.displaySectionTitle && attributes.sectionTitle && (
@@ -361,7 +375,7 @@ class LatestPostsBlock extends Component {
                           <div
                             className="skt-blocks-timeline__events-new"
                             style={{
-                              marginBottom: attributes.blockSpace,
+                              marginBottom: eff("blockSpace"),
                             }}
                           >
                             <div
@@ -432,14 +446,14 @@ class LatestPostsBlock extends Component {
                               <div
                                 className="skt-blocks-content"
                                 style={{
-                                  padding: attributes.contentPadding,
+                                  padding: eff("contentPadding"),
                                 }}
                               >
                                 {attributes.displayPostTitle && (
                                   <PostTag
                                     className="skt-blocks-block-post-timeline-title"
                                     style={{
-                                      marginBottom: attributes.headingSpace,
+                                      marginBottom: eff("headingSpace"),
                                     }}
                                   >
                                     <a
@@ -474,7 +488,7 @@ class LatestPostsBlock extends Component {
                                   <div
                                     className="skt-blocks-block-post-timeline-byline"
                                     style={{
-                                      marginBottom: attributes.authorSpace,
+                                      marginBottom: eff("authorSpace"),
                                     }}
                                   >
                                     {attributes.displayPostAuthor &&
@@ -673,7 +687,14 @@ export default compose([
       (value) => !isUndefined(value)
     );
 
-    latestPostsQuery[rest_base] = categories;
+    // Only add a taxonomy filter when we actually have a rest base AND a
+    // selected term. Previously this always ran, and with no taxonomy selected
+    // rest_base was "" — adding an empty-key param ("": categories) that made
+    // the REST request invalid, so getEntityRecords never resolved and the
+    // block spun forever.
+    if (rest_base && categories) {
+      latestPostsQuery[rest_base] = categories;
+    }
 
     return {
       latestPosts: getEntityRecords(
@@ -685,6 +706,21 @@ export default compose([
       taxonomyList:
         "undefined" != typeof currentTax ? currentTax["taxonomy"] : [],
     };
+  }),
+  withSelect((select) => {
+    let deviceType = "Desktop";
+    try {
+      const editor = select("core/editor");
+      if (editor && editor.getDeviceType) {
+        deviceType = editor.getDeviceType();
+      } else {
+        const editPost = select("core/edit-post");
+        if (editPost && editPost.__experimentalGetPreviewDeviceType) {
+          deviceType = editPost.__experimentalGetPreviewDeviceType();
+        }
+      }
+    } catch (e) {}
+    return { deviceType };
   }),
 ])(LatestPostsBlock);
 

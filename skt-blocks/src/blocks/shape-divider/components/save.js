@@ -32,6 +32,13 @@ const save = ({ attributes, className }) => {
     gradientDirection,
     backgroundType,
     align,
+    hideDesktop,
+    hideTablet,
+    hideMobile,
+    shapeHeightTablet,
+    shapeHeightMobile,
+    backgroundHeightTablet,
+    backgroundHeightMobile,
   } = attributes;
 
   const shapeClass = getColorClassName("color", color);
@@ -45,6 +52,13 @@ const save = ({ attributes, className }) => {
     "is-horizontally-flipped": horizontalFlip,
     [shapeClass]: shapeClass,
     [backgroundClass]: backgroundClass,
+    "skt-hide-desktop": hideDesktop,
+    "skt-hide-tablet": hideTablet,
+    "skt-hide-mobile": hideMobile,
+    "has-shape-height-tablet": !!shapeHeightTablet,
+    "has-shape-height-mobile": !!shapeHeightMobile,
+    "has-bg-height-tablet": !!backgroundHeightTablet,
+    "has-bg-height-mobile": !!backgroundHeightMobile,
   });
 
   if (
@@ -60,8 +74,10 @@ const save = ({ attributes, className }) => {
 
   const styles = {
     backgroundColor:
-      backgroundType == "color" && backgroundColor != undefined
-        ? backgroundColor.color
+      backgroundType == "color"
+        ? backgroundClass
+          ? undefined
+          : customBackgroundColor
         : null,
     backgroundImage:
       backgroundType == "gradient"
@@ -74,6 +90,18 @@ const save = ({ attributes, className }) => {
           )
         : undefined,
     color: shapeClass ? undefined : customColor,
+    "--skt-sd-shape-tablet": shapeHeightTablet
+      ? shapeHeightTablet + "px"
+      : undefined,
+    "--skt-sd-shape-mobile": shapeHeightMobile
+      ? shapeHeightMobile + "px"
+      : undefined,
+    "--skt-sd-bg-tablet": backgroundHeightTablet
+      ? backgroundHeightTablet + "px"
+      : undefined,
+    "--skt-sd-bg-mobile": backgroundHeightMobile
+      ? backgroundHeightMobile + "px"
+      : undefined,
   };
 
   return (

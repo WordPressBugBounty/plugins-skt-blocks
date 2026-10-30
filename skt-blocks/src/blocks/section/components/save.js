@@ -109,6 +109,8 @@ export default class Save extends Component {
     const CustomTag = `${sectionTag}`;
     let imgopacity = opacity / 100;
 
+    const { hideDesktop: hideD, hideTablet: hideT, hideMobile: hideM } = this.props.attributes;
+
     return (
       <div
         id={anchor}
@@ -116,7 +118,13 @@ export default class Save extends Component {
           "skt-blocks-block-section-outer-wrap",
           `block-${blockId}`,
           backgroundType ? `background-type-${backgroundType}` : "",
-          `align${align}`
+          `align${align}`,
+          {
+            "skt-section-hide": hideD || hideT || hideM,
+            "skt-hide-desktop": hideD,
+            "skt-hide-tablet": hideT,
+            "skt-hide-mobile": hideM,
+          }
         )}
         style={{
           zIndex: z_index,

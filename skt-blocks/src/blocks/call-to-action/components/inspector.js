@@ -111,6 +111,42 @@ export default class Inspector extends Component {
     } = this.props.attributes;
     const { setAttributes } = this.props;
 
+    // One RangeControl with Desktop / Tablet / Mobile tabs. Desktop writes the
+    // base attribute; tablet/mobile write <base>Tablet / <base>Mobile. `def`
+    // keeps the desktop default on reset; tablet/mobile reset to undefined and
+    // inherit desktop via the render CSS.
+    const respRange = ( label, base, min, max, def ) => (
+      <TabPanel
+        className=" responsive-size-type-field-tabs  responsive-size-type-field__common-tabs  responsive-inline-margin"
+        activeClass="active-tab"
+        tabs={ [
+          { name: "desktop", title: <Dashicon icon="desktop" />, className: " responsive-desktop-tab  responsive-responsive-tabs" },
+          { name: "tablet", title: <Dashicon icon="tablet" />, className: " responsive-tablet-tab  responsive-responsive-tabs" },
+          { name: "mobile", title: <Dashicon icon="smartphone" />, className: " responsive-mobile-tab  responsive-responsive-tabs" },
+        ] }
+      >
+        { ( tab ) => {
+          const key =
+            tab.name === "tablet" ? base + "Tablet" : tab.name === "mobile" ? base + "Mobile" : base;
+          const isDesktop = tab.name === "desktop";
+          return (
+            <RangeControl
+              label={ __( label, "skt-blocks" ) }
+              value={ this.props.attributes[ key ] }
+              onChange={ ( value ) =>
+                setAttributes( {
+                  [ key ]: value !== undefined ? value : ( isDesktop ? def : undefined ),
+                } )
+              }
+              min={ min }
+              max={ max }
+              allowReset
+            />
+          );
+        } }
+      </TabPanel>
+    );
+
     // Button size values
     const buttonSizeOptions = [
       {
@@ -845,27 +881,8 @@ export default class Inspector extends Component {
                   max={20}
                 />
               )}
-              <RangeControl
-                label={__("Vertical Padding", "skt-blocks")}
-                value={buttonvPadding}
-                onChange={(value) => {
-                  setAttributes({ buttonvPadding: value });
-                }}
-                min={0}
-                max={200}
-              />
-              <RangeControl
-                label={__(
-                  "Horizontal Padding",
-                  "skt-blocks"
-                )}
-                value={buttonhPadding}
-                onChange={(value) => {
-                  setAttributes({ buttonhPadding: value });
-                }}
-                min={0}
-                max={200}
-              />
+              { respRange( "Vertical Padding", "buttonvPadding", 0, 200, 10 ) }
+              { respRange( "Horizontal Padding", "buttonhPadding", 0, 200, 14 ) }
             </PanelBody>
           )}
           {resctaType === "button" && (
@@ -1143,97 +1160,49 @@ export default class Inspector extends Component {
             title={__("Spacing", "skt-blocks")}
             initialOpen={false}
           >
-            <RangeControl
-              label={__("Top Padding", "skt-blocks")}
-              value={topPadding}
-              onChange={(value) =>
-                setAttributes({ topPadding: value !== undefined ? value : 20 })
-              }
-              min={0}
-              max={2000}
-              allowReset
-            />
-            <RangeControl
-              label={__("Bottom Padding", "skt-blocks")}
-              value={bottomPadding}
-              onChange={(value) =>
-                setAttributes({
-                  bottomPadding: value !== undefined ? value : 20,
-                })
-              }
-              min={0}
-              max={2000}
-              allowReset
-            />
-            <RangeControl
-              label={__("Left Padding", "skt-blocks")}
-              value={leftPadding}
-              onChange={(value) =>
-                setAttributes({ leftPadding: value !== undefined ? value : 20 })
-              }
-              min={0}
-              max={2000}
-              allowReset
-            />
-            <RangeControl
-              label={__("Right Padding", "skt-blocks")}
-              value={rightPadding}
-              onChange={(value) =>
-                setAttributes({
-                  rightPadding: value !== undefined ? value : 20,
-                })
-              }
-              min={0}
-              max={2000}
-              allowReset
-            />
+            { respRange( "Top Padding", "topPadding", 0, 2000, 20 ) }
+            { respRange( "Bottom Padding", "bottomPadding", 0, 2000, 20 ) }
+            { respRange( "Left Padding", "leftPadding", 0, 2000, 20 ) }
+            { respRange( "Right Padding", "rightPadding", 0, 2000, 20 ) }
           </PanelBody>
           <PanelBody
             title={__("Margin", "skt-blocks")}
             initialOpen={false}
           >
-            <RangeControl
-              label={__(
-                "Title Bottom Margin",
-                "skt-blocks"
-              )}
-              value={titleSpace}
-              onChange={(value) =>
-                setAttributes({ titleSpace: value !== undefined ? value : 25 })
-              }
-              min={-100}
-              max={100}
-              allowReset
-            />
-            <RangeControl
-              label={__(
-                "Description Bottom Margin",
-                "skt-blocks"
-              )}
-              value={subtitleSpace}
-              onChange={(value) =>
-                setAttributes({
-                  subtitleSpace: value !== undefined ? value : 28,
-                })
-              }
-              min={-100}
-              max={100}
-              allowReset
-            />
-            <RangeControl
-              label={__(
-                "Button Bottom Margin",
-                "skt-blocks"
-              )}
-              value={buttonSpace}
-              onChange={(value) =>
-                setAttributes({ buttonSpace: value !== undefined ? value : 20 })
-              }
-              min={-100}
-              max={100}
-              allowReset
-            />
+            { respRange( "Title Bottom Margin", "titleSpace", -100, 100, 25 ) }
+            { respRange( "Description Bottom Margin", "subtitleSpace", -100, 100, 28 ) }
+            { respRange( "Button Bottom Margin", "buttonSpace", -100, 100, 20 ) }
           </PanelBody>
+        </PanelBody>
+        <PanelBody
+          title={__("Visibility", "skt-blocks")}
+          initialOpen={false}
+        >
+          <ToggleControl
+            label={__("Hide on Desktop", "skt-blocks")}
+            checked={!!this.props.attributes.hideDesktop}
+            onChange={(value) => setAttributes({ hideDesktop: value })}
+          />
+          <ToggleControl
+            label={__("Hide on Tablet", "skt-blocks")}
+            checked={!!this.props.attributes.hideTablet}
+            onChange={(value) => setAttributes({ hideTablet: value })}
+          />
+          <ToggleControl
+            label={__("Hide on Mobile", "skt-blocks")}
+            checked={!!this.props.attributes.hideMobile}
+            onChange={(value) => setAttributes({ hideMobile: value })}
+          />
+          <ToggleControl
+            label={__("Hide for Logged In Users", "skt-blocks")}
+            checked={!!this.props.attributes.hideLoggedIn}
+            onChange={(value) => setAttributes({ hideLoggedIn: value })}
+          />
+          <ToggleControl
+            label={__("Hide for Logged Out Users", "skt-blocks")}
+            checked={!!this.props.attributes.hideLoggedOut}
+            onChange={(value) => setAttributes({ hideLoggedOut: value })}
+          />
         </PanelBody>
       </InspectorControls>
     );

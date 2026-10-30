@@ -27,6 +27,9 @@ const save = ({ attributes, className }) => {
     lightbox,
     rel,
     target,
+    hideDesktop,
+    hideTablet,
+    hideMobile,
   } = attributes;
 
   const innerClasses = classnames(...GalleryClasses(attributes), {
@@ -44,7 +47,13 @@ const save = ({ attributes, className }) => {
   };
 
   return (
-    <div className={className}>
+    <div
+      className={classnames(className, {
+        "skt-hide-desktop": hideDesktop,
+        "skt-hide-tablet": hideTablet,
+        "skt-hide-mobile": hideMobile,
+      })}
+    >
       <div className={innerClasses}>
         <ul className={masonryClasses} style={masonryStyles}>
           {images.map((image) => {

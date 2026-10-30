@@ -8,12 +8,14 @@ import Inspector from "./inspector";
 import Testimonial from "./testimonial";
 import icons from "./../../../utils/components/icons";
 import { loadGoogleFont } from "../../../utils/font";
+import { inherited, previewSuffix } from "./responsive-utils";
 
 /**
  * WordPress dependencies
  */
 const { __ } = wp.i18n;
 const { Component, Fragment } = wp.element;
+const { withSelect } = wp.data;
 const {
   RichText,
   AlignmentToolbar,
@@ -28,7 +30,7 @@ const { Button, Dashicon } = wp.components;
 
 const ALLOWED_MEDIA_TYPES = ["image"];
 
-export default class Edit extends Component {
+class Edit extends Component {
   constructor() {
     super(...arguments);
   }
@@ -65,9 +67,24 @@ export default class Edit extends Component {
         testimonialTextColor,
         testimonialTitleColor,
         testimonialNameColor,
+        hideDesktop,
+        hideTablet,
+        hideMobile,
       },
       setAttributes,
     } = this.props;
+
+    // Size of the little "remove image" cross follows the avatar width, so it
+    // no longer covers a small avatar (min 12px, max 20px).
+    const removeSize = (w) =>
+      Math.min(20, Math.max(12, Math.round((Number(w) || 55) * 0.4)));
+
+    // Live preview: avatar width for the editor's current preview device.
+    const liveImageWidth = inherited(
+      this.props.attributes,
+      "imageWidth",
+      previewSuffix(this.props.deviceType)
+    );
 
     var data_copy = [...testimonialBlock];
 
@@ -92,16 +109,46 @@ export default class Edit extends Component {
             [`has-${count}-columns`]: count,
             "has-responsive-columns": count > 1,
             [`has-${gutter}-gutter`]: gutter,
+            "skt-hide-desktop": hideDesktop,
+            "skt-hide-tablet": hideTablet,
+            "skt-hide-mobile": hideMobile,
           }
         )}
       >
+        {/*
+          Editor-only: WP 6.x renders the canvas in an iframe, so the column
+          layout CSS enqueued to the top document never reaches it. Injecting
+          this <style> INSIDE the wrapper guarantees it lands in the iframe, and
+          targeting the box by its own class makes the boxes sit in one row in
+          the editor just like the front end. Not part of the saved output.
+        */}
+        <style>
+          {`
+            .wp-block-skt-blocks-testimonial-wrapper.has-columns{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:stretch;width:100%}
+            .wp-block-skt-blocks-testimonial-wrapper.has-columns .skt-blocks-block-testimonial{box-sizing:border-box}
+            .wp-block-skt-blocks-testimonial-wrapper.has-2-columns .skt-blocks-block-testimonial{flex:0 1 48%;max-width:48%}
+            .wp-block-skt-blocks-testimonial-wrapper.has-3-columns .skt-blocks-block-testimonial{flex:0 1 31.5%;max-width:31.5%}
+            .wp-block-skt-blocks-testimonial-wrapper.has-4-columns .skt-blocks-block-testimonial{flex:0 1 23%;max-width:23%}
+            .wp-block-skt-blocks-testimonial-wrapper .skt-blocks-block-testimonial{overflow:hidden}
+            .wp-block-skt-blocks-testimonial-wrapper.skt-hide-desktop,
+            .wp-block-skt-blocks-testimonial-wrapper.skt-hide-tablet,
+            .wp-block-skt-blocks-testimonial-wrapper.skt-hide-mobile{display:block !important;opacity:.55}
+            .wp-block-skt-blocks-testimonial-wrapper.has-columns.skt-hide-desktop,
+            .wp-block-skt-blocks-testimonial-wrapper.has-columns.skt-hide-tablet,
+            .wp-block-skt-blocks-testimonial-wrapper.has-columns.skt-hide-mobile{display:flex !important}
+            .skt-blocks-block-testimonial.has-ts-shadow-live:not(:hover){box-shadow:var(--skt-ts-shadow-live) !important}
+            .wp-block-skt-blocks-testimonial-wrapper .skt-blocks-testimonial-name,
+            .wp-block-skt-blocks-testimonial-wrapper .skt-blocks-testimonial-title{overflow-wrap:anywhere;word-break:break-word}
+          `}
+        </style>
         {testimonialBlock.map((test, index) => (
-          <Testimonial {...this.props}>
+          <Testimonial key={index} {...this.props} isEditorPreview>
             {titleFontFamily && loadGoogleFont(titleFontFamily)}
             {nameFontFamily && loadGoogleFont(nameFontFamily)}
             {contentFontFamily && loadGoogleFont(contentFontFamily)}
             <RichText
               tagName="div"
+              identifier={"testimonialContent-" + index}
               multiline="p"
               placeholder={__(
                 "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.",
@@ -152,8 +199,8 @@ export default class Edit extends Component {
                   <div
                     className="skt-blocks-testimonial-image-wrap"
                     style={{
-                      height: imageWidth + "px",
-                      width: imageWidth + "px",
+                      height: liveImageWidth + "px",
+                      width: liveImageWidth + "px",
                     }}
                   >
                     <MediaUpload
@@ -203,8 +250,8 @@ export default class Edit extends Component {
                                 }
                                 alt="avatar"
                                 style={{
-                                  height: imageWidth + "px",
-                                  width: imageWidth + "px",
+                                  height: liveImageWidth + "px",
+                                  width: liveImageWidth + "px",
                                 }}
                               />
                             )}
@@ -212,6 +259,19 @@ export default class Edit extends Component {
                           {testimonialBlock[index]["testimonialImgId"] && (
                             <Button
                               className="skt-blocks-remove-image"
+                              style={{
+                                position: "absolute",
+                                top: -removeSize(liveImageWidth) / 2,
+                                right: -removeSize(liveImageWidth) / 2,
+                                width: removeSize(liveImageWidth),
+                                height: removeSize(liveImageWidth),
+                                minWidth: 0,
+                                padding: 0,
+                                borderRadius: "50%",
+                                background: "#fff",
+                                lineHeight: 1,
+                                zIndex: 20,
+                              }}
                               onClick={(value) => {
                                 var new_content = {
                                   testimonialContent:
@@ -227,7 +287,10 @@ export default class Edit extends Component {
                                 setAttributes({ testimonialBlock: data_copy });
                               }}
                             >
-                              <Dashicon icon={"dismiss"} />
+                              <Dashicon
+                                icon={"dismiss"}
+                                size={removeSize(liveImageWidth)}
+                              />
                             </Button>
                           )}
                         </Fragment>
@@ -239,6 +302,7 @@ export default class Edit extends Component {
                 <div className="skt-blocks-testimonial-details">
                   <RichText
                     tagName="h2"
+                    identifier={"testimonialName-" + index}
                     placeholder={__(
                       "John Doe",
                       "skt-blocks"
@@ -274,6 +338,7 @@ export default class Edit extends Component {
 
                   <RichText
                     tagName="small"
+                    identifier={"testimonialTitle-" + index}
                     placeholder={__(
                       "Add title/designation",
                       "skt-blocks"
@@ -312,3 +377,20 @@ export default class Edit extends Component {
     ];
   }
 }
+
+// Re-render the editor preview whenever the preview device changes.
+export default withSelect((select) => {
+  let deviceType = "Desktop";
+  try {
+    const editor = select("core/editor");
+    if (editor && editor.getDeviceType) {
+      deviceType = editor.getDeviceType();
+    } else {
+      const editPost = select("core/edit-post");
+      if (editPost && editPost.__experimentalGetPreviewDeviceType) {
+        deviceType = editPost.__experimentalGetPreviewDeviceType();
+      }
+    }
+  } catch (e) {}
+  return { deviceType };
+})(Edit);

@@ -3,6 +3,7 @@
  */
 
 import classnames from "classnames";
+import { DEVICE_TABS, deviceSuffix, inherited, previewSuffix, setPreviewDevice } from "./responsive-utils";
 import icons from "../../../utils/components/icons";
 import renderSVG from "../../../renderIcon";
 import FontIconPicker from "@fonticonpicker/react-fonticonpicker";
@@ -16,6 +17,15 @@ import { hexToRgba } from "../../../utils/index.js";
 import fontOptions from "../../../utils/googlefonts";
 import { loadGoogleFont } from "../../../utils/font";
 import Style from "style-it";
+
+
+const isSetVal = (v) => v !== undefined && v !== null && v !== "";
+const marginRules = (v, h) => ({
+  "margin-top": isSetVal(v) ? v + "px !important" : undefined,
+  "margin-bottom": isSetVal(v) ? v + "px !important" : undefined,
+  "margin-left": isSetVal(h) ? h + "px !important" : undefined,
+  "margin-right": isSetVal(h) ? h + "px !important" : undefined,
+});
 
 function styling(props) {
   const {
@@ -69,6 +79,10 @@ function styling(props) {
     titleBackgroundColorOpacity,
     marginV,
     marginH,
+    marginVTablet,
+    marginHTablet,
+    marginVMobile,
+    marginHMobile,
     titleSecondaryBackgroundColor,
     titleGradientDegree,
     titleBgGradient,
@@ -134,12 +148,17 @@ function styling(props) {
     ) +
     ")";
 
+  // Value shown for the device selected in the editor preview.
+  const previewSfx = previewSuffix(props.deviceType);
+  const effMarginV = previewSfx ? inherited(props.attributes, "marginV", previewSfx) : marginV;
+  const effMarginH = previewSfx ? inherited(props.attributes, "marginH", previewSfx) : marginH;
+
   selectors = {
     " ": {
-      "margin-top": marginV + "px",
-      "margin-bottom": marginV + "px",
-      "margin-left": marginH + "px",
-      "margin-right": marginH + "px",
+      "margin-top": effMarginV + "px",
+      "margin-bottom": effMarginV + "px",
+      "margin-left": effMarginH + "px",
+      "margin-right": effMarginH + "px",
     },
     " .skt-blocks-icon svg": {
       width: generateCSSUnit(iconSize, iconSizeType),
@@ -232,6 +251,7 @@ function styling(props) {
   };
 
   tablet_selectors = {
+    " ": marginRules(marginVTablet, marginHTablet),
     " .skt-blocks-accordion-titles-button": {
       "padding-top": generateCSSUnit(
         vtitlePaddingTablet,
@@ -281,6 +301,7 @@ function styling(props) {
   };
 
   mobile_selectors = {
+    " ": marginRules(marginVMobile, marginHMobile),
     " .skt-blocks-accordion-titles-button": {
       "padding-top": generateCSSUnit(
         vtitlePaddingMobile,
@@ -373,9 +394,10 @@ function styling(props) {
       "text-align": align,
     };
     selectors[
-      " .skt-blocks-accordion-layout-grid .block-editor-inner-blocks > .block-editor-block-list__layout"
+      ".skt-blocks-accordion-layout-grid .block-editor-inner-blocks > .block-editor-block-list__layout"
     ] = {
       "grid-template-columns": "repeat(" + columns + ", 1fr)",
+      display: "grid",
     };
   }
 
@@ -616,6 +638,9 @@ class ResponsiveBlockEditorAddonsAccordionEdit extends Component {
       titleBackgroundColorOpacity,
       marginV,
       marginH,
+      hideDesktop,
+      hideTablet,
+      hideMobile,
       titleSecondaryBackgroundColor,
       titleGradientDegree,
       titleBgGradient,
@@ -1081,20 +1106,35 @@ class ResponsiveBlockEditorAddonsAccordionEdit extends Component {
               />
             </Fragment>
           )}
-          <RangeControl
-            label={__("Vertical Margin")}
-            value={marginV}
-            onChange={(value) => setAttributes({ marginV: value })}
-            min={0}
-            max={100}
-          />
-          <RangeControl
-            label={__("Horizontal Margin")}
-            value={marginH}
-            onChange={(value) => setAttributes({ marginH: value })}
-            min={0}
-            max={100}
-          />
+          <TabPanel
+            className="rbea-inspect-tabs rbea-inspect-tabs-col-3"
+            activeClass="active-tab"
+            initialTabName={(this.props.deviceType || "Desktop").toLowerCase()}
+            onSelect={setPreviewDevice}
+            tabs={DEVICE_TABS.map((t) => ({ ...t, className: "rbea-normal-tab" }))}
+          >
+            {(tab) => {
+              const sfx = deviceSuffix(tab.name);
+              const field = (base, label) => (
+                <RangeControl
+                  label={label}
+                  value={inherited(this.props.attributes, base, sfx)}
+                  onChange={(value) =>
+                    setAttributes({ [base + sfx]: value })
+                  }
+                  min={0}
+                  max={100}
+                  allowReset
+                />
+              );
+              return (
+                <div>
+                  {field("marginV", __("Vertical Margin"))}
+                  {field("marginH", __("Horizontal Margin"))}
+                </div>
+              );
+            }}
+          </TabPanel>
         </PanelBody>
       );
     };
@@ -1146,6 +1186,32 @@ class ResponsiveBlockEditorAddonsAccordionEdit extends Component {
               <TabPanel
                 className="skt-blocks-size-type-field-tabs skt-blocks-size-type-field__common-tabs skt-blocks-inline-margin"
                 activeClass="active-tab"
+                onSelect={(tabName) => {
+                  const deviceType =
+                    tabName === "tablet"
+                      ? "Tablet"
+                      : tabName === "mobile"
+                      ? "Mobile"
+                      : "Desktop";
+                  const editorDispatch = wp.data.dispatch("core/editor");
+                  if (
+                    editorDispatch &&
+                    typeof editorDispatch.setDeviceType === "function"
+                  ) {
+                    editorDispatch.setDeviceType(deviceType);
+                  } else {
+                    const editPostDispatch = wp.data.dispatch("core/edit-post");
+                    if (
+                      editPostDispatch &&
+                      typeof editPostDispatch.__experimentalSetPreviewDeviceType ===
+                        "function"
+                    ) {
+                      editPostDispatch.__experimentalSetPreviewDeviceType(
+                        deviceType
+                      );
+                    }
+                  }
+                }}
                 tabs={[
                   {
                     name: "desktop",
@@ -1355,6 +1421,33 @@ class ResponsiveBlockEditorAddonsAccordionEdit extends Component {
           {accordionColorSettings()}
           {accordionStylingSettings()}
           {accordionTypographySettings()}
+        <PanelBody title={__("Visibility", "skt-blocks")} initialOpen={false}>
+          <ToggleControl
+            label={__("Hide on Desktop", "skt-blocks")}
+            checked={!!this.props.attributes.hideDesktop}
+            onChange={(value) => setAttributes({ hideDesktop: value })}
+          />
+          <ToggleControl
+            label={__("Hide on Tablet", "skt-blocks")}
+            checked={!!this.props.attributes.hideTablet}
+            onChange={(value) => setAttributes({ hideTablet: value })}
+          />
+          <ToggleControl
+            label={__("Hide on Mobile", "skt-blocks")}
+            checked={!!this.props.attributes.hideMobile}
+            onChange={(value) => setAttributes({ hideMobile: value })}
+          />
+          <ToggleControl
+            label={__("Hide from Logged-in Users", "skt-blocks")}
+            checked={!!this.props.attributes.hideLoggedIn}
+            onChange={(value) => setAttributes({ hideLoggedIn: value })}
+          />
+          <ToggleControl
+            label={__("Hide from Logged-out Users", "skt-blocks")}
+            checked={!!this.props.attributes.hideLoggedOut}
+            onChange={(value) => setAttributes({ hideLoggedOut: value })}
+          />
+        </PanelBody>
           {titleFontFamily && loadGoogleFont(titleFontFamily)}
           {contentFontFamily && loadGoogleFont(contentFontFamily)}
         </InspectorControls>
@@ -1371,6 +1464,14 @@ class ResponsiveBlockEditorAddonsAccordionEdit extends Component {
       }
       `}
         </Style>
+        {/*
+          Editor-only: the per-block dynamic CSS (icon size, colours, layout,
+          responsive sizes) was injected into the top document's <head>, which
+          WP 6.x's iframed canvas never sees — so changing the icon Size did
+          nothing in the editor while it worked on the front end. Rendering the
+          same CSS here keeps it inside the iframe and updates live. Not saved.
+        */}
+        <style dangerouslySetInnerHTML={{ __html: styling(this.props) }} />
         <div
           className={classnames(
             "skt-blocks-accordion__outer-wrap",
@@ -1382,7 +1483,13 @@ class ResponsiveBlockEditorAddonsAccordionEdit extends Component {
             `skt-blocks-accordion-layout-${this.props.attributes.layout}`,
             `skt-blocks-accordion-expand-first-${this.props.attributes.expandFirstItem}`,
             `skt-blocks-accordion-inactive-other-${this.props.attributes.inactiveOtherItems}`,
-            equalHeightClass
+            equalHeightClass,
+            {
+              "skt-accordion-hide": hideDesktop || hideTablet || hideMobile,
+              "skt-hide-desktop": hideDesktop,
+              "skt-hide-tablet": hideTablet,
+              "skt-hide-mobile": hideMobile,
+            }
           )}
         >
           <InnerBlocks
@@ -1421,8 +1528,22 @@ export default compose(
       json_data["mainEntity"][key] = accordion_data;
     });
 
+    let deviceType = "Desktop";
+    try {
+      const editor = select("core/editor");
+      if (editor && editor.getDeviceType) {
+        deviceType = editor.getDeviceType();
+      } else {
+        const editPost = select("core/edit-post");
+        if (editPost && editPost.__experimentalGetPreviewDeviceType) {
+          deviceType = editPost.__experimentalGetPreviewDeviceType();
+        }
+      }
+    } catch (e) {}
+
     return {
       schemaJsonData: json_data,
+      deviceType,
     };
   })
 )(ResponsiveBlockEditorAddonsAccordionEdit);

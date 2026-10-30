@@ -172,3 +172,31 @@
 .wp-block-cover .wp-block-skt-blocks-pricing-table__inner {
   color: #333;
 }
+
+// Keep hidden blocks visible (dimmed) while editing.
+.editor-styles-wrapper {
+  .skt-pricing-hide.skt-hide-desktop,
+  .skt-pricing-hide.skt-hide-tablet,
+  .skt-pricing-hide.skt-hide-mobile {
+    display: block !important;
+    opacity: 0.55;
+  }
+}
+
+/* --- Editor parity: the block editor runs in an iframe, so the min-width
+   media queries above key off the (often narrow) canvas width, not the
+   viewport — which makes the pricing columns stack while editing even though
+   the front end shows them side by side. Apply the column flex-basis here
+   unconditionally (editor only) so the editor matches the front end. The
+   existing max-width rules still cap each column by gutter + count. --- */
+.editor-styles-wrapper {
+	.has-columns.has-2-columns > *:not(.block-editor-inner-blocks) {
+		flex-basis: 50%;
+	}
+	.has-columns.has-3-columns > *:not(.block-editor-inner-blocks) {
+		flex-basis: 33.33%;
+	}
+	.has-columns.has-4-columns > *:not(.block-editor-inner-blocks) {
+		flex-basis: 25%;
+	}
+}

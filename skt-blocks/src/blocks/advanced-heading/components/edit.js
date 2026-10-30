@@ -4,12 +4,14 @@
 import classnames from "classnames";
 import Inspector from "./inspector";
 import Style from "style-it";
+import { inherited, previewSuffix } from "./responsive-utils";
 import { loadGoogleFont } from "../../../utils/font";
 /**
  * WordPress dependencies
  */
 const { __ } = wp.i18n;
 const { Component, Fragment } = wp.element;
+const { withSelect } = wp.data;
 const {
   RichText,
   AlignmentToolbar,
@@ -23,7 +25,7 @@ const { Button, Dashicon } = wp.components;
 
 const ALLOWED_MEDIA_TYPES = ["image"];
 
-export default class Edit extends Component {
+class Edit extends Component {
   constructor() {
     super(...arguments);
   }
@@ -79,6 +81,69 @@ export default class Edit extends Component {
       onReplace,
     } = this.props;
     this.props.setAttributes({ block_id: this.props.clientId });
+    const { hideDesktop, hideTablet, hideMobile } = this.props.attributes;
+    // Value for the device selected in the editor preview.
+    const sfx = previewSuffix(this.props.deviceType);
+    const effSepHeight = inherited(this.props.attributes, "separatorHeight", sfx);
+    const effSepWidth = inherited(this.props.attributes, "separatorWidth", sfx);
+
+    // --- Editor live preview for Alignment / Font Size / Spacing. The saved
+    // markup gates the desktop values behind @media (min-width:976px); the WP
+    // 6.9 editor iframe canvas is usually narrower than that, so those rules
+    // never fire and changes look like they have no effect. Here we apply the
+    // desktop values unconditionally and layer Tablet / Mobile on top only when
+    // the editor is previewing that device, so every change shows immediately.
+    // Editor-only (save.js is untouched, so the frontend stays validation-safe). ---
+    const ahScope =
+      ".skt-blocks-block-advanced-heading.block-" + this.props.clientId;
+    const ahDev = this.props.deviceType;
+    const ahNum = (v) =>
+      typeof v === "number" && !isNaN(v) ? v : null;
+    const ahRules = (fs, hs, sep, sub, subFs, alignVal) => {
+      let c = "";
+      if (ahNum(fs) !== null)
+        c += `${ahScope} .responsive-heading-title-text{font-size:${fs}px!important;}`;
+      if (ahNum(hs) !== null)
+        c += `${ahScope} .responsive-heading-title-text{margin-bottom:${hs}px!important;}`;
+      if (ahNum(sep) !== null)
+        c += `${ahScope} .responsive-heading-seperator{margin-bottom:${sep}px!important;}`;
+      if (ahNum(sub) !== null)
+        c += `${ahScope} .responsive-heading-desc-text{margin-bottom:${sub}px!important;}`;
+      if (ahNum(subFs) !== null)
+        c += `${ahScope} .responsive-heading-desc-text{font-size:${subFs}px!important;}`;
+      if (alignVal)
+        c += `${ahScope}{text-align:${alignVal}!important;}`;
+      return c;
+    };
+    let ahEditorCss = ahRules(
+      headingTitleFontSize,
+      headSpacing,
+      separatorSpacing,
+      subheadSpacing,
+      subHeadingTitleFontSize,
+      headingAlignment
+    );
+    if (ahDev === "Tablet" || ahDev === "Mobile") {
+      ahEditorCss += ahRules(
+        headingTitleFontSizeTablet,
+        headSpacingTablet,
+        separatorSpacingTablet,
+        subheadSpacingTablet,
+        subHeadingTitleFontSizeTablet,
+        headingAlignmentTablet
+      );
+    }
+    if (ahDev === "Mobile") {
+      ahEditorCss += ahRules(
+        headingTitleFontSizeMobile,
+        headSpacingMobile,
+        separatorSpacingMobile,
+        subheadSpacingMobile,
+        subHeadingTitleFontSizeMobile,
+        headingAlignmentMobile
+      );
+    }
+
     return [
       <BlockControls key="controls">
         <AlignmentToolbar
@@ -89,129 +154,20 @@ export default class Edit extends Component {
       // Show the block controls on focus
       <Inspector {...{ setAttributes, ...this.props }} />,
       <Fragment>
-        <Style>
-          {`    
-      @media only screen and (min-width: 976px){
-.skt-blocks-block-advanced-heading.block-${this.props.clientId} .responsive-heading-title-text {
-	font-size: ${headingTitleFontSize}px !important;
-  margin-bottom: ${headSpacing}px !important;
-		}
-.skt-blocks-block-advanced-heading.block-${this.props.clientId} .responsive-heading-seperator {
-      margin-bottom: ${separatorSpacing}px !important;
-    }
-.skt-blocks-block-advanced-heading.block-${this.props.clientId} .responsive-heading-desc-text {
-      margin-bottom: ${subheadSpacing}px !important;
-    }
-}
-      @media only screen and (min-width: 768px) and (max-width: 975px){
-.skt-blocks-block-advanced-heading.block-${this.props.clientId} .responsive-heading-title-text {
-  margin-bottom: ${headSpacingTablet}px !important;
-    }
-.skt-blocks-block-advanced-heading.block-${this.props.clientId} .responsive-heading-seperator {
-  margin-bottom: ${separatorSpacingTablet}px !important;
-    }
-.skt-blocks-block-advanced-heading.block-${this.props.clientId} .responsive-heading-desc-text {
-  margin-bottom: ${subheadSpacingTablet}px !important;
-    }
-}
-      @media only screen and (max-width: 767px){
-  .skt-blocks-block-advanced-heading.block-${this.props.clientId} .responsive-heading-title-text {
-    margin-bottom: ${headSpacingMobile}px !important;
-    }
-  .skt-blocks-block-advanced-heading.block-${this.props.clientId} .responsive-heading-seperator {
-    margin-bottom: ${separatorSpacingMobile}px !important;
-    }
-  .skt-blocks-block-advanced-heading.block-${this.props.clientId} .responsive-heading-desc-text {
-    margin-bottom: ${subheadSpacingMobile}px !important;
-    }
-}
-      `}
-        </Style>
-
-        {headingTitleFontSizeTablet!=null && (
-          <Style>
-            {`
-      @media only screen and (max-width: 976px){
-.skt-blocks-block-advanced-heading.block-${this.props.clientId} .responsive-heading-title-text {
-	font-size: ${headingTitleFontSizeTablet}px;
-		}
-}
-      `}
-          </Style>
-        )}
-        {headingTitleFontSizeMobile!=null && (
-          <Style>
-            {`
-
-
-@media only screen and (max-width: 767px){
-	.skt-blocks-block-advanced-heading.block-${this.props.clientId} .responsive-heading-title-text {
-	font-size: ${headingTitleFontSizeMobile}px;
-		}
-}
-`}
-          </Style>
-        )}
-        <Style>
-          {`
-      @media only screen and (min-width: 976px){
-.skt-blocks-block-advanced-heading.block-${this.props.clientId} .responsive-heading-desc-text {
-	font-size: ${subHeadingTitleFontSize}px !important;
-		}
-}
-      `}
-        </Style>
-
-        {subHeadingTitleFontSizeTablet && (
-          <Style>
-            {`
-      @media only screen and (max-width: 976px){
-.skt-blocks-block-advanced-heading.block-${this.props.clientId} .responsive-heading-desc-text {
-	font-size: ${subHeadingTitleFontSizeTablet}px;
-		}
-}
-      `}
-          </Style>
-        )}
-        {subHeadingTitleFontSizeMobile && (
-          <Style>
-            {`
-
-
-@media only screen and (max-width: 767px){
-	.skt-blocks-block-advanced-heading.block-${this.props.clientId} .responsive-heading-desc-text {
-	font-size: ${subHeadingTitleFontSizeMobile}px;
-		}
-}
-`}
-          </Style>
-        )}
-        <Style>
-          {`
-            @media only screen and (min-width: 976px){
-               .skt-blocks-block-advanced-heading.block-${this.props.clientId} {
-                  text-align: ${headingAlignment};
-               }
-             }
-             @media only screen and (max-width: 976px){
-               .skt-blocks-block-advanced-heading.block-${this.props.clientId} {
-                  text-align: ${headingAlignmentTablet};
-               }
-             }
-             @media only screen and (max-width: 767px){
-               .skt-blocks-block-advanced-heading.block-${this.props.clientId} {
-                  text-align: ${headingAlignmentMobile};
-               }
-             }
-            `}
-        </Style>
+        {ahEditorCss && <Style>{ahEditorCss}</Style>}
       </Fragment>,
 
       // Show the block markup in the editor
       <div
         className={classnames(
           "skt-blocks-block-advanced-heading",
-          `block-${this.props.clientId}`
+          `block-${this.props.clientId}`,
+          {
+            "skt-heading-hide": hideDesktop || hideTablet || hideMobile,
+            "skt-hide-desktop": hideDesktop,
+            "skt-hide-tablet": hideTablet,
+            "skt-hide-mobile": hideMobile,
+          }
         )}
       >
         {headingTitleFontFamily && loadGoogleFont(headingTitleFontFamily)}
@@ -253,8 +209,8 @@ export default class Edit extends Component {
               className="responsive-heading-seperator"
               style={{
                 borderTopStyle: seperatorStyle,
-                borderTopWidth: separatorHeight,
-                width: separatorWidth,
+                borderTopWidth: effSepHeight,
+                width: effSepWidth,
                 borderColor: separatorColor,
               }}
             ></div>
@@ -284,3 +240,19 @@ export default class Edit extends Component {
     ];
   }
 }
+
+export default withSelect((select) => {
+  let deviceType = "Desktop";
+  try {
+    const editor = select("core/editor");
+    if (editor && editor.getDeviceType) {
+      deviceType = editor.getDeviceType();
+    } else {
+      const editPost = select("core/edit-post");
+      if (editPost && editPost.__experimentalGetPreviewDeviceType) {
+        deviceType = editPost.__experimentalGetPreviewDeviceType();
+      }
+    }
+  } catch (e) {}
+  return { deviceType };
+})(Edit);

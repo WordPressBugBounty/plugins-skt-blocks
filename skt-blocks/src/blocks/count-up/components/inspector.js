@@ -33,6 +33,13 @@ const {
   TabPanel,
 } = wp.components;
 
+import {
+  DEVICE_TABS,
+  deviceSuffix,
+  inherited,
+  setPreviewDevice,
+} from "./responsive-utils";
+
 let svg_icons = Object.keys(ResponsiveBlocksIcon);
 
 /**
@@ -377,7 +384,7 @@ export default class Inspector extends Component {
                       icon: "lightbulb",
                       title: "Title " + newCount,
                       amount: "1,234",
-                      features: "Description",
+                      features: "<li>Description</li>",
                     });
                   });
                 }
@@ -830,67 +837,70 @@ export default class Inspector extends Component {
           title={__("Spacing", "skt-blocks")}
           initialOpen={false}
         >
-          <RangeControl
-            label={__("Content Padding", "skt-blocks")}
-            value={contentSpacing}
-            onChange={(value) =>
-              this.props.setAttributes({
-                contentSpacing: value !== undefined ? value : 0,
-              })
-            }
-            min={0}
-            max={50}
-            step={1}
-            allowReset
-          />
-          <RangeControl
-            label={__("Icon Bottom Spacing", "skt-blocks")}
-            value={iconSpacing}
-            onChange={(value) =>
-              this.props.setAttributes({
-                iconSpacing: value !== undefined ? value : 16,
-              })
-            }
-            min={0}
-            max={50}
-            step={1}
-            allowReset
-          />
-          <RangeControl
-            label={__("Title Bottom Margin", "skt-blocks")}
-            value={titleSpace}
-            onChange={(value) =>
-              setAttributes({ titleSpace: value !== undefined ? value : 20 })
-            }
-            min={0}
-            max={100}
-            allowReset
-          />
-          <RangeControl
-            label={__("Number Bottom Margin", "skt-blocks")}
-            value={numSpace}
-            onChange={(value) =>
-              setAttributes({ numSpace: value !== undefined ? value : 20 })
-            }
-            min={0}
-            max={100}
-            allowReset
-          />
-          <RangeControl
-            label={__(
-              "Description Bottom Margin",
-              "skt-blocks"
-            )}
-            value={contentSpace}
-            onChange={(value) =>
-              setAttributes({
-                contentSpace: value !== undefined ? value : 30,
-              })
-            }
-            min={0}
-            max={100}
-            allowReset
-          />
+          <TabPanel
+            className="skt-countup-device-tabs"
+            tabs={DEVICE_TABS}
+            initialTabName={(this.props.deviceType || "Desktop").toLowerCase()}
+            onSelect={setPreviewDevice}
+          >
+            {(tab) => {
+              const s = deviceSuffix(tab.name);
+              const attrs = this.props.attributes;
+              // [attribute, label, max, desktop reset value]
+              const rows = [
+                ["contentSpacing", __("Content Padding", "skt-blocks"), 50, 0],
+                [
+                  "iconSpacing",
+                  __("Icon Bottom Spacing", "skt-blocks"),
+                  50,
+                  16,
+                ],
+                [
+                  "titleSpace",
+                  __("Title Bottom Margin", "skt-blocks"),
+                  100,
+                  20,
+                ],
+                [
+                  "numSpace",
+                  __("Number Bottom Margin", "skt-blocks"),
+                  100,
+                  20,
+                ],
+                [
+                  "contentSpace",
+                  __("Description Bottom Margin", "skt-blocks"),
+                  100,
+                  30,
+                ],
+              ];
+              return (
+                <Fragment>
+                  {rows.map(([base, label, max, reset]) => (
+                    <RangeControl
+                      key={base + s}
+                      label={label}
+                      value={inherited(attrs, base, s)}
+                      onChange={(value) =>
+                        setAttributes({
+                          [base + s]:
+                            value !== undefined
+                              ? value
+                              : s === ""
+                              ? reset
+                              : undefined,
+                        })
+                      }
+                      min={0}
+                      max={max}
+                      step={1}
+                      allowReset
+                    />
+                  ))}
+                </Fragment>
+              );
+            }}
+          </TabPanel>
         </PanelBody>
 
         <PanelColorSettings
@@ -986,6 +996,33 @@ export default class Inspector extends Component {
               />
             </Fragment>
           )}
+        </PanelBody>
+        <PanelBody title={__("Visibility", "skt-blocks")} initialOpen={false}>
+          <ToggleControl
+            label={__("Hide on Desktop", "skt-blocks")}
+            checked={!!this.props.attributes.hideDesktop}
+            onChange={(value) => setAttributes({ hideDesktop: value })}
+          />
+          <ToggleControl
+            label={__("Hide on Tablet", "skt-blocks")}
+            checked={!!this.props.attributes.hideTablet}
+            onChange={(value) => setAttributes({ hideTablet: value })}
+          />
+          <ToggleControl
+            label={__("Hide on Mobile", "skt-blocks")}
+            checked={!!this.props.attributes.hideMobile}
+            onChange={(value) => setAttributes({ hideMobile: value })}
+          />
+          <ToggleControl
+            label={__("Hide from Logged-in Users", "skt-blocks")}
+            checked={!!this.props.attributes.hideLoggedIn}
+            onChange={(value) => setAttributes({ hideLoggedIn: value })}
+          />
+          <ToggleControl
+            label={__("Hide from Logged-out Users", "skt-blocks")}
+            checked={!!this.props.attributes.hideLoggedOut}
+            onChange={(value) => setAttributes({ hideLoggedOut: value })}
+          />
         </PanelBody>
       </InspectorControls>
     );

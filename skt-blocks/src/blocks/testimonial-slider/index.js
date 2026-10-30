@@ -277,6 +277,32 @@ registerBlockType( "skt-blocks/testimonial-slider", {
             type: "number",
             default: 60,
         },
+        imageWidthTablet: {
+            type: "number",
+        },
+        imageWidthMobile: {
+            type: "number",
+        },
+        hideDesktop: {
+            type: "boolean",
+            default: false,
+        },
+        hideTablet: {
+            type: "boolean",
+            default: false,
+        },
+        hideMobile: {
+            type: "boolean",
+            default: false,
+        },
+        hideLoggedIn: {
+            type: "boolean",
+            default: false,
+        },
+        hideLoggedOut: {
+            type: "boolean",
+            default: false,
+        },
         columns :{
             type: "number",
             default: 1,
@@ -337,6 +363,26 @@ registerBlockType( "skt-blocks/testimonial-slider", {
             type: "number",
             default : 5
         },
+
+        // --- Responsive (tablet/mobile) spacing overrides. Desktop keeps the
+        // existing base attribute; these hold only tablet/mobile values and
+        // default to undefined, so unset values fall back to desktop via the
+        // CSS cascade and nothing extra is written to saved markup. ---
+        rowGapTablet: { type: "number" },
+        rowGapMobile: { type: "number" },
+        columnGapTablet: { type: "number" },
+        columnGapMobile: { type: "number" },
+        contentPaddingTablet: { type: "number" },
+        contentPaddingMobile: { type: "number" },
+        descSpaceTablet: { type: "number" },
+        descSpaceMobile: { type: "number" },
+        nameSpaceTablet: { type: "number" },
+        nameSpaceMobile: { type: "number" },
+        imgHrPaddingTablet: { type: "number" },
+        imgHrPaddingMobile: { type: "number" },
+        imgVrPaddingTablet: { type: "number" },
+        imgVrPaddingMobile: { type: "number" },
+
         backgroundType: {
             type: "string",
         },

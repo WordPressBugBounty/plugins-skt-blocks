@@ -76,6 +76,9 @@ export default class Save extends Component {
             [`has-${count}-columns`]: count,
             "has-responsive-columns": count > 1,
             [`has-${gutter}-gutter`]: gutter,
+            "skt-hide-desktop": this.props.attributes.hideDesktop,
+            "skt-hide-tablet": this.props.attributes.hideTablet,
+            "skt-hide-mobile": this.props.attributes.hideMobile,
           }
         )}
       >

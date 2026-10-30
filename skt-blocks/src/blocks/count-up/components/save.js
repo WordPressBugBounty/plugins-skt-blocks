@@ -74,10 +74,34 @@ export default class Save extends Component {
       shapeBorder,
       contentSpacing,
       iconSpacing,
+      hideDesktop,
+      hideTablet,
+      hideMobile,
     } = this.props.attributes;
+
+    // Tablet / Mobile spacing: CSS variables + classes used by media queries in
+    // style.scss. Nothing is output when no Tablet/Mobile value is set, so
+    // existing blocks keep their saved markup.
+    const attrs = this.props.attributes;
+    const px = (v) => (v || v === 0 ? v + "px" : undefined);
+    const has = (v) => v || v === 0;
 
     const classes = classnames({
       [`has-text-align-${contentAlign}`]: contentAlign,
+      "skt-countup-hide": hideDesktop || hideTablet || hideMobile,
+      "skt-hide-desktop": hideDesktop,
+      "skt-hide-tablet": hideTablet,
+      "skt-hide-mobile": hideMobile,
+      "has-cu-pad-tablet": has(attrs.contentSpacingTablet),
+      "has-cu-pad-mobile": has(attrs.contentSpacingMobile),
+      "has-cu-icon-tablet": has(attrs.iconSpacingTablet),
+      "has-cu-icon-mobile": has(attrs.iconSpacingMobile),
+      "has-cu-title-tablet": has(attrs.titleSpaceTablet),
+      "has-cu-title-mobile": has(attrs.titleSpaceMobile),
+      "has-cu-num-tablet": has(attrs.numSpaceTablet),
+      "has-cu-num-mobile": has(attrs.numSpaceMobile),
+      "has-cu-desc-tablet": has(attrs.contentSpaceTablet),
+      "has-cu-desc-mobile": has(attrs.contentSpaceMobile),
     });
 
     let imgopacity = opacity / 100;
@@ -129,6 +153,16 @@ export default class Save extends Component {
         className={classes}
         style={{
           padding: contentSpacing,
+          "--cu-pad-tablet": px(attrs.contentSpacingTablet),
+          "--cu-pad-mobile": px(attrs.contentSpacingMobile),
+          "--cu-icon-tablet": px(attrs.iconSpacingTablet),
+          "--cu-icon-mobile": px(attrs.iconSpacingMobile),
+          "--cu-title-tablet": px(attrs.titleSpaceTablet),
+          "--cu-title-mobile": px(attrs.titleSpaceMobile),
+          "--cu-num-tablet": px(attrs.numSpaceTablet),
+          "--cu-num-mobile": px(attrs.numSpaceMobile),
+          "--cu-desc-tablet": px(attrs.contentSpaceTablet),
+          "--cu-desc-mobile": px(attrs.contentSpaceMobile),
         }}
       >
         <div

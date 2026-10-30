@@ -3,6 +3,7 @@
  */
 import classnames from "classnames";
 import Inspector from "./inspector";
+import { inherited, previewSuffix } from "./responsive-utils";
 import generateBackgroundImageEffect from "../../../generateBackgroundImageEffect";
 import { hexToRgba } from "../../../utils/index.js";
 import renderSVG from "../renderQuoteIcon";
@@ -14,10 +15,11 @@ import { loadGoogleFont } from "../../../utils/font";
  */
 const { __ } = wp.i18n;
 const { Component, Fragment } = wp.element;
+const { withSelect } = wp.data;
 const { RichText, AlignmentToolbar, BlockControls } = wp.editor;
 const { Dashicon } = wp.components;
 
-export default class Edit extends Component {
+class Edit extends Component {
   constructor() {
     super(...arguments);
   }
@@ -43,6 +45,9 @@ export default class Edit extends Component {
         rightPadding,
         topPadding,
         bottomPadding,
+        hideDesktop,
+        hideTablet,
+        hideMobile,
         backgroundColor,
         backgroundColor1,
         backgroundColor2,
@@ -74,6 +79,9 @@ export default class Edit extends Component {
     if ("outset" === boxShadowPosition) {
       boxShadowPositionCSS = "";
     }
+
+    const sfx = previewSuffix(this.props.deviceType);
+    const eff = (b) => inherited(this.props.attributes, b, sfx);
 
     return [
       // Show the alignment toolbar on focus
@@ -112,10 +120,10 @@ export default class Edit extends Component {
             " " +
             boxShadowPositionCSS,
           textAlign: quoteAlign,
-          paddingLeft: leftPadding,
-          paddingRight: rightPadding,
-          paddingTop: topPadding,
-          paddingBottom: bottomPadding,
+          paddingLeft: eff("leftPadding"),
+          paddingRight: eff("rightPadding"),
+          paddingTop: eff("topPadding"),
+          paddingBottom: eff("bottomPadding"),
           opacity: backgroundType == "gradient" ? imgopacity : 1,
           backgroundColor:
             backgroundType == "color"
@@ -136,7 +144,13 @@ export default class Edit extends Component {
           this.props.className,
           quoteAlign,
           "skt-blocks-font-size-" + quoteFontSize,
-          "skt-blocks-block-quote"
+          "skt-blocks-block-quote",
+          {
+            "skt-quote-hide": hideDesktop || hideTablet || hideMobile,
+            "skt-hide-desktop": hideDesktop,
+            "skt-hide-tablet": hideTablet,
+            "skt-hide-mobile": hideMobile,
+          }
         )}
       >
         {backgroundType == "image" && (
@@ -211,3 +225,19 @@ export default class Edit extends Component {
     ];
   }
 }
+
+export default withSelect((select) => {
+  let deviceType = "Desktop";
+  try {
+    const editor = select("core/editor");
+    if (editor && editor.getDeviceType) {
+      deviceType = editor.getDeviceType();
+    } else {
+      const editPost = select("core/edit-post");
+      if (editPost && editPost.__experimentalGetPreviewDeviceType) {
+        deviceType = editPost.__experimentalGetPreviewDeviceType();
+      }
+    }
+  } catch (e) {}
+  return { deviceType };
+})(Edit);

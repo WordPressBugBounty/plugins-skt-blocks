@@ -106,6 +106,8 @@ export default class Edit extends Component {
 
     const CustomTag = `${sectionTag}`;
     let imgopacity = opacity / 100;
+    const { hideDesktop: hideD, hideTablet: hideT, hideMobile: hideM } = this.props.attributes;
+
     return [
       <Inspector {...{ setAttributes, ...this.props }} />,
       <Fragment>
@@ -234,7 +236,13 @@ export default class Edit extends Component {
         <div
           className={classnames(
             "skt-blocks-block-section-outer-wrap",
-            backgroundType ? `background-type-${backgroundType}` : ""
+            backgroundType ? `background-type-${backgroundType}` : "",
+            {
+            "skt-section-hide": hideD || hideT || hideM,
+            "skt-hide-desktop": hideD,
+            "skt-hide-tablet": hideT,
+            "skt-hide-mobile": hideM,
+          }
           )}
           style={{
             zIndex: z_index,

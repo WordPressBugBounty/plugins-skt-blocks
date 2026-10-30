@@ -195,3 +195,13 @@
     width: 50%;
   }
 }
+
+// Keep hidden blocks visible (dimmed) while editing.
+.editor-styles-wrapper {
+  .skt-flipbox-hide.skt-hide-desktop,
+  .skt-flipbox-hide.skt-hide-tablet,
+  .skt-flipbox-hide.skt-hide-mobile {
+    display: block !important;
+    opacity: 0.55;
+  }
+}

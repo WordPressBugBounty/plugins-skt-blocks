@@ -231,3 +231,13 @@
   width: 14px;
   height: 14px;
 }
+
+// Keep hidden blocks visible (dimmed) while editing.
+.editor-styles-wrapper {
+  .skt-section-hide.skt-hide-desktop,
+  .skt-section-hide.skt-hide-tablet,
+  .skt-section-hide.skt-hide-mobile {
+    display: block !important;
+    opacity: 0.55;
+  }
+}

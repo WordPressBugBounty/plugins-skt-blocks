@@ -57,6 +57,9 @@ export default class Save extends Component {
       testimonialTextColor,
       testimonialTitleColor,
       testimonialNameColor,
+      hideDesktop,
+      hideTablet,
+      hideMobile,
     } = this.props.attributes;
 
     return (
@@ -68,6 +71,9 @@ export default class Save extends Component {
             [`has-${count}-columns`]: count,
             "has-responsive-columns": count > 1,
             [`has-${gutter}-gutter`]: gutter,
+            "skt-hide-desktop": hideDesktop,
+            "skt-hide-tablet": hideTablet,
+            "skt-hide-mobile": hideMobile,
           }
         )}
       >

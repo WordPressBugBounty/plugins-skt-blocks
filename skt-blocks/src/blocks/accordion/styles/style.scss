@@ -16,3 +16,20 @@
 .wp-block-cover .skt-blocks-accordion-item__outer-wrap {
   color: #333;
 }
+
+// Responsive visibility (Desktop >=1025, Tablet 768-1024, Mobile <=767).
+@media (max-width: 767px) {
+  .skt-accordion-hide.skt-hide-mobile {
+    display: none !important;
+  }
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+  .skt-accordion-hide.skt-hide-tablet {
+    display: none !important;
+  }
+}
+@media (min-width: 1025px) {
+  .skt-accordion-hide.skt-hide-desktop {
+    display: none !important;
+  }
+}

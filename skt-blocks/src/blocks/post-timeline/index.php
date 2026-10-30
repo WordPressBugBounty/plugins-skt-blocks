@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * Server-side rendering for the post grid block
  *
@@ -36,9 +37,19 @@ function skt_blocks_post_timeline_render_latest_posts( $attributes ) {
 		'ignore_sticky_posts' => 1,
 	);
 
-	if ( isset( $attributes['categories'] ) && '' !== $attributes['categories'] ) {
+	$timeline_taxonomy = ( isset( $attributes['taxonomyType'] ) && '' !== $attributes['taxonomyType'] )
+		? $attributes['taxonomyType']
+		: 'category';
+
+	// Only add the taxonomy filter when the taxonomy actually applies to the
+	// selected post type. Otherwise (e.g. Content Type = Page with a leftover
+	// Tags/Categories filter from a Post configuration) the query returns no
+	// results and the timeline is empty on the front end.
+	if ( isset( $attributes['categories'] ) && '' !== $attributes['categories']
+		&& taxonomy_exists( $timeline_taxonomy )
+		&& is_object_in_taxonomy( $attributes['postType'], $timeline_taxonomy ) ) {
 		$grid_query['tax_query'][] = array(
-			'taxonomy' => ( isset( $attributes['taxonomyType'] ) ) ? $attributes['taxonomyType'] : 'category',
+			'taxonomy' => $timeline_taxonomy,
 			'field'    => 'id',
 			'terms'    => $attributes['categories'],
 			'operator' => 'IN',
@@ -51,7 +62,7 @@ function skt_blocks_post_timeline_render_latest_posts( $attributes ) {
 	if ( ! empty( $attributes['bgColor'] || $attributes['borderRadius'] ) ) {
 		$wrapper_styles .= 'background-color:' . $attributes['bgColor'] . '; border-radius: ' . $attributes['borderRadius'] . 'px;';
 	}
-
+	
 	/* Post Grid wrapper styles. */
 	if ( ! empty( $wrapper_styles ) ) {
 		$wrapper_style = $wrapper_styles;
@@ -79,6 +90,12 @@ function skt_blocks_post_timeline_render_latest_posts( $attributes ) {
 	}
 
 	/* Post Grid Excerpct styles. */
+	if ( ! empty( $heading_colors ) ) {
+		$heading_color = $heading_colors;
+	} else {
+		$heading_color = null;
+	}
+
 	if ( ! empty( $heading_colors ) ) {
 		$heading_color = $heading_colors;
 	} else {
@@ -316,14 +333,12 @@ function skt_blocks_post_timeline_render_latest_posts( $attributes ) {
 			);
 
 			/* Get the post date */
-			if ( isset( $attributes['postType'] ) && 'post' === $attributes['postType'] ) {
-				if ( isset( $attributes['displayPostDate'] ) && $attributes['displayPostDate'] ) {
-						$post_grid_markup .= sprintf(
-							'<time datetime="%1$s" class="skt-blocks-timeline__date-new" itemprop="datePublished" style="' . safecss_filter_attr( $date_style ) . '">%2$s</time>',
-							esc_attr( get_the_date( 'c', $post_id ) ),
-							esc_html( get_the_date( '', $post_id ) )
-						);
-				}
+			if ( isset( $attributes['displayPostDate'] ) && $attributes['displayPostDate'] ) {
+					$post_grid_markup .= sprintf(
+						'<time datetime="%1$s" class="skt-blocks-timeline__date-new" itemprop="datePublished" style="' . safecss_filter_attr( $date_style ) . '">%2$s</time>',
+						esc_attr( get_the_date( 'c', $post_id ) ),
+						esc_html( get_the_date( '', $post_id ) )
+					);
 			}
 			/* Close the byline content */
 			$post_grid_markup .= sprintf(
@@ -497,14 +512,12 @@ function skt_blocks_post_timeline_render_latest_posts( $attributes ) {
 			);
 
 			/* Get the post date */
-			if ( isset( $attributes['postType'] ) && 'post' === $attributes['postType'] ) {
-				if ( isset( $attributes['displayPostDate'] ) && $attributes['displayPostDate'] ) {
-						$post_grid_markup .= sprintf(
-							'<time datetime="%1$s" class="skt-blocks-timeline__date-new" itemprop="datePublished" style="' . safecss_filter_attr( $date_style ) . '">%2$s</time>',
-							esc_attr( get_the_date( 'c', $post_id ) ),
-							esc_html( get_the_date( '', $post_id ) )
-						);
-				}
+			if ( isset( $attributes['displayPostDate'] ) && $attributes['displayPostDate'] ) {
+					$post_grid_markup .= sprintf(
+						'<time datetime="%1$s" class="skt-blocks-timeline__date-new" itemprop="datePublished" style="' . safecss_filter_attr( $date_style ) . '">%2$s</time>',
+						esc_attr( get_the_date( 'c', $post_id ) ),
+						esc_html( get_the_date( '', $post_id ) )
+					);
 			}
 			/* Close the byline content */
 			$post_grid_markup .= sprintf(
@@ -550,6 +563,20 @@ function skt_blocks_post_timeline_render_latest_posts( $attributes ) {
 
 		if ( isset( $attributes['className'] ) ) {
 			$class .= ' ' . $attributes['className'];
+		}
+
+		/* Responsive visibility classes (device hiding is done in CSS). */
+		if ( ! empty( $attributes['hideDesktop'] ) || ! empty( $attributes['hideTablet'] ) || ! empty( $attributes['hideMobile'] ) ) {
+			$class .= ' skt-timeline-hide';
+		}
+		if ( ! empty( $attributes['hideDesktop'] ) ) {
+			$class .= ' skt-hide-desktop';
+		}
+		if ( ! empty( $attributes['hideTablet'] ) ) {
+			$class .= ' skt-hide-tablet';
+		}
+		if ( ! empty( $attributes['hideMobile'] ) ) {
+			$class .= ' skt-hide-mobile';
 		}
 
 		$sec_classes = 'skt-blocks-block-post-timeline';
@@ -698,6 +725,43 @@ function skt_blocks_post_timeline_render_latest_posts( $attributes ) {
 				}
 			}
             </style>';
+
+		/* Tablet / Mobile overrides: only output when a value is set. */
+		$skt_pt_scope = '.wp-block-skt-blocks-post-timeline-' . $attributes['block_id'];
+		$skt_pt_map   = array(
+			'contentPadding' => array( array( ' .skt-blocks-content', 'padding' ) ),
+			'blockSpace'     => array( array( ' .skt-blocks-timeline__events-new', 'margin-bottom' ) ),
+			'headingSpace'   => array( array( ' .skt-blocks-block-post-timeline-title', 'margin-bottom' ) ),
+			'authorSpace'    => array( array( ' .skt-blocks-block-post-timeline-byline', 'margin-bottom' ) ),
+			'verSpace'       => array( array( ' .skt-blocks-timeline__field.skt-blocks-timeline__field-wrap', 'margin-bottom' ) ),
+			'horSpace'       => array(
+				array( ' .skt-blocks-timeline__center-block .skt-blocks-timeline__marker', 'margin-left' ),
+				array( ' .skt-blocks-timeline__center-block .skt-blocks-timeline__marker', 'margin-right' ),
+				array( ' .skt-blocks-timeline__left-block .skt-blocks-timeline__day-new', 'margin-left' ),
+				array( ' .skt-blocks-timeline__right-block .skt-blocks-timeline__day-new', 'margin-left' ),
+			),
+		);
+		$skt_pt_css   = '';
+		foreach ( array(
+			'Tablet' => 1024,
+			'Mobile' => 767,
+		) as $skt_pt_suffix => $skt_pt_bp ) {
+			$skt_pt_rules = '';
+			foreach ( $skt_pt_map as $skt_pt_attr => $skt_pt_targets ) {
+				$skt_pt_key = $skt_pt_attr . $skt_pt_suffix;
+				if ( isset( $attributes[ $skt_pt_key ] ) && '' !== $attributes[ $skt_pt_key ] && null !== $attributes[ $skt_pt_key ] ) {
+					foreach ( $skt_pt_targets as $skt_pt_target ) {
+						$skt_pt_rules .= $skt_pt_scope . $skt_pt_target[0] . '{' . $skt_pt_target[1] . ':' . floatval( $attributes[ $skt_pt_key ] ) . 'px !important;}';
+					}
+				}
+			}
+			if ( '' !== $skt_pt_rules ) {
+				$skt_pt_css .= '@media(max-width:' . $skt_pt_bp . 'px){' . $skt_pt_rules . '}';
+			}
+		}
+		if ( '' !== $skt_pt_css ) {
+			$styles .= '<style type="text/css">' . $skt_pt_css . '</style>';
+		}
 
 		/* Output the post markup */
 		/**
@@ -1060,6 +1124,62 @@ function skt_blocks_post_timeline_register_latest_posts() {
 				'horSpace'            => array(
 					'type'    => 'number',
 					'default' => 0,
+				),
+				'contentPaddingTablet' => array(
+					'type' => 'number',
+				),
+				'contentPaddingMobile' => array(
+					'type' => 'number',
+				),
+				'blockSpaceTablet' => array(
+					'type' => 'number',
+				),
+				'blockSpaceMobile' => array(
+					'type' => 'number',
+				),
+				'headingSpaceTablet' => array(
+					'type' => 'number',
+				),
+				'headingSpaceMobile' => array(
+					'type' => 'number',
+				),
+				'authorSpaceTablet' => array(
+					'type' => 'number',
+				),
+				'authorSpaceMobile' => array(
+					'type' => 'number',
+				),
+				'verSpaceTablet' => array(
+					'type' => 'number',
+				),
+				'verSpaceMobile' => array(
+					'type' => 'number',
+				),
+				'horSpaceTablet' => array(
+					'type' => 'number',
+				),
+				'horSpaceMobile' => array(
+					'type' => 'number',
+				),
+				'hideDesktop' => array(
+					'type'    => 'boolean',
+					'default' => false,
+				),
+				'hideTablet' => array(
+					'type'    => 'boolean',
+					'default' => false,
+				),
+				'hideMobile' => array(
+					'type'    => 'boolean',
+					'default' => false,
+				),
+				'hideLoggedIn' => array(
+					'type'    => 'boolean',
+					'default' => false,
+				),
+				'hideLoggedOut' => array(
+					'type'    => 'boolean',
+					'default' => false,
 				),
 				'stack'               => array(
 					'type'    => 'string',

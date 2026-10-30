@@ -28,3 +28,13 @@
 .wp-block-cover .skt-blocks-accordion-item__outer-wrap {
   color: #333;
 }
+
+// Keep hidden blocks visible (dimmed) while editing.
+.editor-styles-wrapper {
+  .skt-accordion-hide.skt-hide-desktop,
+  .skt-accordion-hide.skt-hide-tablet,
+  .skt-accordion-hide.skt-hide-mobile {
+    display: block !important;
+    opacity: 0.55;
+  }
+}

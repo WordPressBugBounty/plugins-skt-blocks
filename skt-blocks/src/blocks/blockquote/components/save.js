@@ -39,6 +39,17 @@ export default class Save extends Component {
         rightPadding,
         topPadding,
         bottomPadding,
+        topPaddingTablet,
+        topPaddingMobile,
+        bottomPaddingTablet,
+        bottomPaddingMobile,
+        leftPaddingTablet,
+        leftPaddingMobile,
+        rightPaddingTablet,
+        rightPaddingMobile,
+        hideDesktop,
+        hideTablet,
+        hideMobile,
         backgroundColor,
         backgroundColor1,
         backgroundColor2,
@@ -71,9 +82,31 @@ export default class Save extends Component {
       boxShadowPositionCSS = "";
     }
 
+    // Tablet / Mobile padding as CSS variables, only when set, so existing
+    // blocks keep exactly the same markup.
+    const isSet = (v) => v !== undefined && v !== null && v !== "";
+    const vars = {};
+    const extra = {};
+    [
+      ["pt", topPaddingTablet, topPaddingMobile],
+      ["pb", bottomPaddingTablet, bottomPaddingMobile],
+      ["pl", leftPaddingTablet, leftPaddingMobile],
+      ["pr", rightPaddingTablet, rightPaddingMobile],
+    ].forEach(([k, t, m]) => {
+      if (isSet(t)) {
+        vars[`--bq-${k}-tablet`] = `${t}px`;
+        extra[`has-bq-${k}-tablet`] = true;
+      }
+      if (isSet(m)) {
+        vars[`--bq-${k}-mobile`] = `${m}px`;
+        extra[`has-bq-${k}-mobile`] = true;
+      }
+    });
+
     return (
       <div
         style={{
+          ...vars,
           backgroundColor:
             backgroundType == "color"
               ? `${hexToRgba(backgroundColor || "#ffffff", imgopacity || 0)}`
@@ -120,7 +153,14 @@ export default class Save extends Component {
           this.props.className,
           quoteAlign,
           "skt-blocks-font-size-" + quoteFontSize,
-          "skt-blocks-block-quote"
+          "skt-blocks-block-quote",
+          extra,
+          {
+            "skt-quote-hide": hideDesktop || hideTablet || hideMobile,
+            "skt-hide-desktop": hideDesktop,
+            "skt-hide-tablet": hideTablet,
+            "skt-hide-mobile": hideMobile,
+          }
         )}
       >
         {backgroundType == "image" && (

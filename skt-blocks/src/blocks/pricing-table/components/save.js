@@ -151,6 +151,45 @@ export default class Save extends Component {
       imageSize,
       imageShape,
       imageWidth,
+      imageWidthTablet,
+      imageWidthMobile,
+      ctaHpaddingTablet,
+      ctaHpaddingMobile,
+      ctaVpaddingTablet,
+      ctaVpaddingMobile,
+      ctaBorderWidthTablet,
+      ctaBorderWidthMobile,
+      blockBorderWidthTablet,
+      blockBorderWidthMobile,
+      blockTopPaddingTablet,
+      blockTopPaddingMobile,
+      blockBottomPaddingTablet,
+      blockBottomPaddingMobile,
+      blockLeftPaddingTablet,
+      blockLeftPaddingMobile,
+      blockRightPaddingTablet,
+      blockRightPaddingMobile,
+      columnTopPaddingTablet,
+      columnTopPaddingMobile,
+      columnBottomPaddingTablet,
+      columnBottomPaddingMobile,
+      columnLeftPaddingTablet,
+      columnLeftPaddingMobile,
+      columnRightPaddingTablet,
+      columnRightPaddingMobile,
+      titleSpaceTablet,
+      titleSpaceMobile,
+      priceSpaceTablet,
+      priceSpaceMobile,
+      subpriceSpaceTablet,
+      subpriceSpaceMobile,
+      featuresSpaceTablet,
+      featuresSpaceMobile,
+      buttonSpaceTablet,
+      buttonSpaceMobile,
+      hideDesktop,
+      hideTablet,
+      hideMobile,
       blockId,
     } = this.props.attributes;
     var boxShadowPositionCSS = boxShadowPosition;
@@ -188,6 +227,41 @@ export default class Save extends Component {
     if ("right" == blockAlign) {
       alignStyle = "flex-end";
     }
+
+    // Tablet / Mobile values as CSS variables, only when set, so existing
+    // blocks keep exactly the same markup.
+    const isSet = (v) => v !== undefined && v !== null && v !== "";
+    const vars = {};
+    const extra = {};
+    [
+      ["iw", imageWidthTablet, imageWidthMobile],
+      ["ch", ctaHpaddingTablet, ctaHpaddingMobile],
+      ["cv", ctaVpaddingTablet, ctaVpaddingMobile],
+      ["cbw", ctaBorderWidthTablet, ctaBorderWidthMobile],
+      ["bw", blockBorderWidthTablet, blockBorderWidthMobile],
+      ["bpt", blockTopPaddingTablet, blockTopPaddingMobile],
+      ["bpb", blockBottomPaddingTablet, blockBottomPaddingMobile],
+      ["bpl", blockLeftPaddingTablet, blockLeftPaddingMobile],
+      ["bpr", blockRightPaddingTablet, blockRightPaddingMobile],
+      ["cpt", columnTopPaddingTablet, columnTopPaddingMobile],
+      ["cpb", columnBottomPaddingTablet, columnBottomPaddingMobile],
+      ["cpl", columnLeftPaddingTablet, columnLeftPaddingMobile],
+      ["cpr", columnRightPaddingTablet, columnRightPaddingMobile],
+      ["ts", titleSpaceTablet, titleSpaceMobile],
+      ["ps", priceSpaceTablet, priceSpaceMobile],
+      ["sps", subpriceSpaceTablet, subpriceSpaceMobile],
+      ["fs", featuresSpaceTablet, featuresSpaceMobile],
+      ["bs", buttonSpaceTablet, buttonSpaceMobile],
+    ].forEach(([k, t, m]) => {
+      if (isSet(t)) {
+        vars[`--pt-${k}-tablet`] = `${t}px`;
+        extra[`has-pt-${k}-tablet`] = true;
+      }
+      if (isSet(m)) {
+        vars[`--pt-${k}-mobile`] = `${m}px`;
+        extra[`has-pt-${k}-mobile`] = true;
+      }
+    });
 
     return [
       <Fragment>
@@ -259,9 +333,17 @@ export default class Save extends Component {
         className={classnames(
           classes,
           "wp-block-skt-blocks-pricing-table",
-          "image-shape-" + imageShape
+          "image-shape-" + imageShape,
+          extra,
+          {
+            "skt-pricing-hide": hideDesktop || hideTablet || hideMobile,
+            "skt-hide-desktop": hideDesktop,
+            "skt-hide-tablet": hideTablet,
+            "skt-hide-mobile": hideMobile,
+          }
         )}
         style={{
+          ...vars,
           textAlign: blockAlign,
           paddingTop: blockTopPadding,
           paddingBottom: blockBottomPadding,

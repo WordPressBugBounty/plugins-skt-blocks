@@ -1,3 +1,9 @@
+import {
+  DEVICE_TABS,
+  deviceSuffix,
+  inherited,
+  setPreviewDevice,
+} from "./responsive-utils";
 import fontOptions from "../../../utils/googlefonts";
 import { loadGoogleFont } from "../../../utils/font";
 
@@ -13,7 +19,13 @@ const { Component, Fragment } = wp.element;
 const { InspectorControls, PanelColorSettings } = wp.editor;
 
 // Import Inspector components
-const { PanelBody, RangeControl, SelectControl, ToggleControl } = wp.components;
+const {
+  PanelBody,
+  RangeControl,
+  SelectControl,
+  ToggleControl,
+  TabPanel,
+} = wp.components;
 
 /**
  * Create an Inspector Controls wrapper Component
@@ -271,39 +283,39 @@ export default class Inspector extends Component {
           title={__("Spacing", "skt-blocks")}
           initialOpen={false}
         >
-          <RangeControl
-            label={__(
-              "Title - Margin Bottom",
-              "skt-blocks"
-            )}
-            value={titleSpace}
-            onChange={(value) =>
-              setAttributes({ titleSpace: value !== undefined ? value : 28 })
-            }
-            min={-100}
-            max={100}
-            allowReset
-          />
-          <RangeControl
-            label={__("Text - Margin Bottom", "skt-blocks")}
-            value={textSpace}
-            onChange={(value) =>
-              setAttributes({ textSpace: value !== undefined ? value : 20 })
-            }
-            min={-100}
-            max={100}
-            allowReset
-          />
-          <RangeControl
-            label={__("Link - Margin Botton", "skt-blocks")}
-            value={linkSpace}
-            onChange={(value) =>
-              setAttributes({ linkSpace: value !== undefined ? value : 18 })
-            }
-            min={-100}
-            max={100}
-            allowReset
-          />
+          <TabPanel
+            className="rbea-inspect-tabs rbea-inspect-tabs-col-3"
+            activeClass="active-tab"
+            initialTabName={(this.props.deviceType || "Desktop").toLowerCase()}
+            onSelect={setPreviewDevice}
+            tabs={DEVICE_TABS.map((t) => ({ ...t, className: "rbea-normal-tab" }))}
+          >
+            {(tab) => {
+              const sfx = deviceSuffix(tab.name);
+              const field = (base, label, def) => (
+                <RangeControl
+                  label={label}
+                  value={inherited(this.props.attributes, base, sfx)}
+                  onChange={(value) =>
+                    setAttributes({
+                      [base + sfx]:
+                        value !== undefined ? value : sfx ? undefined : def,
+                    })
+                  }
+                  min={-100}
+                  max={100}
+                  allowReset
+                />
+              );
+              return (
+                <div>
+                  {field("titleSpace", __("Title - Margin Bottom", "skt-blocks"), 28)}
+                  {field("textSpace", __("Text - Margin Bottom", "skt-blocks"), 20)}
+                  {field("linkSpace", __("Link - Margin Bottom", "skt-blocks"), 18)}
+                </div>
+              );
+            }}
+          </TabPanel>
         </PanelBody>
         <PanelColorSettings
           title={__("Color Setting", "skt-blocks")}
@@ -326,6 +338,33 @@ export default class Inspector extends Component {
             },
           ]}
         ></PanelColorSettings>
+        <PanelBody title={__("Visibility", "skt-blocks")} initialOpen={false}>
+          <ToggleControl
+            label={__("Hide on Desktop", "skt-blocks")}
+            checked={!!this.props.attributes.hideDesktop}
+            onChange={(value) => setAttributes({ hideDesktop: value })}
+          />
+          <ToggleControl
+            label={__("Hide on Tablet", "skt-blocks")}
+            checked={!!this.props.attributes.hideTablet}
+            onChange={(value) => setAttributes({ hideTablet: value })}
+          />
+          <ToggleControl
+            label={__("Hide on Mobile", "skt-blocks")}
+            checked={!!this.props.attributes.hideMobile}
+            onChange={(value) => setAttributes({ hideMobile: value })}
+          />
+          <ToggleControl
+            label={__("Hide from Logged-in Users", "skt-blocks")}
+            checked={!!this.props.attributes.hideLoggedIn}
+            onChange={(value) => setAttributes({ hideLoggedIn: value })}
+          />
+          <ToggleControl
+            label={__("Hide from Logged-out Users", "skt-blocks")}
+            checked={!!this.props.attributes.hideLoggedOut}
+            onChange={(value) => setAttributes({ hideLoggedOut: value })}
+          />
+        </PanelBody>
       </InspectorControls>
     );
   }

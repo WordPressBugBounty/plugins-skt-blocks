@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit;
 function skt_blocks_add_google_fonts() {
     global $post;
     if ( is_object( $post ) && property_exists( $post, 'post_content' ) ) {

@@ -3,6 +3,7 @@
  */
 import classnames from "classnames";
 import Inspector from "./inspector";
+import { inherited, previewSuffix } from "./responsive-utils";
 import times from "lodash/times";
 import generateCSSUnit from "../../../generateCSSUnit";
 import generateBackgroundImageEffect from "../../../generateBackgroundImageEffect";
@@ -17,6 +18,7 @@ import { hexToRgba } from "../../../utils/index.js";
  */
 const { __, sprintf } = wp.i18n;
 const { Component, Fragment } = wp.element;
+const { withSelect } = wp.data;
 const { Dashicon, Icon, Button } = wp.components;
 const {
   RichText,
@@ -45,7 +47,7 @@ const TEMPLATE = [
 
 let svg_icons = Object.keys(ResponsiveBlocksIcon);
 
-export default class Edit extends Component {
+class Edit extends Component {
   constructor() {
     super(...arguments);
   }
@@ -132,6 +134,9 @@ export default class Edit extends Component {
         blockbotmargin,
         blockleftmargin,
         blockrightmargin,
+        hideDesktop,
+        hideTablet,
+        hideMobile,
         bgimageSize,
         bgimagePosition,
         bgimageRepeat,
@@ -162,6 +167,9 @@ export default class Edit extends Component {
         ? null
         : "has-background-dim-" + 10 * Math.round(ratio / 10);
     };
+
+    const sfx = previewSuffix(this.props.deviceType);
+    const eff = (b) => inherited(this.props.attributes, b, sfx);
 
     return [
       // Show the alignment toolbar on focus
@@ -207,13 +215,19 @@ export default class Edit extends Component {
       <div
         className={classnames(
           `skt-blocks-${counterId}`,
-          `responsive-columns__stack-${stack}`
+          `responsive-columns__stack-${stack}`,
+          {
+            "skt-card-hide": hideDesktop || hideTablet || hideMobile,
+            "skt-hide-desktop": hideDesktop,
+            "skt-hide-tablet": hideTablet,
+            "skt-hide-mobile": hideMobile,
+          }
         )}
         style={{
-          marginBottom: blockbotmargin,
-          marginTop: blockmargin,
-          marginLeft: blockleftmargin,
-          marginRight: blockrightmargin,
+          marginBottom: eff("blockbotmargin"),
+          marginTop: eff("blockmargin"),
+          marginLeft: eff("blockleftmargin"),
+          marginRight: eff("blockrightmargin"),
           zIndex: blockzindex,
         }}
       >
@@ -293,7 +307,7 @@ export default class Edit extends Component {
                     "skt-blocks-card-avatar"
                   )}
                   style={{
-                    height: imageheight,
+                    height: eff("imageheight"),
                   }}
                 >
                   {cardsArray[index]["image"] && (
@@ -322,8 +336,8 @@ export default class Edit extends Component {
                 className="card-content-wrap"
                 style={{
                   textAlign: contentAlignment,
-                  marginBottom: contentSpace,
-                  marginTop: contenttopSpace,
+                  marginBottom: eff("contentSpace"),
+                  marginTop: eff("contenttopSpace"),
                 }}
               >
                 {headingFontFamily && loadGoogleFont(headingFontFamily)}
@@ -350,7 +364,7 @@ export default class Edit extends Component {
                   keepPlaceholderOnFocus
                   style={{
                     marginTop: 0,
-                    marginBottom: titleSpace,
+                    marginBottom: eff("titleSpace"),
                     color: textColor,
                     lineHeight: headingLineHeight,
                     fontFamily: headingFontFamily,
@@ -379,7 +393,7 @@ export default class Edit extends Component {
                   keepPlaceholderOnFocus
                   style={{
                     marginTop: 0,
-                    marginBottom: subtitleSpace,
+                    marginBottom: eff("subtitleSpace"),
                     color: textColor,
                     lineHeight: subLineHeight,
                     fontWeight: subFontWeight,
@@ -422,14 +436,14 @@ export default class Edit extends Component {
                   <div
                     className="skt-blocks-card-button-inner"
                     style={{
-                      paddingTop: vPadding,
-                      paddingBottom: vPadding,
-                      paddingLeft: hPadding,
-                      paddingRight: hPadding,
-                      marginTop: vMargin,
-                      marginBottom: vMargin,
-                      marginLeft: hMargin,
-                      marginRight: hMargin,
+                      paddingTop: eff("vPadding"),
+                      paddingBottom: eff("vPadding"),
+                      paddingLeft: eff("hPadding"),
+                      paddingRight: eff("hPadding"),
+                      marginTop: eff("vMargin"),
+                      marginBottom: eff("vMargin"),
+                      marginLeft: eff("hMargin"),
+                      marginRight: eff("hMargin"),
                       borderStyle: butborderStyle ? butborderStyle : "none",
                       borderRadius: butborderRadius ? butborderRadius : "",
                       borderWidth: butborderWidth ? butborderWidth : "0px",
@@ -531,3 +545,19 @@ export default class Edit extends Component {
     ];
   }
 }
+
+export default withSelect((select) => {
+  let deviceType = "Desktop";
+  try {
+    const editor = select("core/editor");
+    if (editor && editor.getDeviceType) {
+      deviceType = editor.getDeviceType();
+    } else {
+      const editPost = select("core/edit-post");
+      if (editPost && editPost.__experimentalGetPreviewDeviceType) {
+        deviceType = editPost.__experimentalGetPreviewDeviceType();
+      }
+    }
+  } catch (e) {}
+  return { deviceType };
+})(Edit);

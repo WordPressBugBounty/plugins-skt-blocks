@@ -3,7 +3,6 @@
  */
 import classnames from "classnames";
 import filter from "lodash/filter";
-import Masonry from "react-masonry-component";
 
 /**
  * Internal dependencies
@@ -201,14 +200,19 @@ class GalleryMasonryEdit extends Component {
       <Fragment>
         {isSelected && <Inspector {...this.props} />}
         {noticeUI}
-        <div className={className}>
+        <div
+          className={classnames(className, {
+            "skt-hide-desktop": attributes.hideDesktop,
+            "skt-hide-tablet": attributes.hideTablet,
+            "skt-hide-mobile": attributes.hideMobile,
+          })}
+        >
           <div className={innerClasses}>
-            <Masonry
-              elementType={"ul"}
-              className={masonryClasses}
-              options={masonryOptions}
-              disableImagesLoaded={false}
-              updateOnEachImageLoad={false}
+            <ul
+              className={classnames(
+                masonryClasses,
+                "skt-blocks-masonry-editor-preview"
+              )}
             >
               {images.map((img, index) => {
                 const ariaLabel = sprintf(
@@ -252,7 +256,7 @@ class GalleryMasonryEdit extends Component {
                   </li>
                 );
               })}
-            </Masonry>
+            </ul>
           </div>
           {masonryGalleryPlaceholder}
         </div>

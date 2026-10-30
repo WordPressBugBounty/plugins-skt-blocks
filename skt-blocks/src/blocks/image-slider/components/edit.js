@@ -3,7 +3,6 @@
  */
 import classnames from "classnames";
 import filter from "lodash/filter";
-import Flickity from "react-flickity-component";
 
 /**
  * Internal dependencies
@@ -41,10 +40,21 @@ class GalleryCarouselEdit extends Component {
   }
 
   componentDidMount() {
-    // This block does not support the following attributes.
-    this.props.setAttributes({
-      shadow: undefined,
-    });
+    const { clientId, attributes, setAttributes } = this.props;
+    const updates = {};
+    // This block does not support the following attribute.
+    if (attributes.shadow !== undefined) {
+      updates.shadow = undefined;
+    }
+    // Assign a stable id ONCE here. Doing this during render() caused extra
+    // re-renders, and re-rendering the Flickity carousel (which clones/moves
+    // DOM nodes) is what triggered the React 18 "removeChild" crash.
+    if (attributes.counterId !== clientId) {
+      updates.counterId = clientId;
+    }
+    if (Object.keys(updates).length) {
+      setAttributes(updates);
+    }
   }
 
   componentDidUpdate(prevProps) {
@@ -184,8 +194,6 @@ class GalleryCarouselEdit extends Component {
         isSmallImage,
     } = attributes;
 
-    setAttributes({ counterId: this.props.clientId });
-
     let imgopacity = iconBackgroundOpacity / 100;
 
     const hasImages = !!images.length;
@@ -230,7 +238,7 @@ class GalleryCarouselEdit extends Component {
       draggable: false,
       pageDots: true,
       prevNextButtons: true,
-      wrapAround: true,
+      wrapAround: false,
       autoPlay: false,
       cellAlign: alignCells ? "left" : "center",
       arrowShape: {
@@ -250,7 +258,7 @@ class GalleryCarouselEdit extends Component {
       draggable: false,
       pageDots: true,
       prevNextButtons: false,
-      wrapAround: true,
+      wrapAround: false,
       autoPlay: false,
       thumbnails: false,
       cellAlign: "left",
@@ -346,13 +354,11 @@ class GalleryCarouselEdit extends Component {
           )}
           <div className={className}>
             <div className={innerClasses}>
-              <Flickity
-                className={flickityClasses}
-                disableImagesLoaded={false}
-                flickityRef={(c) => (this.flkty = c)}
-                options={flickityOptions}
-                reloadOnUpdate={true}
-                updateOnEachImageLoad={true}
+              <div
+                className={classnames(
+                  flickityClasses,
+                  "skt-blocks-carousel-editor-preview"
+                )}
               >
                 {images.map((img, index) => {
                   const ariaLabel = sprintf(
@@ -396,20 +402,18 @@ class GalleryCarouselEdit extends Component {
                     </div>
                   );
                 })}
-              </Flickity>
+              </div>
             </div>
           </div>
         </ResizableBox>
         {thumbnails && (
           <div className={className}>
             <div className={innerClasses}>
-              <Flickity
-                className={navClasses}
-                options={navOptions}
-                disableImagesLoaded={false}
-                reloadOnUpdate={true}
-                flickityRef={(c) => (this.flkty = c)}
-                updateOnEachImageLoad={true}
+              <div
+                className={classnames(
+                  navClasses,
+                  "skt-blocks-carousel-editor-preview"
+                )}
               >
                 {images.map((image) => {
                   return (
@@ -429,7 +433,7 @@ class GalleryCarouselEdit extends Component {
                     </div>
                   );
                 })}
-              </Flickity>
+              </div>
             </div>
           </div>
         )}

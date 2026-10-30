@@ -17,6 +17,9 @@ const {
   TextControl,
   Button,
   ExternalLink,
+  ToggleControl,
+  TabPanel,
+  Dashicon,
 } = wp.components;
 
 /**
@@ -55,24 +58,48 @@ export default class Inspector extends Component {
             max={17}
             step={1}
           />
-          <BaseControl
-            label={__("Height in pixels", "skt-blocks")}
-            id="map-height-control"
+          <TabPanel
+            className=" responsive-size-type-field-tabs  responsive-size-type-field__common-tabs  responsive-inline-margin"
+            activeClass="active-tab"
+            tabs={[
+              { name: "desktop", title: <Dashicon icon="desktop" />, className: " responsive-desktop-tab  responsive-responsive-tabs" },
+              { name: "tablet", title: <Dashicon icon="tablet" />, className: " responsive-tablet-tab  responsive-responsive-tabs" },
+              { name: "mobile", title: <Dashicon icon="smartphone" />, className: " responsive-mobile-tab  responsive-responsive-tabs" },
+            ]}
           >
-            <input
-              type="number"
-              aria-label={__(
-                "Height for the map in pixels",
-                "skt-blocks"
-              )}
-              onChange={(event) =>
-                setAttributes({ height: parseInt(event.target.value, 10) })
-              }
-              value={height}
-              min={200}
-              step={10}
-            />
-          </BaseControl>
+            {(tab) => {
+              const key =
+                tab.name === "tablet"
+                  ? "heightTablet"
+                  : tab.name === "mobile"
+                  ? "heightMobile"
+                  : "height";
+              return (
+                <BaseControl
+                  label={__("Height in pixels", "skt-blocks")}
+                  id={"map-height-control-" + tab.name}
+                >
+                  <input
+                    type="number"
+                    aria-label={__("Height for the map in pixels", "skt-blocks")}
+                    onChange={(event) => {
+                      const v = event.target.value;
+                      setAttributes({
+                        [key]: v === "" ? undefined : parseInt(v, 10),
+                      });
+                    }}
+                    value={
+                      this.props.attributes[key] === undefined
+                        ? ""
+                        : this.props.attributes[key]
+                    }
+                    min={200}
+                    step={10}
+                  />
+                </BaseControl>
+              );
+            }}
+          </TabPanel>
         </PanelBody>
 
         <PanelBody
@@ -133,6 +160,36 @@ export default class Inspector extends Component {
               {__("Remove", "skt-blocks")}
             </Button>
           )}
+        </PanelBody>
+        <PanelBody
+          title={__("Visibility", "skt-blocks")}
+          initialOpen={false}
+        >
+          <ToggleControl
+            label={__("Hide on Desktop", "skt-blocks")}
+            checked={!!this.props.attributes.hideDesktop}
+            onChange={(value) => setAttributes({ hideDesktop: value })}
+          />
+          <ToggleControl
+            label={__("Hide on Tablet", "skt-blocks")}
+            checked={!!this.props.attributes.hideTablet}
+            onChange={(value) => setAttributes({ hideTablet: value })}
+          />
+          <ToggleControl
+            label={__("Hide on Mobile", "skt-blocks")}
+            checked={!!this.props.attributes.hideMobile}
+            onChange={(value) => setAttributes({ hideMobile: value })}
+          />
+          <ToggleControl
+            label={__("Hide for Logged In Users", "skt-blocks")}
+            checked={!!this.props.attributes.hideLoggedIn}
+            onChange={(value) => setAttributes({ hideLoggedIn: value })}
+          />
+          <ToggleControl
+            label={__("Hide for Logged Out Users", "skt-blocks")}
+            checked={!!this.props.attributes.hideLoggedOut}
+            onChange={(value) => setAttributes({ hideLoggedOut: value })}
+          />
         </PanelBody>
       </InspectorControls>
     );

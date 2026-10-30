@@ -6,6 +6,12 @@ import metadata from "./block.json";
 import save from "./components/save";
 import { GalleryAttributes } from "../../utils/components/block-gallery/shared";
 
+// Block styles (frontend + editor). These were never imported, so the masonry
+// list styling (e.g. list-style: none) was missing on the front end — the
+// slides showed a bullet — and the editor preview styles were absent too.
+import "./styles/style.scss";
+import "./styles/editor.scss";
+
 /**
  * WordPress dependencies
  */

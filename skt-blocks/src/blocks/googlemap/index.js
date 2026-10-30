@@ -48,6 +48,16 @@ registerBlockType("skt-blocks/googlemap", {
       type: "number",
       default: 400,
     },
+    // Responsive (tablet/mobile) height. Default unset = inherit desktop via the
+    // editor <style> + PHP render_block filter. save.js is never changed.
+    heightTablet: { type: "number" },
+    heightMobile: { type: "number" },
+    // Visibility.
+    hideDesktop: { type: "boolean", default: false },
+    hideTablet: { type: "boolean", default: false },
+    hideMobile: { type: "boolean", default: false },
+    hideLoggedIn: { type: "boolean", default: false },
+    hideLoggedOut: { type: "boolean", default: false },
     pinned: {
       type: "boolean",
       default: false,

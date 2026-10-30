@@ -172,6 +172,37 @@ registerBlockType("skt-blocks/pricing-list", {
     imageWidth: {
       type: "number",
     },
+
+    // --- Responsive (tablet/mobile) overrides. Desktop keeps the existing
+    // base attribute and stays inline in the saved markup; these only hold
+    // tablet/mobile values and default to undefined, so save output is never
+    // changed (validation-safe). Applied via editor <style> + PHP render_block. ---
+    imageWidthTablet: { type: "number" },
+    imageWidthMobile: { type: "number" },
+    seperatorWidthTablet: { type: "number" },
+    seperatorWidthMobile: { type: "number" },
+    rowGapTablet: { type: "number" },
+    rowGapMobile: { type: "number" },
+    columnGapTablet: { type: "number" },
+    columnGapMobile: { type: "number" },
+    titleSpaceTablet: { type: "number" },
+    titleSpaceMobile: { type: "number" },
+    topPaddingTablet: { type: "number" },
+    topPaddingMobile: { type: "number" },
+    bottomPaddingTablet: { type: "number" },
+    bottomPaddingMobile: { type: "number" },
+    leftPaddingTablet: { type: "number" },
+    leftPaddingMobile: { type: "number" },
+    rightPaddingTablet: { type: "number" },
+    rightPaddingMobile: { type: "number" },
+
+    // --- Visibility. Device hide + logged-in/out are applied only through the
+    // editor <style> and the PHP render_block filter (never the saved markup). ---
+    hideDesktop: { type: "boolean", default: false },
+    hideTablet: { type: "boolean", default: false },
+    hideMobile: { type: "boolean", default: false },
+    hideLoggedIn: { type: "boolean", default: false },
+    hideLoggedOut: { type: "boolean", default: false },
   },
 
   /* Render the block in the editor. */

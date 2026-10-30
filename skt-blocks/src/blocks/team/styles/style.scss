@@ -387,3 +387,21 @@
     margin-right: auto;
   }
 }
+
+// Visibility: hide the whole Team block per device (front end).
+// Breakpoints: mobile <=767, tablet 768-1024, desktop >=1025.
+@media (max-width: 767px) {
+  .wp-block-skt-blocks-team-wrapper.skt-hide-mobile {
+    display: none !important;
+  }
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+  .wp-block-skt-blocks-team-wrapper.skt-hide-tablet {
+    display: none !important;
+  }
+}
+@media (min-width: 1025px) {
+  .wp-block-skt-blocks-team-wrapper.skt-hide-desktop {
+    display: none !important;
+  }
+}

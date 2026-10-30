@@ -283,6 +283,35 @@ const blockAttributes = {
     type: "number",
     default: 20,
   },
+
+  // Responsive (tablet/mobile) spacing. Default unset = inherit desktop via the
+  // CSS cascade. Applied through the editor in-tree <style> + a PHP render_block
+  // filter, so save.js (saved markup) is never changed (validation-safe).
+  topPaddingTablet: { type: "number" },
+  topPaddingMobile: { type: "number" },
+  bottomPaddingTablet: { type: "number" },
+  bottomPaddingMobile: { type: "number" },
+  leftPaddingTablet: { type: "number" },
+  leftPaddingMobile: { type: "number" },
+  rightPaddingTablet: { type: "number" },
+  rightPaddingMobile: { type: "number" },
+  titleSpaceTablet: { type: "number" },
+  titleSpaceMobile: { type: "number" },
+  subtitleSpaceTablet: { type: "number" },
+  subtitleSpaceMobile: { type: "number" },
+  buttonSpaceTablet: { type: "number" },
+  buttonSpaceMobile: { type: "number" },
+  buttonvPaddingTablet: { type: "number" },
+  buttonvPaddingMobile: { type: "number" },
+  buttonhPaddingTablet: { type: "number" },
+  buttonhPaddingMobile: { type: "number" },
+  // Visibility.
+  hideDesktop: { type: "boolean", default: false },
+  hideTablet: { type: "boolean", default: false },
+  hideMobile: { type: "boolean", default: false },
+  hideLoggedIn: { type: "boolean", default: false },
+  hideLoggedOut: { type: "boolean", default: false },
+
   imagePosition: {
     type: "string",
     default: "center center",

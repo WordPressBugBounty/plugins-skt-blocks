@@ -1,0 +1,35 @@
+{
+  "name": "skt-blocks",
+  "version": "2.6.0",
+  "description": "SKT Blocks for Gutenberg",
+  "private": true,
+  "scripts": {
+    "build": "wp-scripts build",
+    "postbuild": "node postbuild.js",
+    "start": "wp-scripts start"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^30.0.0"
+  },
+  "dependencies": {
+    "@fonticonpicker/react-fonticonpicker": "^1.2.0",
+    "@wordpress/dom-ready": "^4.54.0",
+    "bigpicture": "^2.6.4",
+    "classnames": "^2.5.1",
+    "color-rgba": "^3.0.0",
+    "counterup2": "^1.0.1",
+    "flickity": "^3.0.0",
+    "memize": "^2.1.0",
+    "re-resizable": "^6.9.11",
+    "react-flickity-component": "^4.0.7",
+    "react-masonry-component": "^6.3.0",
+    "react-slick": "^0.30.2",
+    "react-transition-group": "^4.4.5",
+    "slick-carousel": "^1.8.1",
+    "style-it": "^2.1.4",
+    "waypoints": "^4.0.1"
+  },
+  "overrides": {
+    "ajv": "^8.20.0"
+  }
+}

@@ -3,12 +3,14 @@
  */
 import classnames from "classnames";
 import Inspector from "./inspector";
+import { inherited, previewSuffix } from "./responsive-utils";
 
 /**
  * WordPress dependencies
  */
 const { __, sprintf } = wp.i18n;
 const { Component, Fragment } = wp.element;
+const { withSelect } = wp.data;
 const { Button, Dashicon, Icon } = wp.components;
 const { RichText, URLInput } = wp.editor;
 
@@ -19,7 +21,7 @@ import Style from "style-it";
 import { hexToRgba } from "../../../utils";
 import generateBackgroundImageEffect from "../../../generateBackgroundImageEffect";
 
-export default class Edit extends Component {
+class Edit extends Component {
   constructor() {
     super(...arguments);
   }
@@ -101,6 +103,9 @@ export default class Edit extends Component {
         buttonopacity,
         buttonHopacity,
         blockId,
+        hideDesktop,
+        hideTablet,
+        hideMobile,
       },
       setAttributes,
     } = this.props;
@@ -158,8 +163,16 @@ export default class Edit extends Component {
       "wp-block-skt-blocks-flipbox",
       {
         [`has-text-align-${contentAlign}`]: contentAlign,
+        "skt-flipbox-hide": hideDesktop || hideTablet || hideMobile,
+        "skt-hide-desktop": hideDesktop,
+        "skt-hide-tablet": hideTablet,
+        "skt-hide-mobile": hideMobile,
       }
     );
+
+    // Effective value for the device selected in the editor preview.
+    const sfx = previewSuffix(this.props.deviceType);
+    const eff = (b) => inherited(this.props.attributes, b, sfx);
 
     const innerClasses = classnames(
       "wp-block-skt-blocks-flipbox__inner",
@@ -281,8 +294,8 @@ export default class Edit extends Component {
       <div
         className={classes}
         style={{
-          marginTop: topMargin,
-          marginBottom: bottomMargin,
+          marginTop: eff("topMargin"),
+          marginBottom: eff("bottomMargin"),
         }}
       >
         {" "}
@@ -312,8 +325,8 @@ export default class Edit extends Component {
                     color: frontTextColor,
                     borderColor: borderColor,
                     borderStyle: borderStyle,
-                    borderWidth: borderWidth,
-                    borderRadius: borderRadius,
+                    borderWidth: eff("borderWidth"),
+                    borderRadius: eff("borderRadius"),
                     boxShadow:
                       generateCSSUnit(boxShadowHOffset, "px") +
                       " " +
@@ -327,21 +340,21 @@ export default class Edit extends Component {
                       " " +
                       boxShadowPositionCSS,
                     height: height,
-                    paddingTop: topPadding,
-                    paddingBottom: bottomPadding,
-                    paddingLeft: leftPadding,
-                    paddingRight: rightPadding,
+                    paddingTop: eff("topPadding"),
+                    paddingBottom: eff("bottomPadding"),
+                    paddingLeft: eff("leftPadding"),
+                    paddingRight: eff("rightPadding"),
                   }}
                 >
                   {showFrontIcon && (
-                    <div style={{ width: iconSize, height: iconSize }}>
+                    <div style={{ width: eff("iconSize"), height: eff("iconSize") }}>
                       <Dashicon
                         icon={flipboxArray[index]["icon"]}
-                        height={iconSize}
-                        width={iconSize}
+                        height={eff("iconSize")}
+                        width={eff("iconSize")}
                         style={{
-                          height: iconSize,
-                          width: iconSize,
+                          height: eff("iconSize"),
+                          width: eff("iconSize"),
                           fill: iconColor,
                         }}
                       />
@@ -413,8 +426,8 @@ export default class Edit extends Component {
                     transform: flipStyleBack,
                     borderColor: borderColor,
                     borderStyle: borderStyle,
-                    borderWidth: borderWidth,
-                    borderRadius: borderRadius,
+                    borderWidth: eff("borderWidth"),
+                    borderRadius: eff("borderRadius"),
                     boxShadow:
                       generateCSSUnit(boxShadowHOffset, "px") +
                       " " +
@@ -428,21 +441,21 @@ export default class Edit extends Component {
                       " " +
                       boxShadowPositionCSS,
                     height: height,
-                    paddingTop: backtopPadding,
-                    paddingBottom: backbottomPadding,
-                    paddingLeft: backleftPadding,
-                    paddingRight: backrightPadding,
+                    paddingTop: eff("backtopPadding"),
+                    paddingBottom: eff("backbottomPadding"),
+                    paddingLeft: eff("backleftPadding"),
+                    paddingRight: eff("backrightPadding"),
                   }}
                 >
                   {showBackIcon && (
-                    <div style={{ width: backIconSize, height: backIconSize }}>
+                    <div style={{ width: eff("backIconSize"), height: eff("backIconSize") }}>
                       <Dashicon
                         icon={flipboxArray[index]["back_icon"]}
-                        height={backIconSize}
-                        width={backIconSize}
+                        height={eff("backIconSize")}
+                        width={eff("backIconSize")}
                         style={{
-                          height: backIconSize,
-                          width: backIconSize,
+                          height: eff("backIconSize"),
+                          width: eff("backIconSize"),
                           fill: backIconColor,
                         }}
                       />
@@ -587,3 +600,19 @@ export default class Edit extends Component {
     ];
   }
 }
+
+export default withSelect((select) => {
+  let deviceType = "Desktop";
+  try {
+    const editor = select("core/editor");
+    if (editor && editor.getDeviceType) {
+      deviceType = editor.getDeviceType();
+    } else {
+      const editPost = select("core/edit-post");
+      if (editPost && editPost.__experimentalGetPreviewDeviceType) {
+        deviceType = editPost.__experimentalGetPreviewDeviceType();
+      }
+    }
+  } catch (e) {}
+  return { deviceType };
+})(Edit);

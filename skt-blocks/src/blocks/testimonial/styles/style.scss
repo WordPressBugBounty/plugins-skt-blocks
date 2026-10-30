@@ -359,3 +359,66 @@
     }
   }
 }
+
+
+// Responsive visibility (Desktop >=1025, Tablet 768-1024, Mobile <=767).
+@media (max-width: 767px) {
+  .wp-block-skt-blocks-testimonial-wrapper.skt-hide-mobile {
+    display: none !important;
+  }
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+  .wp-block-skt-blocks-testimonial-wrapper.skt-hide-tablet {
+    display: none !important;
+  }
+}
+@media (min-width: 1025px) {
+  .wp-block-skt-blocks-testimonial-wrapper.skt-hide-desktop {
+    display: none !important;
+  }
+}
+
+// Responsive box shadow and avatar width. Values come from CSS variables on
+// the box. Mobile falls back to Tablet, then Desktop.
+@media (max-width: 1024px) {
+  .skt-blocks-block-testimonial.has-ts-shadow-tablet:not(:hover) {
+    box-shadow: var(--skt-ts-shadow-tablet) !important;
+  }
+  .skt-blocks-block-testimonial.has-ts-img-tablet
+    .skt-blocks-testimonial-image-wrap,
+  .skt-blocks-block-testimonial.has-ts-img-tablet
+    .skt-blocks-testimonial-avatar {
+    width: var(--skt-ts-img-tablet) !important;
+    height: var(--skt-ts-img-tablet) !important;
+  }
+}
+@media (max-width: 767px) {
+  .skt-blocks-block-testimonial.has-ts-shadow-mobile:not(:hover) {
+    box-shadow: var(--skt-ts-shadow-mobile) !important;
+  }
+  .skt-blocks-block-testimonial.has-ts-img-mobile
+    .skt-blocks-testimonial-image-wrap,
+  .skt-blocks-block-testimonial.has-ts-img-mobile
+    .skt-blocks-testimonial-avatar {
+    width: var(--skt-ts-img-mobile) !important;
+    height: var(--skt-ts-img-mobile) !important;
+  }
+}
+
+// Responsive border width / radius. Mobile falls back to Tablet, then Desktop.
+@media (max-width: 1024px) {
+  .skt-blocks-block-testimonial.has-ts-bw-tablet {
+    border-width: var(--skt-ts-bw-tablet) !important;
+  }
+  .skt-blocks-block-testimonial.has-ts-br-tablet {
+    border-radius: var(--skt-ts-br-tablet) !important;
+  }
+}
+@media (max-width: 767px) {
+  .skt-blocks-block-testimonial.has-ts-bw-mobile {
+    border-width: var(--skt-ts-bw-mobile) !important;
+  }
+  .skt-blocks-block-testimonial.has-ts-br-mobile {
+    border-radius: var(--skt-ts-br-mobile) !important;
+  }
+}

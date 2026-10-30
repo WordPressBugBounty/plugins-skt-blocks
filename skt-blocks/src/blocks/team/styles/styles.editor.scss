@@ -214,3 +214,14 @@
     }
   }
 }
+
+// Keep a Team block visible (dimmed) in the editor even when set to hide on the
+// current device, so it stays selectable. Scoped to the editor only.
+.editor-styles-wrapper {
+  .wp-block-skt-blocks-team-wrapper.skt-hide-desktop,
+  .wp-block-skt-blocks-team-wrapper.skt-hide-tablet,
+  .wp-block-skt-blocks-team-wrapper.skt-hide-mobile {
+    display: flex !important;
+    opacity: 0.55;
+  }
+}

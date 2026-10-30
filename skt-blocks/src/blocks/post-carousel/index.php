@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * Server-side rendering for the post carousel block
  *
@@ -270,6 +271,14 @@ function get_responsive_post_carousel_default_attributes() {
  */
 function skt_blocks_render_block_core_latest_posts2( $attributes ) {
 
+	// Visibility: hide for logged-in / logged-out users (output-only).
+	if ( ! empty( $attributes['hideLoggedIn'] ) && is_user_logged_in() ) {
+		return '';
+	}
+	if ( ! empty( $attributes['hideLoggedOut'] ) && ! is_user_logged_in() ) {
+		return '';
+	}
+
 	/**
 	 * Global post object.
 	 * Used for excluding the current post from the carousel.
@@ -470,9 +479,10 @@ $buttonTarget = $attributes['buttonTarget']? "_blank" : null;
 
 			/* Start the markup for the post */
 			$post_carousel_markup .= sprintf(
-				'<article id="post-%1$s" class="%2$s"><div class="skt-blocks-post-carousel-inner" style="' . safecss_filter_attr( $wrapper_style ) . '">',
+				'<article id="post-%1$s" class="%2$s"><div class="skt-blocks-post-carousel-inner" style="%3$s">',
 				esc_attr( $post_id ),
-				esc_attr( $post_classes )
+				esc_attr( $post_classes ),
+				safecss_filter_attr( $wrapper_style )
 			);
 
 			/* Get the featured image */
@@ -486,20 +496,17 @@ $buttonTarget = $attributes['buttonTarget']? "_blank" : null;
 
 				/* Output the featured image */
 				$post_carousel_markup .= sprintf(
-					'<div class="skt-blocks-block-post-carousel-image-'.esc_attr( $attributes['imagePosition'] ).'"><a href="%1$s" rel="bookmark" aria-hidden="true" tabindex="-1">%2$s</a></div>',
+					'<div class="skt-blocks-block-post-carousel-image-%3$s"><a href="%1$s" rel="bookmark" aria-hidden="true" tabindex="-1">%2$s</a></div>',
 					esc_url( get_permalink( $post_id ) ),
-					wp_get_attachment_image( $post_thumb_id, $post_thumb_size )
+					wp_get_attachment_image( $post_thumb_id, $post_thumb_size ),
+					esc_attr( $attributes['imagePosition'] )
 				);
 			}
             $alignStyle="text-align:".esc_attr( $attributes["blockAlign"] );
 
 			/* Wrap the text content */
-			$post_carousel_markup .= sprintf(
-				'<div class="skt-blocks-block-post-carousel-text-wrap" style="' . safecss_filter_attr( $content_padding_wrapper_style ) . ';'.esc_attr( $alignStyle ).'">'
-			);
-				$post_carousel_markup .= sprintf(
-					'<header class="skt-blocks-block-post-carousel-header" style="'.esc_attr( $alignStyle ).'">'
-				);
+			$post_carousel_markup .= '<div class="skt-blocks-block-post-carousel-text-wrap" style="' . safecss_filter_attr( $content_padding_wrapper_style ) . ';' . esc_attr( $alignStyle ) . '">';
+				$post_carousel_markup .= '<header class="skt-blocks-block-post-carousel-header" style="' . esc_attr( $alignStyle ) . '">';
 
 			/* Get the post title */
 			$title = get_the_title( $post_id );
@@ -523,34 +530,36 @@ $buttonTarget = $attributes['buttonTarget']? "_blank" : null;
 				 * @param $post_title_tag resolved escaping issue at $post_title_tag on line \plugins\skt-blocks\src\blocks\post-carousel\index.php : Line: 522
 				 */
 				$post_carousel_markup .= sprintf(
-					'<%3$s class="skt-blocks-block-post-carousel-title" style="'.esc_attr( $titleSpace ).'"><a href="%1$s" rel="bookmark" style="'.esc_attr( $titleColor ).';">%2$s</a></%3$s>',
+					'<%3$s class="skt-blocks-block-post-carousel-title" style="%4$s"><a href="%1$s" rel="bookmark" style="%5$s;">%2$s</a></%3$s>',
 					esc_url( get_permalink( $post_id ) ),
 					esc_html( $title ),
-					esc_attr( $post_title_tag )
+					esc_attr( $post_title_tag ),
+					esc_attr( $titleSpace ),
+					esc_attr( $titleColor )
 				);
 			}
 
 			if ( isset( $attributes['postType'] ) && 'post' === $attributes['postType'] ) {
 				/* Wrap the byline content */
-				$post_carousel_markup .= sprintf(
-					'<div class="skt-blocks-block-post-carousel-byline" style="'.esc_attr( $dateSpace ).';'.esc_attr( $metaColor ).'">'
-				);
+				$post_carousel_markup .= '<div class="skt-blocks-block-post-carousel-byline" style="' . esc_attr( $dateSpace ) . ';' . esc_attr( $metaColor ) . '">';
 
 				/* Get the post author */
 				if ( isset( $attributes['displayPostAuthor'] ) && $attributes['displayPostAuthor'] ) {
 					$post_carousel_markup .= sprintf(
-						'<div class="skt-blocks-block-post-carousel-author" itemprop="author" itemtype="https://schema.org/Person"><a class="skt-blocks-text-link" href="%2$s" itemprop="url" rel="author" style="'.esc_attr( $metaColor ).';"><span itemprop="name">%1$s</span></a></div>',
+						'<div class="skt-blocks-block-post-carousel-author" itemprop="author" itemtype="https://schema.org/Person"><a class="skt-blocks-text-link" href="%2$s" itemprop="url" rel="author" style="%3$s;"><span itemprop="name">%1$s</span></a></div>',
 						esc_html( get_the_author_meta( 'display_name', get_the_author_meta( 'ID' ) ) ),
-						esc_html( get_author_posts_url( get_the_author_meta( 'ID' ) ) )
+						esc_html( get_author_posts_url( get_the_author_meta( 'ID' ) ) ),
+						esc_attr( $metaColor )
 					);
 				}
 
 				/* Get the post date */
 				if ( isset( $attributes['displayPostDate'] ) && $attributes['displayPostDate'] ) {
 						$post_carousel_markup .= sprintf(
-							'<time datetime="%1$s" class="skt-blocks-block-post-carousel-date" itemprop="datePublished" style="'.esc_attr( $dateColor ).';">%2$s</time>',
+							'<time datetime="%1$s" class="skt-blocks-block-post-carousel-date" itemprop="datePublished" style="%3$s;">%2$s</time>',
 							esc_attr( get_the_date( 'c', $post_id ) ),
-							esc_html( get_the_date( '', $post_id ) )
+							esc_html( get_the_date( '', $post_id ) ),
+							esc_attr( $dateColor )
 						);
 				}
 
@@ -582,9 +591,7 @@ $buttonTarget = $attributes['buttonTarget']? "_blank" : null;
 			);
 
 			/* Wrap the excerpt content */
-			$post_carousel_markup .= sprintf(
-				'<div class="skt-blocks-block-post-carousel-excerpt" style="' . safecss_filter_attr( $excerpt_style ) . ';'.esc_attr( $alignStyle ). ';'.esc_attr( $contentColor ).';'.esc_attr( $excerptSpace ).'">'
-			);
+			$post_carousel_markup .= '<div class="skt-blocks-block-post-carousel-excerpt" style="' . safecss_filter_attr( $excerpt_style ) . ';' . esc_attr( $alignStyle ) . ';' . esc_attr( $contentColor ) . ';' . esc_attr( $excerptSpace ) . '">';
 
 			/* Get the excerpt */
 
@@ -630,10 +637,13 @@ $buttonTarget = $attributes['buttonTarget']? "_blank" : null;
 			 */
 			if ( isset( $attributes['displayPostLink'] ) && $attributes['displayPostLink'] ) {
 				$post_carousel_markup .= sprintf(
-					'<p style="'.esc_attr( $ctaSpace ).'"><a class="skt-blocks-block-post-carousel-more-link skt-blocks-text-link" href="%1$s" target="'.esc_attr( $buttonTarget ).'"rel="bookmark" style="'.esc_attr( $ctaStyles ).'">%2$s <span class="screen-reader-text">%3$s</span></a></p>',
+					'<p style="%4$s"><a class="skt-blocks-block-post-carousel-more-link skt-blocks-text-link" href="%1$s" target="%5$s" rel="bookmark" style="%6$s">%2$s <span class="screen-reader-text">%3$s</span></a></p>',
 					esc_url( get_permalink( $post_id ) ),
 					esc_html( $attributes['readMoreText'] ),
-					esc_html( $title )
+					esc_html( $title ),
+					esc_attr( $ctaSpace ),
+					esc_attr( $buttonTarget ),
+					esc_attr( $ctaStyles )
 				);
 			}
 
@@ -765,15 +775,87 @@ $buttonTarget = $attributes['buttonTarget']? "_blank" : null;
 		 * @param $section_tag resolved escaping issue at $section_tag.
 		 */
 		$block_content = sprintf(
-			'<%1$s class="%2$s" data-carouselid="%7$s">%3$s<div class="%4$s" %6$s>%5$s</div>'.$styles.'</%1$s>',
+			'<%1$s class="%2$s" data-carouselid="%7$s">%3$s<div class="%4$s" %6$s>%5$s</div>%8$s</%1$s>',
 			esc_attr( $section_tag ),
 			esc_attr( $class ),
 			$section_title,
 			esc_attr( $carousel_class ),
 			$post_carousel_markup,
 			'data-slick=' . $settings,
-            esc_attr( $attributes['block_id'] )
+			esc_attr( $attributes['block_id'] ),
+			$styles
 		);
+
+		// --- Responsive (tablet/mobile) spacing + device visibility. Scoped to
+		// this carousel instance and added to the output only, so unset values
+		// inherit desktop via the cascade and no existing markup is affected. ---
+		$skt_pc_scope = '.responsive-post-slick-carousel-' . esc_attr( $attributes['block_id'] );
+		$skt_pc_num   = function ( $k ) use ( $attributes ) {
+			return ( isset( $attributes[ $k ] ) && is_numeric( $attributes[ $k ] ) && '' !== $attributes[ $k ] ) ? floatval( $attributes[ $k ] ) : null;
+		};
+		$skt_pc_build = function ( $suffix, $cp_key ) use ( $skt_pc_num, $skt_pc_scope ) {
+			$c  = '';
+			$cp = $skt_pc_num( $cp_key );
+			if ( null !== $cp ) {
+				$c .= $skt_pc_scope . ' .skt-blocks-block-post-carousel-text-wrap{padding:' . $cp . 'px !important;}';
+			}
+			$rg = $skt_pc_num( 'rowGap' . $suffix );
+			if ( null !== $rg ) {
+				$c .= $skt_pc_scope . ' .slick-slide{margin-bottom:' . $rg . 'px !important;}';
+			}
+			$cg = $skt_pc_num( 'columnGap' . $suffix );
+			if ( null !== $cg ) {
+				$c .= $skt_pc_scope . ' .slick-slide>div:first-child{margin-left:' . ( $cg / 2 ) . 'px !important;margin-right:' . ( $cg / 2 ) . 'px !important;}';
+			}
+			$is = $skt_pc_num( 'imageSpace' . $suffix );
+			$ts = $skt_pc_num( 'titleSpace' . $suffix );
+			if ( null !== $is || null !== $ts ) {
+				$c .= $skt_pc_scope . ' .skt-blocks-block-post-carousel-title{';
+				if ( null !== $is ) {
+					$c .= 'margin-top:' . $is . 'px !important;';
+				}
+				if ( null !== $ts ) {
+					$c .= 'margin-bottom:' . $ts . 'px !important;';
+				}
+				$c .= '}';
+			}
+			$ds = $skt_pc_num( 'dateSpace' . $suffix );
+			if ( null !== $ds ) {
+				$c .= $skt_pc_scope . ' .skt-blocks-block-post-carousel-byline{margin-bottom:' . $ds . 'px !important;}';
+			}
+			$es = $skt_pc_num( 'excerptSpace' . $suffix );
+			if ( null !== $es ) {
+				$c .= $skt_pc_scope . ' .skt-blocks-block-post-carousel-excerpt p{margin-bottom:' . $es . 'px !important;}';
+			}
+			$cs = $skt_pc_num( 'ctaSpace' . $suffix );
+			if ( null !== $cs ) {
+				$c .= $skt_pc_scope . ' .skt-blocks-block-post-carousel-more-link{margin-bottom:' . $cs . 'px !important;}';
+			}
+			return $c;
+		};
+		$skt_pc_tablet = $skt_pc_build( 'Tablet', 'contentPaddingTablet' );
+		$skt_pc_mobile = $skt_pc_build( 'Mobile', 'contentPaddingMobile' );
+
+		$skt_pc_resp = '';
+		if ( '' !== $skt_pc_tablet ) {
+			$skt_pc_resp .= '@media (max-width:976px){' . $skt_pc_tablet . '}';
+		}
+		if ( '' !== $skt_pc_mobile ) {
+			$skt_pc_resp .= '@media (max-width:767px){' . $skt_pc_mobile . '}';
+		}
+		if ( ! empty( $attributes['hideDesktop'] ) ) {
+			$skt_pc_resp .= '@media (min-width:1025px){' . $skt_pc_scope . '{display:none !important;}}';
+		}
+		if ( ! empty( $attributes['hideTablet'] ) ) {
+			$skt_pc_resp .= '@media (min-width:768px) and (max-width:1024px){' . $skt_pc_scope . '{display:none !important;}}';
+		}
+		if ( ! empty( $attributes['hideMobile'] ) ) {
+			$skt_pc_resp .= '@media (max-width:767px){' . $skt_pc_scope . '{display:none !important;}}';
+		}
+		if ( '' !== $skt_pc_resp ) {
+			$block_content .= '<style type="text/css">' . $skt_pc_resp . '</style>';
+		}
+
 		return $block_content;
 	}
 }
@@ -1050,6 +1132,30 @@ function skt_blocks_register_block_core_latest_posts2() {
 					'type'    => 'number',
 					'default'    => 20,
 				),
+				// Responsive (tablet/mobile) spacing. Default unset = fall back to
+				// desktop via the CSS cascade. Content Padding mobile reuses the
+				// existing contentPaddingMobile.
+				'contentPaddingTablet' => array( 'type' => 'number' ),
+				'rowGapTablet'         => array( 'type' => 'number' ),
+				'rowGapMobile'         => array( 'type' => 'number' ),
+				'columnGapTablet'      => array( 'type' => 'number' ),
+				'columnGapMobile'      => array( 'type' => 'number' ),
+				'imageSpaceTablet'     => array( 'type' => 'number' ),
+				'imageSpaceMobile'     => array( 'type' => 'number' ),
+				'titleSpaceTablet'     => array( 'type' => 'number' ),
+				'titleSpaceMobile'     => array( 'type' => 'number' ),
+				'dateSpaceTablet'      => array( 'type' => 'number' ),
+				'dateSpaceMobile'      => array( 'type' => 'number' ),
+				'excerptSpaceTablet'   => array( 'type' => 'number' ),
+				'excerptSpaceMobile'   => array( 'type' => 'number' ),
+				'ctaSpaceTablet'       => array( 'type' => 'number' ),
+				'ctaSpaceMobile'       => array( 'type' => 'number' ),
+				// Visibility.
+				'hideDesktop'          => array( 'type' => 'boolean', 'default' => false ),
+				'hideTablet'           => array( 'type' => 'boolean', 'default' => false ),
+				'hideMobile'           => array( 'type' => 'boolean', 'default' => false ),
+				'hideLoggedIn'         => array( 'type' => 'boolean', 'default' => false ),
+				'hideLoggedOut'        => array( 'type' => 'boolean', 'default' => false ),
                 'titleFontSize'     => array(
 					'type'    => 'number',
                     'default' => 20,

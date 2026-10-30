@@ -87,3 +87,23 @@
   justify-content: flex-end;
   display: flex;
 }
+
+
+// Keep the buttons visible/selectable in the editor even when hidden on the
+// current device. Editor only.
+.editor-styles-wrapper {
+  .skt-blocks-buttons__outer-wrap.skt-hide-desktop,
+  .skt-blocks-buttons__outer-wrap.skt-hide-tablet,
+  .skt-blocks-buttons__outer-wrap.skt-hide-mobile {
+    display: block !important;
+    opacity: 0.55;
+  }
+  .skt-blocks-buttons__outer-wrap.left.skt-hide-desktop,
+  .skt-blocks-buttons__outer-wrap.left.skt-hide-tablet,
+  .skt-blocks-buttons__outer-wrap.left.skt-hide-mobile,
+  .skt-blocks-buttons__outer-wrap.right.skt-hide-desktop,
+  .skt-blocks-buttons__outer-wrap.right.skt-hide-tablet,
+  .skt-blocks-buttons__outer-wrap.right.skt-hide-mobile {
+    display: flex !important;
+  }
+}

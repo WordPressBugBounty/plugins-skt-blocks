@@ -67,3 +67,14 @@
     width: 12px;
   }
 }
+
+// Keep the divider visible/selectable in the editor even when hidden on the
+// current device. Editor only.
+.editor-styles-wrapper {
+  .skt-blocks-block-spacer.skt-hide-desktop,
+  .skt-blocks-block-spacer.skt-hide-tablet,
+  .skt-blocks-block-spacer.skt-hide-mobile {
+    display: block !important;
+    opacity: 0.55;
+  }
+}

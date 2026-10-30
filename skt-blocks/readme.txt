@@ -2,9 +2,9 @@
 Contributors: sonalsinha21
 Tags: gutenberg blocks, page builder, WordPress blocks, blocks, editor
 Requires at least: 5.0
-Tested up to: 6.9
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.6
+Stable tag: 2.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,6 +75,40 @@ e.g.
 6. Post-TimeLine Block
 
 == Changelog ==
+= 2.7 =
+* Added the new Flex Block.
+* Added the Visibility option to all supported blocks.
+* Added responsive Desktop, Tablet, and Mobile controls for spacing, padding, margins, and other supported styling options.
+* Accordion Block: Added responsive Vertical Margin and Horizontal Margin controls, along with the Visibility option.
+* Advanced Heading Block: Added a Thickness (px) and Width control for the Separator, along with the Visibility option.
+* Image Slider Block: Added the Visibility option.
+* Expand/Show More Block: Added responsive Desktop, Tablet, and Mobile spacing controls, along with the Visibility option.
+* Blockquote Block: Added responsive spacing controls for Desktop, Tablet, and Mobile, along with the Visibility option.
+* Card Block: Added Custom Height, Vertical Padding, Horizontal Padding, Vertical Margin, and Horizontal Margin controls for buttons. Added responsive spacing controls and the Visibility option.
+* Pricing Table Block: Added Image Width, Horizontal Padding, Vertical Padding, and Border Width controls. Added responsive Desktop, Tablet, and Mobile spacing controls, improved column layout handling, and added the Visibility option.
+* Pricing List Block: Added the Visibility option, Image Position Width, Separator Width, responsive spacing controls.
+* Video Popup Block: Added the Visibility option.
+* Testimonial Slider Block: Added responsive width controls for Desktop, Tablet, and Mobile, the Visibility option, and responsive spacing and width controls.
+* Info Block: Added the Visibility option.
+* Section Block: Added the Visibility option.
+* Image Boxes Block: Added the Visibility option, responsive padding and spacing controls, and improvements to the backend and frontend display.
+* Call to Action Block: Added the Visibility option and responsive spacing controls. Fixed the Button Shape effect and added responsive Horizontal Padding and Vertical Padding controls in the Border section for Desktop, Tablet, and Mobile.
+* Content Timeline Block: Added the Visibility option, responsive Timeline Item padding controls, and responsive spacing controls for Desktop, Tablet, and Mobile.
+* Google Map Block: Added the Visibility option and responsive Height (px) controls for Desktop, Tablet, and Mobile.
+* Post and Page Grid Block: Added responsive spacing controls, the Visibility option, and a Font Family option.
+* Post Carousel Block: Added responsive spacing controls, the Visibility option, and fixed the Single Post Repeat issue.
+* Advanced Slider Block: Added the Visibility option.
+* Post Timeline Block: Added responsive padding and spacing controls for Desktop, Tablet, and Mobile, along with the Visibility option.
+* Team Block: Added the Visibility option and responsive Image Width controls for Desktop, Tablet, and Mobile. Fixed the Social Icons not displaying in the editor while showing on the frontend.
+* Shape Divider Block: Added the Visibility option, along with responsive Shape Height (px) and Background Height (px) controls for Desktop, Tablet, and Mobile.
+* Divider Block: Added the Visibility option, Vertical Margin, and responsive Divider Height and Divider Width controls for Desktop, Tablet, and Mobile.
+* Testimonial Block: Added the Visibility option, Box Shadow controls (Horizontal, Vertical, Blur, Spread), and Border Width and Border Radius controls, with responsive Desktop, Tablet, and Mobile support.
+* Icon List Block: Added the Visibility option and responsive Desktop, Tablet, and Mobile controls.
+* Multi Buttons Block: Added the Visibility option and responsive Desktop, Tablet, and Mobile controls.
+* Masonry Block: Added the Visibility option and responsive Desktop, Tablet, and Mobile controls.
+* Count Up Block: Added the Visibility option and Spacing controls.
+* Flipblock Block: Added the Visibility option, Image/Icon Margin, Spacing, Border Width, and Border Radius controls, and a Width option for the Separator, with responsive Desktop, Tablet, and Mobile support.
+ 
 = 2.6 =
  * Issue Resolved Review Google API key secret detected in src/utils/build.js#L22 and Compatibility with WordPress 6.9
 

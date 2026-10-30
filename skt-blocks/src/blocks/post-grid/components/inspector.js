@@ -83,6 +83,41 @@ export default class Inspector extends Component {
     // Setup the attributes
     const { attributes, setAttributes, latestPosts } = this.props;
 
+    // One RangeControl with Desktop / Tablet / Mobile tabs. Desktop writes the
+    // base attribute; tablet/mobile write <base>Tablet / <base>Mobile. Unset
+    // tablet/mobile inherit the desktop value (handled in render CSS).
+    const respRange = ( label, base, min, max ) => (
+      <TabPanel
+        className=" responsive-size-type-field-tabs  responsive-size-type-field__common-tabs  responsive-inline-margin"
+        activeClass="active-tab"
+        tabs={ [
+          { name: "desktop", title: <Dashicon icon="desktop" />, className: " responsive-desktop-tab  responsive-responsive-tabs" },
+          { name: "tablet", title: <Dashicon icon="tablet" />, className: " responsive-tablet-tab  responsive-responsive-tabs" },
+          { name: "mobile", title: <Dashicon icon="smartphone" />, className: " responsive-mobile-tab  responsive-responsive-tabs" },
+        ] }
+      >
+        { ( tab ) => {
+          const key =
+            tab.name === "tablet"
+              ? base + "Tablet"
+              : tab.name === "mobile"
+              ? base + "Mobile"
+              : base;
+          return (
+            <RangeControl
+              label={ __( label, "skt-blocks" ) }
+              value={ attributes[ key ] }
+              onChange={ ( value ) => setAttributes( { [ key ]: value } ) }
+              min={ min }
+              max={ max }
+              step={ 1 }
+              allowReset
+            />
+          );
+        } }
+      </TabPanel>
+    );
+
     const { order, orderBy } = attributes;
 
     const { categoriesList } = this.state;
@@ -1349,77 +1384,40 @@ export default class Inspector extends Component {
               return <div>{tabout}</div>;
             }}
           </TabPanel>
-          <RangeControl
-            label={__("Column Gap", "atomic-blocks")}
-            value={attributes.columnGap}
-            onChange={(value) =>
-              this.props.setAttributes({
-                columnGap: value,
-              })
-            }
-            min={0}
-            max={50}
-            step={1}
+          { respRange( "Column Gap", "columnGap", 0, 50 ) }
+          { respRange( "Content Padding", "contentPadding", 0, 100 ) }
+          { respRange( "Title Bottom Spacing", "titleBottomSpacing", 0, 50 ) }
+          { respRange( "Meta Bottom Spacing", "metaBottomSpacing", 0, 50 ) }
+          { respRange( "Read More Top Spacing", "readMoreTopSpacing", 0, 50 ) }
+        </PanelBody>
+        <PanelBody
+          title={__("Visibility", "skt-blocks")}
+          initialOpen={false}
+        >
+          <ToggleControl
+            label={__("Hide on Desktop", "skt-blocks")}
+            checked={!!attributes.hideDesktop}
+            onChange={(value) => setAttributes({ hideDesktop: value })}
           />
-          <RangeControl
-            label={__("Content Padding", "atomic-blocks")}
-            value={attributes.contentPadding}
-            onChange={(value) =>
-              this.props.setAttributes({
-                contentPadding: value,
-              })
-            }
-            min={0}
-            max={100}
-            step={1}
+          <ToggleControl
+            label={__("Hide on Tablet", "skt-blocks")}
+            checked={!!attributes.hideTablet}
+            onChange={(value) => setAttributes({ hideTablet: value })}
           />
-          <RangeControl
-            label={__("Mobile Content Padding", "atomic-blocks")}
-            value={attributes.mobileContentPadding}
-            onChange={(value) =>
-              this.props.setAttributes({
-                mobileContentPadding: value,
-              })
-            }
-            min={0}
-            max={100}
-            step={1}
+          <ToggleControl
+            label={__("Hide on Mobile", "skt-blocks")}
+            checked={!!attributes.hideMobile}
+            onChange={(value) => setAttributes({ hideMobile: value })}
           />
-          <RangeControl
-            label={__("Title Bottom Spacing", "atomic-blocks")}
-            value={attributes.titleBottomSpacing}
-            onChange={(value) =>
-              this.props.setAttributes({
-                titleBottomSpacing: value,
-              })
-            }
-            min={0}
-            max={50}
-            step={1}
+          <ToggleControl
+            label={__("Hide for Logged In Users", "skt-blocks")}
+            checked={!!attributes.hideLoggedIn}
+            onChange={(value) => setAttributes({ hideLoggedIn: value })}
           />
-          <RangeControl
-            label={__("Meta Bottom Spacing", "atomic-blocks")}
-            value={attributes.metaBottomSpacing}
-            onChange={(value) =>
-              this.props.setAttributes({
-                metaBottomSpacing: value,
-              })
-            }
-            min={0}
-            max={50}
-            step={1}
-          />
-          <RangeControl
-            label={__("Read More Top Spacing", "atomic-blocks")}
-            value={attributes.readMoreTopSpacing}
-            onChange={(value) =>
-              this.props.setAttributes({
-                readMoreTopSpacing: value,
-              })
-            }
-            min={0}
-            max={50}
-            step={1}
+          <ToggleControl
+            label={__("Hide for Logged Out Users", "skt-blocks")}
+            checked={!!attributes.hideLoggedOut}
+            onChange={(value) => setAttributes({ hideLoggedOut: value })}
           />
         </PanelBody>
       </InspectorControls>

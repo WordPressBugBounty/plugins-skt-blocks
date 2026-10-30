@@ -25,6 +25,9 @@ export default class Buttons extends Component {
         buttonAlignmentMobile,
         buttons,
         stack,
+        hideDesktop,
+        hideTablet,
+        hideMobile,
       },
       setAttributes,
     } = this.props;
@@ -37,7 +40,12 @@ export default class Buttons extends Component {
           `mobileAlign${buttonAlignmentMobile}`,
           "skt-blocks-block-button",
           "skt-blocks-buttons__outer-wrap",
-          `skt-blocks-buttons-stack-${stack}`
+          `skt-blocks-buttons-stack-${stack}`,
+          {
+            "skt-hide-desktop": hideDesktop,
+            "skt-hide-tablet": hideTablet,
+            "skt-hide-mobile": hideMobile,
+          }
         )}
       >
         {this.props.children}

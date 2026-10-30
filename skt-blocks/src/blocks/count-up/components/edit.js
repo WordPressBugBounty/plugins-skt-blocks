@@ -16,11 +16,13 @@ import generateCSSUnit from "../../../generateCSSUnit";
  */
 const { __, sprintf } = wp.i18n;
 const { Component } = wp.element;
+const { withSelect } = wp.data;
 const { RichText, InnerBlocks, BlockControls, AlignmentToolbar } = wp.editor;
 const { Button, Dashicon, Icon } = wp.components;
 import memoize from "memize";
 import map from "lodash/map";
 import { loadGoogleFont } from "../../../utils/font";
+import { inherited, previewSuffix } from "./responsive-utils";
 
 const getCount = memoize((count) => {
   return times(count, (index) => [
@@ -37,7 +39,7 @@ const getCount = memoize((count) => {
 
 let svg_icons = Object.keys(ResponsiveBlocksIcon);
 
-export default class Edit extends Component {
+class Edit extends Component {
   constructor() {
     super(...arguments);
   }
@@ -80,26 +82,37 @@ export default class Edit extends Component {
         iconsize,
         numColor,
         titleColor,
-        titleSpace,
-        numSpace,
-        contentSpace,
         resshowNum,
         iconStyle,
         iconShapeColor,
         shapeBorderRadius,
         shapePadding,
         shapeBorder,
-        contentSpacing,
-        iconSpacing,
+        hideDesktop,
+        hideTablet,
+        hideMobile,
       },
       setAttributes,
     } = this.props;
+
+    // Live preview: spacing for the editor's current preview device
+    // (Desktop / Tablet / Mobile). Mobile falls back to Tablet, then Desktop.
+    const sfx = previewSuffix(this.props.deviceType);
+    const contentSpacing = inherited(this.props.attributes, "contentSpacing", sfx);
+    const iconSpacing = inherited(this.props.attributes, "iconSpacing", sfx);
+    const titleSpace = inherited(this.props.attributes, "titleSpace", sfx);
+    const numSpace = inherited(this.props.attributes, "numSpace", sfx);
+    const contentSpace = inherited(this.props.attributes, "contentSpace", sfx);
     var data_copy = [...countUp];
 
     setAttributes({ counterId: this.props.clientId });
 
     const classes = classnames("responsive-count", {
       [`has-text-align-${contentAlign}`]: contentAlign,
+      "skt-countup-hide": hideDesktop || hideTablet || hideMobile,
+      "skt-hide-desktop": hideDesktop,
+      "skt-hide-tablet": hideTablet,
+      "skt-hide-mobile": hideMobile,
     });
 
     const formattingControls = ["bold", "italic", "strikethrough"];
@@ -118,45 +131,65 @@ export default class Edit extends Component {
       // Show the block controls on focus
 
       <Inspector {...{ setAttributes, ...this.props }} />,
+      <style key="countup-nolist" dangerouslySetInnerHTML={{ __html: `
+        .responsive-count-item__features,
+        .responsive-count-item__features ul,
+        .responsive-count-item__features li {
+          list-style: none !important;
+          list-style-type: none !important;
+          margin: 0;
+          padding: 0;
+        }
+      ` }} />,
       <Style>
         {`
-		  .skt-blocks-countup-${counterId}.responsive-count__inner .responsive-count-item__features li {
-			  line-height: ${contentLineHeight};
-		  }
-		  .skt-blocks-countup-${counterId}.responsive-count__inner .skt-blocks-count-up__source-wrap.res-countup-icon-design-shaped .skt-blocks-count-up__source-icon {
-			  background-color: ${iconShapeColor};
-			  border-radius: ${generateCSSUnit(shapeBorderRadius, "px")};
-			  padding: ${generateCSSUnit(shapePadding, "px")};
-		  }
-		  .skt-blocks-countup-${counterId}.responsive-count__inner .skt-blocks-count-up__source-wrap.res-countup-icon-design-outline .skt-blocks-count-up__source-icon {
-			  border-color: ${iconShapeColor};
-			  border-radius: ${generateCSSUnit(shapeBorderRadius, "px")};
-			  padding: ${generateCSSUnit(shapePadding, "px")};
-			  border-width: ${generateCSSUnit(shapeBorder, "px")};
-		  }
-		  .skt-blocks-countup-${counterId}.responsive-count__inner .skt-blocks-count-up__source-icon svg{
-		    width: ${iconsize}px;
-		    height: ${iconsize}px;
-		    fill: ${icon_color};
-		  }
-	  `}
+      .skt-blocks-countup-${counterId}.responsive-count__inner .responsive-count-item__features,
+      .skt-blocks-countup-${counterId}.responsive-count__inner .responsive-count-item__features ul,
+      .skt-blocks-countup-${counterId}.responsive-count__inner .responsive-count-item__features li {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .skt-blocks-countup-${counterId}.responsive-count__inner .responsive-count-item__features li {
+        line-height: ${contentLineHeight};
+      }
+      .skt-blocks-countup-${counterId}.responsive-count__inner .skt-blocks-count-up__source-wrap.res-countup-icon-design-shaped .skt-blocks-count-up__source-icon {
+        background-color: ${iconShapeColor};
+        border-radius: ${generateCSSUnit(shapeBorderRadius, "px")};
+        padding: ${generateCSSUnit(shapePadding, "px")};
+      }
+      .skt-blocks-countup-${counterId}.responsive-count__inner .skt-blocks-count-up__source-wrap.res-countup-icon-design-outline .skt-blocks-count-up__source-icon {
+        border-color: ${iconShapeColor};
+        border-radius: ${generateCSSUnit(shapeBorderRadius, "px")};
+        padding: ${generateCSSUnit(shapePadding, "px")};
+        border-width: ${generateCSSUnit(shapeBorder, "px")};
+      }
+      .skt-blocks-countup-${counterId}.responsive-count__inner .skt-blocks-count-up__source-icon svg{
+        width: ${iconsize}px;
+        height: ${iconsize}px;
+        fill: ${icon_color};
+      }
+      .skt-blocks-countup-${counterId}.responsive-count__inner .skt-blocks-count-up__source-wrap:has(> .skt-blocks-count-up__source-icon:empty) {
+        display: none;
+      }
+    `}
       </Style>,
       <Style>
         {`
 @media only screen and (min-width: 976px){
 .skt-blocks-countup-${counterId}.responsive-count__inner .responsive-count-item__title {
-	font-size: ${headingFontSize}px ;
-		}
+  font-size: ${headingFontSize}px ;
+    }
 }
 @media only screen and (max-width: 976px){
 .skt-blocks-countup-${counterId}.responsive-count__inner .responsive-count-item__title {
-	font-size: ${headingFontSizeTablet}px;
-		}
+  font-size: ${headingFontSizeTablet}px;
+    }
 }
 @media only screen and (max-width: 767px){
-	.skt-blocks-countup-${counterId}.responsive-count__inner .responsive-count-item__title {
-	font-size: ${headingFontSizeMobile}px;
-		}
+  .skt-blocks-countup-${counterId}.responsive-count__inner .responsive-count-item__title {
+  font-size: ${headingFontSizeMobile}px;
+    }
 }
 `}
       </Style>,
@@ -178,6 +211,7 @@ export default class Edit extends Component {
           {contentFontFamily && loadGoogleFont(contentFontFamily)}
           {countUp.map((test, index) => (
             <div
+              key={index}
               className={classnames("responsive-count-item")}
               style={{
                 backgroundColor: `${hexToRgba(
@@ -208,6 +242,7 @@ export default class Edit extends Component {
               {resshowTitle && (
                 <RichText
                   tagName="span"
+                  identifier={"countTitle-" + index}
                   className="responsive-count-item__title"
                   value={countUp[index]["title"]}
                   placeholder={countUp[index]["title"]}
@@ -236,6 +271,7 @@ export default class Edit extends Component {
                 <div className="responsive-count-item__price-wrapper">
                   <RichText
                     tagName="div"
+                    identifier={"countAmount-" + index}
                     className="responsive-count-item__amount"
                     style={{
                       color: numColor,
@@ -267,6 +303,7 @@ export default class Edit extends Component {
               {resshowDesc && (
                 <RichText
                   tagName="ul"
+                  identifier={"countFeatures-" + index}
                   multiline="li"
                   className="responsive-count-item__features"
                   value={countUp[index]["features"]}
@@ -291,6 +328,10 @@ export default class Edit extends Component {
                     fontSize: contentFontSize,
                     fontFamily: contentFontFamily,
                     marginBottom: contentSpace,
+                    listStyle: "none",
+                    listStyleType: "none",
+                    marginLeft: 0,
+                    paddingLeft: 0,
                   }}
                   keepPlaceholderOnFocus
                 />
@@ -302,3 +343,20 @@ export default class Edit extends Component {
     ];
   }
 }
+
+// Re-render the editor preview whenever the preview device changes.
+export default withSelect((select) => {
+  let deviceType = "Desktop";
+  try {
+    const editor = select("core/editor");
+    if (editor && editor.getDeviceType) {
+      deviceType = editor.getDeviceType();
+    } else {
+      const editPost = select("core/edit-post");
+      if (editPost && editPost.__experimentalGetPreviewDeviceType) {
+        deviceType = editPost.__experimentalGetPreviewDeviceType();
+      }
+    }
+  } catch (e) {}
+  return { deviceType };
+})(Edit);

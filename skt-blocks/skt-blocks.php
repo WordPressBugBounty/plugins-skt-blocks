@@ -4,22 +4,27 @@
  * Plugin URI:    https://www.sktthemes.org/shop/gutenberg-wordpress-editor-plugin
  * Description:   SKT Blocks for Gutenberg
  * Author:        SKT Themes
+ * Author URI:  https://www.sktthemes.org/
  * Text Domain:   skt-blocks
  * License: 	  GPLv2 or later
  * License URI:   http://www.gnu.org/licenses/gpl-2.0.html 
  * Domain Path:   /languages
- * Version:       2.6
+ * Version:       2.7
  *
  * @package       SKT Blocks
  */
+if ( ! defined( 'ABSPATH' ) ) exit;
 
 define( 'SKT_BLOCKS_URL', trailingslashit( plugin_dir_url( __FILE__ ) ) );
 define( 'SKT_BLOCKS_DIR', trailingslashit( plugin_dir_path( __FILE__ ) ) );
-define( 'SKT_BLOCKS_VER', '2.6' );
+define( 'SKT_BLOCKS_VER', '2.7' );
 define( 'SKT_BLOCKS_BASENAME', plugin_basename( __FILE__ ) );
 
 // Skt Blocks plugin's main file.
 require plugin_dir_path( __FILE__ ) . 'includes/class-skt-blocks.php';
+
+// Isolated bundle for all NEW blocks (own bundle + own enqueues, separate from legacy blocks).
+require plugin_dir_path( __FILE__ ) . 'includes/skt-new-blocks.php';
 
 /**
  * The code that runs during plugin activation.

@@ -29,6 +29,25 @@ export default function save( props ) {
 		test_block,
 		imagePosition,
         imageWidth,
+        imageWidthTablet,
+        imageWidthMobile,
+        rowGapTablet,
+        rowGapMobile,
+        columnGapTablet,
+        columnGapMobile,
+        contentPaddingTablet,
+        contentPaddingMobile,
+        descSpaceTablet,
+        descSpaceMobile,
+        nameSpaceTablet,
+        nameSpaceMobile,
+        imgHrPaddingTablet,
+        imgHrPaddingMobile,
+        imgVrPaddingTablet,
+        imgVrPaddingMobile,
+        hideDesktop,
+        hideTablet,
+        hideMobile,
         arrowDots,
         arrowBorderSize,
         arrowBorderRadius,
@@ -114,6 +133,52 @@ export default function save( props ) {
         }
     ]
 }
+	// Tablet / Mobile image width, only emitted when set, so existing blocks
+	// keep exactly the same markup.
+	const isSetVal = ( v ) => v !== undefined && v !== null && v !== ""
+	const imgSel = `.skt-blocks-block-${block_id} .skt-blocks-tm__image img`
+	const imgResponsiveCss =
+		( isSetVal( imageWidthTablet ) ? `@media (max-width: 1024px){${imgSel}{width:${imageWidthTablet}px !important;max-width:${imageWidthTablet}px !important;}}` : "" ) +
+		( isSetVal( imageWidthMobile ) ? `@media (max-width: 767px){${imgSel}{width:${imageWidthMobile}px !important;max-width:${imageWidthMobile}px !important;}}` : "" )
+
+	// Tablet / Mobile spacing, only emitted when a value is actually set, so
+	// existing blocks keep exactly the same markup (validation-safe). Unset
+	// devices inherit the desktop values via the normal CSS cascade.
+	const spNum = ( v ) => ( typeof v === "number" && ! isNaN( v ) ) ? v : null
+	const spScope = `.skt-blocks-block-${ block_id }`
+	const spRules = ( cg, rg, ihp, ivp, cp, ns, ds ) => {
+		let c = ""
+		if ( cg !== null ) {
+			c += `${spScope} .skt-blocks-testimonial__wrap{padding-left:${ cg / 2 }px !important;padding-right:${ cg / 2 }px !important;}`
+		}
+		if ( rg !== null ) {
+			c += `${spScope} .skt-blocks-testimonial__wrap{margin-bottom:${ rg }px !important;}`
+		}
+		if ( ihp !== null || ivp !== null ) {
+			c += `${spScope} .skt-blocks-testimonial__wrap .skt-blocks-tm__image-content{`
+			if ( ihp !== null ) c += `padding-left:${ ihp }px !important;padding-right:${ ihp }px !important;`
+			if ( ivp !== null ) c += `padding-top:${ ivp }px !important;padding-bottom:${ ivp }px !important;`
+			c += `}`
+		}
+		if ( cp !== null ) c += `${spScope} .skt-blocks-tm__content{padding:${ cp }px !important;}`
+		if ( ns !== null ) c += `${spScope} .skt-blocks-tm__author-name{margin-bottom:${ ns }px !important;}`
+		if ( ds !== null ) c += `${spScope} .skt-blocks-tm__desc{margin-bottom:${ ds }px !important;}`
+		return c
+	}
+	const spTablet = spRules(
+		spNum( columnGapTablet ), spNum( rowGapTablet ), spNum( imgHrPaddingTablet ),
+		spNum( imgVrPaddingTablet ), spNum( contentPaddingTablet ), spNum( nameSpaceTablet ),
+		spNum( descSpaceTablet )
+	)
+	const spMobile = spRules(
+		spNum( columnGapMobile ), spNum( rowGapMobile ), spNum( imgHrPaddingMobile ),
+		spNum( imgVrPaddingMobile ), spNum( contentPaddingMobile ), spNum( nameSpaceMobile ),
+		spNum( descSpaceMobile )
+	)
+	const spacingResponsiveCss =
+		( spTablet ? `@media (max-width: 1024px){${spTablet}}` : "" ) +
+		( spMobile ? `@media (max-width: 767px){${spMobile}}` : "" )
+
 	return (
 		<Fragment>
         <Style>
@@ -134,7 +199,7 @@ export default function save( props ) {
             .skt-blocks-tm__image img{
             width: ${imageWidth}px;
             max-width: ${imageWidth}px;
-            }
+            }${imgResponsiveCss}${spacingResponsiveCss}
             .skt-blocks-testimonial__wrap.skt-blocks-tm__bg-type-color .skt-blocks-tm__content{
             background-color: ${backgroundColor};
             }
@@ -174,7 +239,13 @@ export default function save( props ) {
 			<div className={ classnames(
 				className,
 				"skt-blocks-testomonial__outer-wrap skt-blocks-slick-carousel skt-blocks-tm__arrow-outside",
-				`skt-blocks-block-${block_id}`
+				`skt-blocks-block-${block_id}`,
+				{
+					"skt-slider-hide": hideDesktop || hideTablet || hideMobile,
+					"skt-hide-desktop": hideDesktop,
+					"skt-hide-tablet": hideTablet,
+					"skt-hide-mobile": hideMobile,
+				}
 			) }
 			>
 	{settings}

@@ -10,6 +10,7 @@ import times from "lodash/times";
  */
 const { __, sprintf } = wp.i18n;
 const { Component, Fragment } = wp.element;
+const { withSelect } = wp.data;
 const {
   RichText,
   AlignmentToolbar,
@@ -36,7 +37,7 @@ const TEMPLATE = [
   ],
 ];
 
-export default class Edit extends Component {
+class Edit extends Component {
   constructor() {
     super(...arguments);
     this.onSelectTestImage = this.onSelectTestImage.bind(this);
@@ -155,6 +156,84 @@ export default class Edit extends Component {
     } else if ("right" === align) {
       align = "flex-end";
     }
+
+    // --- Responsive live preview (editor only). Desktop stays inline in the
+    // markup; tablet/mobile follow the editor's preview device via these scoped
+    // overrides, so values show up immediately regardless of canvas width.
+    // Frontend tablet/mobile + visibility come from the PHP render_block filter.
+    // save.js is never touched, so saved content stays validation-safe. ---
+    const a = this.props.attributes;
+    const scopeClass = "skt-pl-" + this.props.clientId;
+    const scope = "." + scopeClass;
+    const num = (k) =>
+      typeof a[k] === "number" && !isNaN(a[k]) ? a[k] : null;
+    const sktRespCSS = (suffix) => {
+      let css = "";
+      const iw = num("imageWidth" + suffix);
+      if (iw !== null) {
+        css += `${scope} .skt-blocks-pricing-list-item-image{width:${iw}px!important;max-width:${iw}px!important;}`;
+      }
+      const sw = num("seperatorWidth" + suffix);
+      if (sw !== null) {
+        css += `${scope} .skt-blocks-pricing-list-item-separator{width:${sw}%!important;}`;
+      }
+      const rg = num("rowGap" + suffix);
+      const cg = num("columnGap" + suffix);
+      if (rg !== null || cg !== null) {
+        css += `${scope} .skt-blocks-pricing-list-item-wrap{`;
+        if (rg !== null) css += `margin-bottom:${rg}px!important;`;
+        if (cg !== null)
+          css += `padding-left:${cg / 2}px!important;padding-right:${cg / 2}px!important;`;
+        css += `}`;
+      }
+      const ts = num("titleSpace" + suffix);
+      if (ts !== null) {
+        css += `${scope} .skt-blocks-pricing-list-item-title{margin-bottom:${ts}px!important;}`;
+      }
+      const tp = num("topPadding" + suffix);
+      const bp = num("bottomPadding" + suffix);
+      const lp = num("leftPadding" + suffix);
+      const rp = num("rightPadding" + suffix);
+      if (tp !== null || bp !== null || lp !== null || rp !== null) {
+        css += `${scope} .skt-blocks-pricing-list-item-content{`;
+        if (tp !== null) css += `padding-top:${tp}px!important;`;
+        if (bp !== null) css += `padding-bottom:${bp}px!important;`;
+        if (lp !== null) css += `padding-left:${lp}px!important;`;
+        if (rp !== null) css += `padding-right:${rp}px!important;`;
+        css += `}`;
+      }
+      return css;
+    };
+    // Editor column layout. The float/width column rules live in the editor
+    // stylesheet, which WP 6.9 does not inject into the editor iframe, so the
+    // items stack. We mirror the column width inline here (part of the block's
+    // own render, which DOES reach the iframe) with the outer wrap as a flex
+    // container, so the editor shows the same N columns as the frontend at any
+    // canvas width. Editor-only; save.js is unchanged.
+    const plCols =
+      columns === 1
+        ? "100%"
+        : columns === 3
+        ? "calc(100% / 3)"
+        : "49%";
+
+    let sktResponsiveStyles = "";
+    if (this.props.deviceType === "Tablet") {
+      sktResponsiveStyles = sktRespCSS("Tablet");
+    } else if (this.props.deviceType === "Mobile") {
+      sktResponsiveStyles = sktRespCSS("Tablet") + sktRespCSS("Mobile");
+    }
+    // Editor visibility preview: hide the block when previewing a device it is
+    // set to hide on, so the effect is visible (switch back to Desktop to edit).
+    if (
+      (this.props.deviceType === "Tablet" && a.hideTablet) ||
+      (this.props.deviceType === "Mobile" && a.hideMobile) ||
+      ((!this.props.deviceType || this.props.deviceType === "Desktop") &&
+        a.hideDesktop)
+    ) {
+      sktResponsiveStyles += `${scope}{display:none!important;}`;
+    }
+
     return [
       // Show the alignment toolbar on focus
       <BlockControls key="controls">
@@ -168,8 +247,13 @@ export default class Edit extends Component {
       <Inspector {...{ setAttributes, ...this.props }} />,
 
       <div
-        className={"skt-blocks-pricing-list-outer-wrap"}
+        className={classnames(
+          "skt-blocks-pricing-list-outer-wrap",
+          scopeClass
+        )}
+        style={{ display: "flex", flexWrap: "wrap" }}
       >
+        {"" !== sktResponsiveStyles && <Style>{sktResponsiveStyles}</Style>}
         {titleFontFamily && loadGoogleFont(titleFontFamily)}
         {descriptionFontFamily && loadGoogleFont(descriptionFontFamily)}
         {priceFontFamily && loadGoogleFont(priceFontFamily)}
@@ -185,6 +269,8 @@ export default class Edit extends Component {
                 marginBottom: rowGap,
                 paddingLeft: columnGap / 2,
                 paddingRight: columnGap / 2,
+                boxSizing: "border-box",
+                width: plCols,
               }}
             >
               <div
@@ -344,3 +430,19 @@ export default class Edit extends Component {
     ];
   }
 }
+
+export default withSelect((select) => {
+  let deviceType = "Desktop";
+  try {
+    const editor = select("core/editor");
+    if (editor && editor.getDeviceType) {
+      deviceType = editor.getDeviceType();
+    } else {
+      const editPost = select("core/edit-post");
+      if (editPost && editPost.__experimentalGetPreviewDeviceType) {
+        deviceType = editPost.__experimentalGetPreviewDeviceType();
+      }
+    }
+  } catch (e) {}
+  return { deviceType };
+})(Edit);

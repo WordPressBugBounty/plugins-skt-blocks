@@ -20,6 +20,8 @@ const {
   BaseControl,
   Button,
   ToggleControl,
+  TabPanel,
+  Dashicon,
 } = wp.components;
 import BoxShadowControl from "../../../utils/components/box-shadow";
 import fontOptions from "../../../utils/googlefonts";
@@ -55,7 +57,14 @@ export default class Inspector extends Component {
       setAttributes({ backgroundImage: null });
       return;
     }
+    if (!MediaUpload) {
+      return;
+      setAttributes( {backgroundImage: !null} );
+    }
+    if ( !media.type || "image" != media.type ) {
+      return
 
+    }
     if (!media.type || "image" != media.type) {
       return;
     }
@@ -295,8 +304,21 @@ export default class Inspector extends Component {
                 {
                   times(incAmount, (n) => {
                     cloneTest_block.push({
-                      title: "Team Title " + newCount,
-                      descriptions: "",
+                      teamName: __("John Doe", "skt-blocks"),
+                      teamDesignation: __("Designation", "skt-blocks"),
+                      teamDescription: __(
+                        "Click here to change this text. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
+                        "skt-blocks"
+                      ),
+                      teamImgURL: "",
+                      teamImgId: "",
+                      twitterUrl: "",
+                      facebookUrl: "",
+                      linkedinUrl: "",
+                      instagramUrl: "",
+                      youtubeUrl: "",
+                      pinterestUrl: "",
+                      emailAddress: "",
                     });
                   });
                 }
@@ -668,18 +690,71 @@ export default class Inspector extends Component {
               { value: "large", label: __("Large") },
             ]}
           />
-          <RangeControl
-            label={__("Image Width", "skt-blocks")}
-            value={imageWidth}
-            onChange={(value) =>
-              this.props.setAttributes({
-                imageWidth: value,
-              })
-            }
-            min={0}
-            max={500}
-            step={10}
-          />
+          <TabPanel
+            className="skt-blocks-size-type-field-tabs skt-blocks-inline-margin"
+            activeClass="active-tab"
+            onSelect={(tabName) => {
+              const deviceType =
+                tabName === "tablet"
+                  ? "Tablet"
+                  : tabName === "mobile"
+                  ? "Mobile"
+                  : "Desktop";
+              const ed = wp.data.dispatch("core/editor");
+              if (ed && typeof ed.setDeviceType === "function") {
+                ed.setDeviceType(deviceType);
+              } else {
+                const ep = wp.data.dispatch("core/edit-post");
+                if (
+                  ep &&
+                  typeof ep.__experimentalSetPreviewDeviceType === "function"
+                ) {
+                  ep.__experimentalSetPreviewDeviceType(deviceType);
+                }
+              }
+            }}
+            tabs={[
+              {
+                name: "desktop",
+                title: <Dashicon icon="desktop" />,
+                className: "skt-blocks-responsive-tabs",
+              },
+              {
+                name: "tablet",
+                title: <Dashicon icon="tablet" />,
+                className: "skt-blocks-responsive-tabs",
+              },
+              {
+                name: "mobile",
+                title: <Dashicon icon="smartphone" />,
+                className: "skt-blocks-responsive-tabs",
+              },
+            ]}
+          >
+            {(tab) => {
+              const suffix =
+                tab.name === "tablet"
+                  ? "Tablet"
+                  : tab.name === "mobile"
+                  ? "Mobile"
+                  : "";
+              return (
+                <RangeControl
+                  label={__("Image Width", "skt-blocks")}
+                  value={this.props.attributes["imageWidth" + suffix]}
+                  onChange={(value) =>
+                    this.props.setAttributes({
+                      ["imageWidth" + suffix]: value,
+                    })
+                  }
+                  min={0}
+                  max={350}
+                  step={10}
+                  allowReset
+                />
+              );
+            }}
+          </TabPanel>
         </PanelBody>
         <PanelBody
           title={__("Typography", "skt-blocks")}
@@ -847,87 +922,95 @@ export default class Inspector extends Component {
           title={__("Spacing", "skt-blocks")}
           initialOpen={false}
         >
-          <RangeControl
-            label={__("Title Bottom Spacing", "skt-blocks")}
-            value={titleSpacing}
-            onChange={(value) =>
-              this.props.setAttributes({
-                titleSpacing: value,
-              })
-            }
-            min={0}
-            max={50}
-            step={1}
-          />
-          <RangeControl
-            label={__(
-              "Designation Bottom Spacing",
-              "skt-blocks"
-            )}
-            value={designationSpacing}
-            onChange={(value) =>
-              this.props.setAttributes({
-                designationSpacing: value,
-              })
-            }
-            min={0}
-            max={50}
-            step={1}
-          />
-          <RangeControl
-            label={__(
-              "Description Bottom Spacing",
-              "skt-blocks"
-            )}
-            value={descriptionSpacing}
-            onChange={(value) =>
-              this.props.setAttributes({
-                descriptionSpacing: value,
-              })
-            }
-            min={0}
-            max={50}
-            step={1}
-          />
-          <RangeControl
-            label={__(
-              "Inter Social Icon Spacing",
-              "skt-blocks"
-            )}
-            value={socialIconSpacing}
-            onChange={(value) =>
-              this.props.setAttributes({
-                socialIconSpacing: value,
-              })
-            }
-            min={0}
-            max={50}
-            step={1}
-          />
-          <RangeControl
-            label={__("Image Margin Top", "skt-blocks")}
-            value={imageMarginTop}
-            onChange={(value) =>
-              this.props.setAttributes({
-                imageMarginTop: value,
-              })
-            }
-            min={0}
-            max={200}
-            step={1}
-          />
-          <RangeControl
-            label={__("Image Margin Bottom", "skt-blocks")}
-            value={imageMarginBottom}
-            onChange={(value) =>
-              this.props.setAttributes({
-                imageMarginBottom: value,
-              })
-            }
-            min={0}
-            max={200}
-            step={1}
-          />
+          <TabPanel
+            className="skt-blocks-size-type-field-tabs skt-blocks-inline-margin"
+            activeClass="active-tab"
+            onSelect={(tabName) => {
+              const deviceType =
+                tabName === "tablet"
+                  ? "Tablet"
+                  : tabName === "mobile"
+                  ? "Mobile"
+                  : "Desktop";
+              const ed = wp.data.dispatch("core/editor");
+              if (ed && typeof ed.setDeviceType === "function") {
+                ed.setDeviceType(deviceType);
+              } else {
+                const ep = wp.data.dispatch("core/edit-post");
+                if (
+                  ep &&
+                  typeof ep.__experimentalSetPreviewDeviceType === "function"
+                ) {
+                  ep.__experimentalSetPreviewDeviceType(deviceType);
+                }
+              }
+            }}
+            tabs={[
+              {
+                name: "desktop",
+                title: <Dashicon icon="desktop" />,
+                className: "skt-blocks-responsive-tabs",
+              },
+              {
+                name: "tablet",
+                title: <Dashicon icon="tablet" />,
+                className: "skt-blocks-responsive-tabs",
+              },
+              {
+                name: "mobile",
+                title: <Dashicon icon="smartphone" />,
+                className: "skt-blocks-responsive-tabs",
+              },
+            ]}
+          >
+            {(tab) => {
+              const suffix =
+                tab.name === "tablet"
+                  ? "Tablet"
+                  : tab.name === "mobile"
+                  ? "Mobile"
+                  : "";
+              const attrs = this.props.attributes;
+              const sa = this.props.setAttributes;
+              const makeControl = (label, key, max) => (
+                <RangeControl
+                  label={__(label, "skt-blocks")}
+                  value={attrs[key + suffix]}
+                  onChange={(value) => sa({ [key + suffix]: value })}
+                  min={0}
+                  max={max}
+                  step={1}
+                  allowReset
+                />
+              );
+              return (
+                <Fragment>
+                  {makeControl("Title Bottom Spacing", "titleSpacing", 50)}
+                  {makeControl(
+                    "Designation Bottom Spacing",
+                    "designationSpacing",
+                    50
+                  )}
+                  {makeControl(
+                    "Description Bottom Spacing",
+                    "descriptionSpacing",
+                    50
+                  )}
+                  {makeControl(
+                    "Inter Social Icon Spacing",
+                    "socialIconSpacing",
+                    50
+                  )}
+                  {makeControl("Image Margin Top", "imageMarginTop", 200)}
+                  {makeControl(
+                    "Image Margin Bottom",
+                    "imageMarginBottom",
+                    200
+                  )}
+                </Fragment>
+              );
+            }}
+          </TabPanel>
         </PanelBody>
         <PanelBody
           title={__("Social", "skt-blocks")}
@@ -1048,6 +1131,46 @@ export default class Inspector extends Component {
             },
           ]}
         ></PanelColorSettings>
+        <PanelBody
+          title={__("Visibility", "skt-blocks")}
+          initialOpen={false}
+        >
+          <ToggleControl
+            label={__("Hide on Desktop", "skt-blocks")}
+            checked={this.props.attributes.hideDesktop}
+            onChange={(value) =>
+              this.props.setAttributes({ hideDesktop: value })
+            }
+          />
+          <ToggleControl
+            label={__("Hide on Tablet", "skt-blocks")}
+            checked={this.props.attributes.hideTablet}
+            onChange={(value) =>
+              this.props.setAttributes({ hideTablet: value })
+            }
+          />
+          <ToggleControl
+            label={__("Hide on Mobile", "skt-blocks")}
+            checked={this.props.attributes.hideMobile}
+            onChange={(value) =>
+              this.props.setAttributes({ hideMobile: value })
+            }
+          />
+          <ToggleControl
+            label={__("Hide from Logged-in Users", "skt-blocks")}
+            checked={this.props.attributes.hideLoggedIn}
+            onChange={(value) =>
+              this.props.setAttributes({ hideLoggedIn: value })
+            }
+          />
+          <ToggleControl
+            label={__("Hide from Logged-out Users", "skt-blocks")}
+            checked={this.props.attributes.hideLoggedOut}
+            onChange={(value) =>
+              this.props.setAttributes({ hideLoggedOut: value })
+            }
+          />
+        </PanelBody>
       </InspectorControls>
     );
   }

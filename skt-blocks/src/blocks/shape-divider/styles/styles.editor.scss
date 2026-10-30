@@ -33,8 +33,8 @@
     width: 100%;
 
     &::after {
-      background: theme(primary);
-      border: 2px solid $white;
+      background: var(--wp-admin-theme-color, #007cba);
+      border: 2px solid #fff;
       border-radius: 50%;
       bottom: 4px;
       content: "";
@@ -63,7 +63,7 @@
 
   .wp-block-skt-blocks-shape-divider__svg-wrapper.is-resizing::after,
   .wp-block-skt-blocks-shape-divider__alt-wrapper.is-resizing::after {
-    background: theme(primary);
+    background: var(--wp-admin-theme-color, #007cba);
     opacity: 1;
   }
 
@@ -119,5 +119,16 @@
         margin-top: -0.075em;
       }
     }
+  }
+}
+
+// Keep the divider visible/selectable in the editor even when it is hidden on
+// the current device. Scoped to the editor only.
+.editor-styles-wrapper {
+  .wp-block-skt-blocks-shape-divider.skt-hide-desktop,
+  .wp-block-skt-blocks-shape-divider.skt-hide-tablet,
+  .wp-block-skt-blocks-shape-divider.skt-hide-mobile {
+    display: flex !important;
+    opacity: 0.55;
   }
 }

@@ -78,3 +78,49 @@
     }
   }
 }
+
+
+// Responsive visibility (frontend). Breakpoints: mobile <=767, tablet 768-1024,
+// desktop >=1025. Neutralised in the editor (see styles.editor.scss).
+@media (max-width: 767px) {
+  .wp-block-skt-blocks-shape-divider.skt-hide-mobile {
+    display: none !important;
+  }
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+  .wp-block-skt-blocks-shape-divider.skt-hide-tablet {
+    display: none !important;
+  }
+}
+@media (min-width: 1025px) {
+  .wp-block-skt-blocks-shape-divider.skt-hide-desktop {
+    display: none !important;
+  }
+}
+
+// Responsive heights (Tablet <=1024px, Mobile <=767px). Values come from the
+// CSS variables set on the block; Mobile falls back to Tablet, then Desktop.
+@media (max-width: 1024px) {
+  .wp-block-skt-blocks-shape-divider.has-shape-height-tablet
+    .wp-block-skt-blocks-shape-divider__svg-wrapper {
+    min-height: var(--skt-sd-shape-tablet) !important;
+    height: var(--skt-sd-shape-tablet) !important;
+  }
+  .wp-block-skt-blocks-shape-divider.has-bg-height-tablet
+    .wp-block-skt-blocks-shape-divider__alt-wrapper {
+    min-height: var(--skt-sd-bg-tablet) !important;
+    height: var(--skt-sd-bg-tablet) !important;
+  }
+}
+@media (max-width: 767px) {
+  .wp-block-skt-blocks-shape-divider.has-shape-height-mobile
+    .wp-block-skt-blocks-shape-divider__svg-wrapper {
+    min-height: var(--skt-sd-shape-mobile) !important;
+    height: var(--skt-sd-shape-mobile) !important;
+  }
+  .wp-block-skt-blocks-shape-divider.has-bg-height-mobile
+    .wp-block-skt-blocks-shape-divider__alt-wrapper {
+    min-height: var(--skt-sd-bg-mobile) !important;
+    height: var(--skt-sd-bg-mobile) !important;
+  }
+}

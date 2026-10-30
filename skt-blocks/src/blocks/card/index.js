@@ -336,6 +336,104 @@ registerBlockType("skt-blocks/card", {
       type: "number",
       default: 0,
     },
+    imageheightTablet: {
+      type: "number",
+    },
+    imageheightMobile: {
+      type: "number",
+    },
+    vPaddingTablet: {
+      type: "number",
+    },
+    vPaddingMobile: {
+      type: "number",
+    },
+    hPaddingTablet: {
+      type: "number",
+    },
+    hPaddingMobile: {
+      type: "number",
+    },
+    vMarginTablet: {
+      type: "number",
+    },
+    vMarginMobile: {
+      type: "number",
+    },
+    hMarginTablet: {
+      type: "number",
+    },
+    hMarginMobile: {
+      type: "number",
+    },
+    titleSpaceTablet: {
+      type: "number",
+    },
+    titleSpaceMobile: {
+      type: "number",
+    },
+    subtitleSpaceTablet: {
+      type: "number",
+    },
+    subtitleSpaceMobile: {
+      type: "number",
+    },
+    contenttopSpaceTablet: {
+      type: "number",
+    },
+    contenttopSpaceMobile: {
+      type: "number",
+    },
+    contentSpaceTablet: {
+      type: "number",
+    },
+    contentSpaceMobile: {
+      type: "number",
+    },
+    blockmarginTablet: {
+      type: "number",
+    },
+    blockmarginMobile: {
+      type: "number",
+    },
+    blockbotmarginTablet: {
+      type: "number",
+    },
+    blockbotmarginMobile: {
+      type: "number",
+    },
+    blockleftmarginTablet: {
+      type: "number",
+    },
+    blockleftmarginMobile: {
+      type: "number",
+    },
+    blockrightmarginTablet: {
+      type: "number",
+    },
+    blockrightmarginMobile: {
+      type: "number",
+    },
+    hideDesktop: {
+      type: "boolean",
+      default: false,
+    },
+    hideTablet: {
+      type: "boolean",
+      default: false,
+    },
+    hideMobile: {
+      type: "boolean",
+      default: false,
+    },
+    hideLoggedIn: {
+      type: "boolean",
+      default: false,
+    },
+    hideLoggedOut: {
+      type: "boolean",
+      default: false,
+    },
     contenttopSpace: {
       type: "number",
       default: 16,

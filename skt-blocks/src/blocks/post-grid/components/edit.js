@@ -10,6 +10,7 @@ import Inspector from "./inspector";
 import PostGridImage from "./image";
 import Style from "style-it";
 import generateCSSUnit from "../../../generateCSSUnit";
+import { loadGoogleFont } from "../../../utils/font";
 
 const { compose } = wp.compose;
 
@@ -42,7 +43,6 @@ class LatestPostsBlock extends Component {
   }
   onSelectTaxonomyType(value) {
     const { setAttributes } = this.props;
-    alert(this.props);
 
     setAttributes({ taxonomyType: value });
     setAttributes({ categories: "" });
@@ -57,6 +57,7 @@ class LatestPostsBlock extends Component {
       attributes,
       setAttributes,
       latestPosts,
+      hasResolved,
       taxonomyList,
       categoriesList,
     } = this.props;
@@ -81,9 +82,97 @@ class LatestPostsBlock extends Component {
     const isCourse = "course" === attributes.postType;
     const isLesson = "lesson" === attributes.postType;
 
+    // Build the Query panel (Content Type / Taxonomy / Category controls)
+    // up front, before the no-posts early return, so it can be shown in
+    // BOTH the "no posts found" placeholder state and the normal grid
+    // state below. Previously this panel was only built after the
+    // early return, so switching Content Type to a type with no posts
+    // (course/lesson) made the Query panel — including the Content Type
+    // dropdown itself — disappear, leaving no way to switch back.
+    let taxonomyListOptions = [{ value: "", label: __("Select Taxonomy") }];
+
+    let categoryListOptions = [{ value: "", label: __("All") }];
+
+    if ("" != taxonomyList) {
+      Object.keys(taxonomyList).map((item, thisIndex) => {
+        return taxonomyListOptions.push({
+          value: taxonomyList[item]["name"],
+          label: taxonomyList[item]["label"],
+        });
+      });
+    }
+
+    if ("" != categoriesList) {
+      Object.keys(categoriesList).map((item, thisIndex) => {
+        return categoryListOptions.push({
+          value: categoriesList[item]["id"],
+          label: categoriesList[item]["name"],
+        });
+      });
+    }
+    // Post type options
+    const postTypeOptions = [
+      { value: "post", label: __("Post", "skt-blocks") },
+      { value: "page", label: __("Page", "skt-blocks") },
+      { value: "course", label: __("Courses", "skt-blocks") },
+      { value: "lesson", label: __("Lessons", "skt-blocks") },
+    ];
+
+    const queryInspectorControls = (
+      <InspectorControls>
+        <PanelBody title={__("Query")} initialOpen={true}>
+          <p>{__("Text Alignment", "skt-blocks")}</p>
+          <AlignmentToolbar
+            value={attributes.textAlignment}
+            onChange={(value) =>
+              setAttributes({
+                textAlignment: value,
+              })
+            }
+            controls={["left", "center", "right"]}
+            isCollapsed={false}
+          />
+          <SelectControl
+            label={__("Content Type", "skt-blocks")}
+            options={postTypeOptions}
+            value={attributes.postType}
+            onChange={(value) =>
+              this.props.setAttributes({ postType: value })
+            }
+          />
+          {taxonomyList &&
+            Object.keys(taxonomyList).length > 0 && (
+              <SelectControl
+                label={__("Taxonomy")}
+                value={attributes.taxonomyType}
+                onChange={(value) => this.onSelectTaxonomyType(value)}
+                options={taxonomyListOptions}
+              />
+            )}
+          {categoriesList &&
+            categoriesList.length > 0 &&
+            taxonomyList[attributes.taxonomyType] && (
+              <Fragment>
+                <SelectControl
+                  label={
+                    taxonomyList[attributes.taxonomyType]["label"]
+                  }
+                  value={attributes.categories}
+                  onChange={(value) =>
+                    setAttributes({ categories: value })
+                  }
+                  options={categoryListOptions}
+                />
+              </Fragment>
+            )}
+        </PanelBody>
+      </InspectorControls>
+    );
+
     if (!hasPosts) {
       return (
         <Fragment>
+          {queryInspectorControls}
           <Inspector {...{ setAttributes, ...this.props }} />
           <Placeholder
             icon="admin-post"
@@ -92,7 +181,7 @@ class LatestPostsBlock extends Component {
               "skt-blocks"
             )}
           >
-            {!Array.isArray(latestPosts) ? (
+            {!hasResolved ? (
               <Spinner />
             ) : (
               __("No posts found.", "skt-blocks")
@@ -137,78 +226,39 @@ class LatestPostsBlock extends Component {
     // Get the post title tag
     const PostTag = attributes.postTitleTag ? attributes.postTitleTag : "h3";
 
-    let taxonomyListOptions = [{ value: "", label: __("Select Taxonomy") }];
-
-    let categoryListOptions = [{ value: "", label: __("All") }];
-
-    if ("" != taxonomyList) {
-      Object.keys(taxonomyList).map((item, thisIndex) => {
-        return taxonomyListOptions.push({
-          value: taxonomyList[item]["name"],
-          label: taxonomyList[item]["label"],
-        });
-      });
-    }
-
-    if ("" != categoriesList) {
-      Object.keys(categoriesList).map((item, thisIndex) => {
-        return categoryListOptions.push({
-          value: categoriesList[item]["id"],
-          label: categoriesList[item]["name"],
-        });
-      });
-    }
-    // Post type options
-    const postTypeOptions = [
-      { value: "post", label: __("Post", "skt-blocks") },
-      { value: "page", label: __("Page", "skt-blocks") },
-      { value: "course", label: __("Courses", "skt-blocks") },
-      { value: "lesson", label: __("Lessons", "skt-blocks") },
-    ];
+    // Editor live preview for responsive (tablet/mobile) spacing. Desktop stays
+    // inline on the items; tablet/mobile are emitted here into the in-tree
+    // <Style> (which reaches the editor iframe) as media queries. When the user
+    // switches the editor's device preview, WP resizes the canvas and the right
+    // query fires. Unset values inherit desktop via the cascade. Mirrors index.php.
+    const pgScope = `.block-id-${attributes.postGridBlockId}.skt-blocks-block-post-grid`;
+    const pgNum = ( v ) => ( typeof v === "number" && !isNaN( v ) ) ? v : null;
+    const pgRules = ( suffix, cpKey ) => {
+      let c = "";
+      const cg = pgNum( attributes[ "columnGap" + suffix ] );
+      if ( cg !== null ) c += `${pgScope} .skt-blocks-post-grid-item{margin-left:${cg / 2}px !important;margin-right:${cg / 2}px !important;}`;
+      const cp = pgNum( attributes[ cpKey ] );
+      if ( cp !== null ) {
+        c += `${pgScope} .skt-blocks-post-grid-items article{padding:${cp}px !important;}`;
+        c += `${pgScope} .skt-blocks-block-post-grid-text{padding:${cp}px !important;}`;
+      }
+      const tb = pgNum( attributes[ "titleBottomSpacing" + suffix ] );
+      if ( tb !== null ) c += `${pgScope} header .skt-blocks-block-post-grid-title{margin-bottom:${tb}px !important;}`;
+      const mb = pgNum( attributes[ "metaBottomSpacing" + suffix ] );
+      if ( mb !== null ) c += `${pgScope} .skt-blocks-block-post-grid-byline{margin-bottom:${mb}px !important;}`;
+      const rm = pgNum( attributes[ "readMoreTopSpacing" + suffix ] );
+      if ( rm !== null ) c += `${pgScope} .skt-blocks-block-post-grid-text .skt-blocks-block-post-grid-excerpt a{margin-top:${rm}px !important;}`;
+      return c;
+    };
+    const pgTablet = pgRules( "Tablet", "contentPaddingTablet" );
+    const pgMobile = pgRules( "Mobile", "contentPaddingMobile" );
+    let pgRespCss = "";
+    if ( pgTablet ) pgRespCss += `@media (max-width:976px){${pgTablet}}`;
+    if ( pgMobile ) pgRespCss += `@media (max-width:767px){${pgMobile}}`;
 
     return (
       <Fragment>
-        <InspectorControls>
-          <PanelBody title={__("Query")} initialOpen={true}>
-            <p>{__("Text Alignment", "skt-blocks")}</p>
-            <AlignmentToolbar
-              value={attributes.textAlignment}
-              onChange={(value) =>
-                setAttributes({
-                  textAlignment: value,
-                })
-              }
-              controls={["left", "center", "right"]}
-              isCollapsed={false}
-            />
-            <SelectControl
-              label={__("Content Type", "skt-blocks")}
-              options={postTypeOptions}
-              value={attributes.postType}
-              onChange={(value) =>
-                this.props.setAttributes({ postType: value })
-              }
-            />
-            {"" != taxonomyList && (
-              <SelectControl
-                label={__("Taxonomy")}
-                value={attributes.taxonomyType}
-                onChange={(value) => this.onSelectTaxonomyType(value)}
-                options={taxonomyListOptions}
-              />
-            )}
-            {"" != categoriesList && (
-              <Fragment>
-                <SelectControl
-                  label={taxonomyList[attributes.taxonomyType]["label"]}
-                  value={attributes.categories}
-                  onChange={(value) => setAttributes({ categories: value })}
-                  options={categoryListOptions}
-                />
-              </Fragment>
-            )}
-          </PanelBody>
-        </InspectorControls>
+        {queryInspectorControls}
         <Inspector {...{ setAttributes, ...this.props }} />
         <BlockControls>
           <BlockAlignmentToolbar
@@ -230,30 +280,30 @@ class LatestPostsBlock extends Component {
           box-shadow: ${attributes.hoverboxShadowHOffset}px ${attributes.hoverboxShadowVOffset}px ${attributes.hoverboxShadowBlur}px ${attributes.hoverboxShadowSpread}px ${attributes.hoverboxShadowColor} ${hoverboxShadowPositionCSS};
           }
           .block-id-${attributes.postGridBlockId}.skt-blocks-block-post-grid .skt-blocks-block-post-grid-image img {
-	border-radius: ${attributes.imageBorderRadius}px !important;
-		}
+  border-radius: ${attributes.imageBorderRadius}px !important;
+    }
 @media only screen and (min-width: 976px){
 .block-id-${attributes.postGridBlockId}.skt-blocks-block-post-grid .skt-blocks-block-post-grid-title {
-	font-size: ${attributes.titleFontSize}px !important;
-		}
+  font-size: ${attributes.titleFontSize}px !important;
+    }
 }
 @media only screen and (max-width: 976px){
 .block-id-${attributes.postGridBlockId}.skt-blocks-block-post-grid .skt-blocks-block-post-grid-title {
-	font-size: ${attributes.titleFontSizeTablet}px;
-		}
+  font-size: ${attributes.titleFontSizeTablet}px;
+    }
 }
 @media only screen and (max-width: 767px){
-	.block-id-${attributes.postGridBlockId}.skt-blocks-block-post-grid .skt-blocks-block-post-grid-title {
-	font-size: ${attributes.titleFontSizeMobile}px;
-		}
-		}
-		.block-id-${attributes.postGridBlockId}.skt-blocks-block-post-grid .skt-blocks-block-post-grid-title a {
+  .block-id-${attributes.postGridBlockId}.skt-blocks-block-post-grid .skt-blocks-block-post-grid-title {
+  font-size: ${attributes.titleFontSizeMobile}px;
+    }
+    }
+    .block-id-${attributes.postGridBlockId}.skt-blocks-block-post-grid .skt-blocks-block-post-grid-title a {
             color: ${attributes.titleColor};
         }
         .block-id-${attributes.postGridBlockId}.skt-blocks-block-post-grid .skt-blocks-block-post-grid-title a:hover {
             color: ${attributes.titleHoverColor};
         }
-
+${pgRespCss}
 `}
         </Style>
         {attributes.stackonMobile == false && (
@@ -264,8 +314,8 @@ class LatestPostsBlock extends Component {
         grid-template-columns: 1fr 1fr;
         }
       }
-		  
-	  `}
+      
+    `}
           </Style>
         )}
         <SectionTag
@@ -275,6 +325,12 @@ class LatestPostsBlock extends Component {
             "skt-blocks-block-post-grid"
           )}
         >
+          {/* Load the chosen Google Fonts inside the editor iframe. Rendering
+              the <link> here (not just calling loadGoogleFont in onChange) makes
+              every font change show reliably, not only the first one. */}
+          {attributes.titleFontFamily && loadGoogleFont(attributes.titleFontFamily)}
+          {attributes.metaFontFamily && loadGoogleFont(attributes.metaFontFamily)}
+          {attributes.excerptFontFamily && loadGoogleFont(attributes.excerptFontFamily)}
           {attributes.displaySectionTitle && attributes.sectionTitle && (
             <SectionTitleTag className="skt-blocks-post-grid-section-title">
               {attributes.sectionTitle}
@@ -634,13 +690,24 @@ export default compose([
       latestPostsQuery["exclude"] = select("core/editor").getCurrentPostId();
     }
 
-    latestPostsQuery[rest_base] = categories;
+    // Only add a taxonomy filter when rest_base and a term are set (see the
+    // Post Timeline block for the same fix): an empty rest_base added an
+    // invalid empty-key query param that stopped posts from ever loading.
+    if (rest_base && categories) {
+      latestPostsQuery[rest_base] = categories;
+    }
+
+    const latestPostsQueryArgs = [
+      "postType",
+      props.attributes.postType,
+      latestPostsQuery,
+    ];
 
     return {
-      latestPosts: getEntityRecords(
-        "postType",
-        props.attributes.postType,
-        latestPostsQuery
+      latestPosts: getEntityRecords(...latestPostsQueryArgs),
+      hasResolved: select("core").hasFinishedResolution(
+        "getEntityRecords",
+        latestPostsQueryArgs
       ),
       categoriesList: categoriesList,
       taxonomyList:
@@ -649,7 +716,10 @@ export default compose([
   }),
 ])(LatestPostsBlock);
 
+
+
 // Truncate excerpt
 function truncate(str, no_words) {
   return str.split(" ").splice(0, no_words).join(" ");
 }
+

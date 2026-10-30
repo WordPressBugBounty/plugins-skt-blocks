@@ -12,7 +12,8 @@ import { sprintf } from "@wordpress/i18n";
 /**
  * Internal dependencies
  */
-import { appendImportant, hexToRgba } from "..";
+import appendImportant from "../../../divider/components/appendImportant";
+import { hexToRgba } from "../../../../utils/index.js";
 
 const createBackgroundStyles = (
   attrNameTemplate = "%s",

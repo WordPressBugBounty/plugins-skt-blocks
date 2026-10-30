@@ -1,5 +1,5 @@
 <?php
-
+if ( ! defined( 'ABSPATH' ) ) exit;
 function skt_blocks_accordion_add_frontend_assets() {
 	if ( has_block( 'skt-blocks/accordion' ) ) {
 		wp_enqueue_script(

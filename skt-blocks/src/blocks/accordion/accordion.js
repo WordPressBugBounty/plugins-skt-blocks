@@ -32,6 +32,7 @@ function slideDown(target, duration) {
   target.style.display = display;
   var height = target.offsetHeight;
   target.style.overflow = "hidden";
+  target.style.overflow = "hidden";
   target.style.height = 0;
   target.style.paddingTop = 0;
   target.style.paddingBottom = 0;
@@ -53,7 +54,7 @@ function slideDown(target, duration) {
     target.style.removeProperty("transition-property");
   }, duration);
 }
-
+/*SlideToggle change the target and duration values*/
 function slideToggle(target, duration) {
   if (window.getComputedStyle(target).display === "none") {
     return slideDown(target, duration);
@@ -185,7 +186,64 @@ window.addEventListener("load", function () {
       });
     }
   }
+
+  // Grid layout: make each item independently collapsible (open/close on
+  // click). No "close others" behaviour. Items start open; a small +/-
+  // indicator is injected per title so it reads as clickable. Front end only.
+  var gridElements = document.getElementsByClassName(
+    "skt-blocks-accordion-layout-grid"
+  );
+  for (var gridItem = 0; gridItem < gridElements.length; gridItem++) {
+    var gridButtons = gridElements[gridItem].querySelectorAll(
+      ".skt-blocks-accordion-titles-button"
+    );
+    for (var gBtn = 0; gBtn < gridButtons.length; gBtn++) {
+      var gItemEl = gridButtons[gBtn].parentElement;
+      gItemEl.classList.add("skt-blocks-accordion-item-active");
+      gItemEl.setAttribute("aria-expanded", true);
+      gridButtons[gBtn].style.cursor = "pointer";
+
+      if (
+        !gridButtons[gBtn].querySelector(".skt-blocks-grid-toggle-indicator")
+      ) {
+        var indicator = document.createElement("span");
+        indicator.className = "skt-blocks-grid-toggle-indicator";
+        indicator.textContent = "−"; // minus (open)
+        indicator.style.marginLeft = "10px";
+        indicator.style.fontSize = "20px";
+        indicator.style.lineHeight = "1";
+        indicator.style.flexShrink = "0";
+        gridButtons[gBtn].appendChild(indicator);
+      }
+
+      gridButtons[gBtn].addEventListener("click", gridAccordionClick);
+      gridButtons[gBtn].addEventListener("keypress", gridAccordionClick);
+    }
+  }
 });
+
+function gridAccordionClick(e) {
+  e.preventDefault();
+  var accordionItem = this.parentElement;
+  var content = accordionItem.getElementsByClassName(
+    "skt-blocks-accordion-content"
+  )[0];
+  var indicator = this.querySelector(".skt-blocks-grid-toggle-indicator");
+
+  if (
+    accordionItem.classList.contains("skt-blocks-accordion-item-active")
+  ) {
+    accordionItem.classList.remove("skt-blocks-accordion-item-active");
+    accordionItem.setAttribute("aria-expanded", false);
+    if (indicator) indicator.textContent = "+"; // plus (closed)
+    if (content) slideUp(content, 400);
+  } else {
+    accordionItem.classList.add("skt-blocks-accordion-item-active");
+    accordionItem.setAttribute("aria-expanded", true);
+    if (indicator) indicator.textContent = "−"; // minus (open)
+    if (content) slideDown(content, 400);
+  }
+}
 
 function accordionClick(e, accordionItem, titleButtons) {
   e.preventDefault();

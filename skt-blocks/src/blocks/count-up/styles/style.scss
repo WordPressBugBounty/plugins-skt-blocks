@@ -152,7 +152,68 @@
   align-items: center;
 }
 
+// Hide the icon shape/background when no icon is selected for a box
+// (empty icon -> empty .source-icon). No markup change, so no re-save needed.
+.skt-blocks-count-up__source-wrap:has(> .skt-blocks-count-up__source-icon:empty) {
+  display: none;
+}
+
 .skt-blocks-count-up__source-wrap.res-countup-icon-design-outline
   .skt-blocks-count-up__source-icon {
   border: 2px solid;
+}
+
+
+// Responsive visibility (Desktop >=1025, Tablet 768-1024, Mobile <=767).
+@media (max-width: 767px) {
+  .skt-countup-hide.skt-hide-mobile {
+    display: none !important;
+  }
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+  .skt-countup-hide.skt-hide-tablet {
+    display: none !important;
+  }
+}
+@media (min-width: 1025px) {
+  .skt-countup-hide.skt-hide-desktop {
+    display: none !important;
+  }
+}
+
+// Responsive spacing (Tablet <=1024px, Mobile <=767px). Values come from CSS
+// variables on the block. Mobile falls back to Tablet, then Desktop.
+@media (max-width: 1024px) {
+  .has-cu-pad-tablet {
+    padding: var(--cu-pad-tablet) !important;
+  }
+  .has-cu-icon-tablet .skt-blocks-count-up__source-wrap {
+    margin-bottom: var(--cu-icon-tablet) !important;
+  }
+  .has-cu-title-tablet .responsive-count-item__title {
+    margin-bottom: var(--cu-title-tablet) !important;
+  }
+  .has-cu-num-tablet .responsive-count-item__amount {
+    margin-bottom: var(--cu-num-tablet) !important;
+  }
+  .has-cu-desc-tablet .responsive-count-item__features {
+    margin-bottom: var(--cu-desc-tablet) !important;
+  }
+}
+@media (max-width: 767px) {
+  .has-cu-pad-mobile {
+    padding: var(--cu-pad-mobile) !important;
+  }
+  .has-cu-icon-mobile .skt-blocks-count-up__source-wrap {
+    margin-bottom: var(--cu-icon-mobile) !important;
+  }
+  .has-cu-title-mobile .responsive-count-item__title {
+    margin-bottom: var(--cu-title-mobile) !important;
+  }
+  .has-cu-num-mobile .responsive-count-item__amount {
+    margin-bottom: var(--cu-num-mobile) !important;
+  }
+  .has-cu-desc-mobile .responsive-count-item__features {
+    margin-bottom: var(--cu-desc-mobile) !important;
+  }
 }

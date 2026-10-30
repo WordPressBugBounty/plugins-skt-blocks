@@ -499,6 +499,134 @@ registerBlockType("skt-blocks/pricing-table", {
     imageWidth: {
       type: "number",
     },
+    imageWidthTablet: {
+      type: "number",
+    },
+    imageWidthMobile: {
+      type: "number",
+    },
+    ctaHpaddingTablet: {
+      type: "number",
+    },
+    ctaHpaddingMobile: {
+      type: "number",
+    },
+    ctaVpaddingTablet: {
+      type: "number",
+    },
+    ctaVpaddingMobile: {
+      type: "number",
+    },
+    ctaBorderWidthTablet: {
+      type: "number",
+    },
+    ctaBorderWidthMobile: {
+      type: "number",
+    },
+    blockBorderWidthTablet: {
+      type: "number",
+    },
+    blockBorderWidthMobile: {
+      type: "number",
+    },
+    blockTopPaddingTablet: {
+      type: "number",
+    },
+    blockTopPaddingMobile: {
+      type: "number",
+    },
+    blockBottomPaddingTablet: {
+      type: "number",
+    },
+    blockBottomPaddingMobile: {
+      type: "number",
+    },
+    blockLeftPaddingTablet: {
+      type: "number",
+    },
+    blockLeftPaddingMobile: {
+      type: "number",
+    },
+    blockRightPaddingTablet: {
+      type: "number",
+    },
+    blockRightPaddingMobile: {
+      type: "number",
+    },
+    columnTopPaddingTablet: {
+      type: "number",
+    },
+    columnTopPaddingMobile: {
+      type: "number",
+    },
+    columnBottomPaddingTablet: {
+      type: "number",
+    },
+    columnBottomPaddingMobile: {
+      type: "number",
+    },
+    columnLeftPaddingTablet: {
+      type: "number",
+    },
+    columnLeftPaddingMobile: {
+      type: "number",
+    },
+    columnRightPaddingTablet: {
+      type: "number",
+    },
+    columnRightPaddingMobile: {
+      type: "number",
+    },
+    titleSpaceTablet: {
+      type: "number",
+    },
+    titleSpaceMobile: {
+      type: "number",
+    },
+    priceSpaceTablet: {
+      type: "number",
+    },
+    priceSpaceMobile: {
+      type: "number",
+    },
+    subpriceSpaceTablet: {
+      type: "number",
+    },
+    subpriceSpaceMobile: {
+      type: "number",
+    },
+    featuresSpaceTablet: {
+      type: "number",
+    },
+    featuresSpaceMobile: {
+      type: "number",
+    },
+    buttonSpaceTablet: {
+      type: "number",
+    },
+    buttonSpaceMobile: {
+      type: "number",
+    },
+    hideDesktop: {
+      type: "boolean",
+      default: false,
+    },
+    hideTablet: {
+      type: "boolean",
+      default: false,
+    },
+    hideMobile: {
+      type: "boolean",
+      default: false,
+    },
+    hideLoggedIn: {
+      type: "boolean",
+      default: false,
+    },
+    hideLoggedOut: {
+      type: "boolean",
+      default: false,
+    },
     imageSize: {
       type: "string",
       default: "full",

@@ -105,19 +105,74 @@ export default class Edit extends Component {
         alignment: newAlignment === undefined ? "none" : newAlignment,
       });
 
+    // Responsive spacing (editor preview). Desktop stays as inline styles; the
+    // tablet/mobile overrides are injected here as scoped media-query CSS so the
+    // editor's device preview reflects them. The front end is handled by a PHP
+    // render_block filter, so save output is unchanged (no validation errors).
+    const sktRespScope = "skt-team-resp-" + this.props.clientId.substr(0, 8);
+    const sktA = this.props.attributes;
+    const sktBuildDeviceCSS = (suffix) => {
+      const sel = "." + sktRespScope;
+      let css = "";
+      const num = (k) => {
+        const v = sktA[k + suffix];
+        return typeof v === "number" ? v : null;
+      };
+      const ts = num("titleSpacing");
+      if (ts !== null)
+        css += `${sel} .skt-blocks-team-name{margin-bottom:${ts}px!important}`;
+      const ds = num("designationSpacing");
+      if (ds !== null)
+        css += `${sel} .skt-blocks-team-designation{margin-bottom:${ds}px!important}`;
+      const dsc = num("descriptionSpacing");
+      if (dsc !== null)
+        css += `${sel} .skt-blocks-team-description{margin-bottom:${dsc}px!important}`;
+      const si = num("socialIconSpacing");
+      if (si !== null)
+        css += `${sel} .skt-blocks-team-social-icons li{margin-left:${si}px!important;margin-right:${si}px!important}`;
+      const imt = num("imageMarginTop");
+      const imb = num("imageMarginBottom");
+      const iw = num("imageWidth");
+      if (imt !== null || imb !== null || iw !== null) {
+        css += `${sel} .skt-blocks-team-avatar{`;
+        if (imt !== null) css += `margin-top:${imt}px!important;`;
+        if (imb !== null) css += `margin-bottom:${imb}px!important;`;
+        if (iw !== null) css += `width:${iw}px!important;`;
+        css += `}`;
+      }
+      return css;
+    };
+    const sktTabletCSS = sktBuildDeviceCSS("Tablet");
+    const sktMobileCSS = sktBuildDeviceCSS("Mobile");
+    let sktRespCSS = "";
+    if (sktTabletCSS)
+      sktRespCSS += `@media (max-width:1024px){${sktTabletCSS}}`;
+    if (sktMobileCSS) sktRespCSS += `@media (max-width:767px){${sktMobileCSS}}`;
+
     return [
       // Show the block controls on focus
       <Inspector {...{ setAttributes, ...this.props }} />,
+
+      sktRespCSS ? (
+        <style
+          key="skt-team-resp-style"
+          dangerouslySetInnerHTML={{ __html: sktRespCSS }}
+        />
+      ) : null,
 
       // Show the block markup in the editor
       <div
         className={classnames(
           "wp-block-skt-blocks-team-wrapper",
+          sktRespScope,
           {
             "has-columns": count > 1,
             [`has-${count}-columns`]: count,
             "has-responsive-columns": count > 1,
             [`has-${gutter}-gutter`]: gutter,
+            "skt-hide-desktop": this.props.attributes.hideDesktop,
+            "skt-hide-tablet": this.props.attributes.hideTablet,
+            "skt-hide-mobile": this.props.attributes.hideMobile,
           }
         )}
       >
@@ -127,7 +182,7 @@ export default class Edit extends Component {
           </BlockControls>
         }
         {teamBlock.map((test, index) => (
-          <Team {...this.props}>
+          <Team key={index} {...this.props}>
             { showImage && (
         <div
               className="skt-blocks-team-avatar-wrapper"
@@ -233,7 +288,6 @@ export default class Edit extends Component {
             { showDesignation && (
               <RichText
                 tagName="div"
-                multiline="p"
                 placeholder={__(
                   "Designation",
                   "skt-blocks"
@@ -275,7 +329,6 @@ export default class Edit extends Component {
             { showDescription && (
               <RichText
                 tagName="div"
-                multiline="p"
                 placeholder={__(
                   "Click here to change this text. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
                   "skt-blocks"
@@ -316,6 +369,13 @@ export default class Edit extends Component {
             )}
             {showSocialIcons && (
               <div className="skt-blocks-team-social-icons-wrapper">
+                {/* Editor-only: WP 6.x's iframe canvas does not always load the
+                    dashicons font, so the social glyphs stay blank there while
+                    showing on the front end. Pull dashicons into the iframe. */}
+                <link
+                  rel="stylesheet"
+                  href="/wp-includes/css/dashicons.min.css"
+                />
                 <ul className="skt-blocks-team-social-icons edit-block">
                   {!twitter && (
                     <li
@@ -326,7 +386,7 @@ export default class Edit extends Component {
                     >
                       <a href={teamBlock[index]["twitterUrl"]}>
                         <span
-                          class="dashicons dashicons-twitter"
+                          className="dashicons dashicons-twitter"
                           style={{
                             color: socialIconColor,
                             fontSize: iconSize,
@@ -388,7 +448,7 @@ export default class Edit extends Component {
                     >
                       <a href={teamBlock[index]["facebookUrl"]}>
                         <span
-                          class="dashicons dashicons-facebook"
+                          className="dashicons dashicons-facebook"
                           style={{
                             color: socialIconColor,
                             fontSize: iconSize,
@@ -450,7 +510,7 @@ export default class Edit extends Component {
                     >
                       <a href={teamBlock[index]["linkedinUrl"]}>
                         <span
-                          class="dashicons dashicons-linkedin"
+                          className="dashicons dashicons-linkedin"
                           style={{
                             color: socialIconColor,
                             fontSize: iconSize,
@@ -512,7 +572,7 @@ export default class Edit extends Component {
                     >
                       <a href={teamBlock[index]["instagramUrl"]}>
                         <span
-                          class="dashicons dashicons-instagram"
+                          className="dashicons dashicons-instagram"
                           style={{
                             color: socialIconColor,
                             fontSize: iconSize,
@@ -574,7 +634,7 @@ export default class Edit extends Component {
                     >
                       <a href={teamBlock[index]["emailAddress"]}>
                         <span
-                          class="dashicons dashicons-email"
+                          className="dashicons dashicons-email"
                           style={{
                             color: socialIconColor,
                             fontSize: iconSize,
@@ -636,7 +696,7 @@ export default class Edit extends Component {
                     >
                       <a href={teamBlock[index]["youtubeUrl"]}>
                         <span
-                          class="dashicons dashicons-youtube"
+                          className="dashicons dashicons-youtube"
                           style={{
                             color: socialIconColor,
                             fontSize: iconSize,
@@ -698,7 +758,7 @@ export default class Edit extends Component {
                     >
                       <a href={teamBlock[index]["pinterestUrl"]}>
                         <span
-                          class="dashicons dashicons-pinterest"
+                          className="dashicons dashicons-pinterest"
                           style={{
                             color: socialIconColor,
                             fontSize: iconSize,

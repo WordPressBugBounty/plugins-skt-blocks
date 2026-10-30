@@ -1,5 +1,24 @@
 @import "../../../common.scss";
 
+// Block-gallery styles: carousel cell widths, flickity arrows + page dots,
+// captions, gutters, radius and themes. Imported per-partial and the lightbox
+// partial is intentionally skipped because it references an SVG asset that does
+// not resolve from here (which was breaking the build). These styles were never
+// bundled, so slides had no width and the arrows/dots were unstyled (dots even
+// rendered as a plain 1,2,3,4 list).
+.skt-blocks-gallery {
+  list-style: none !important;
+  padding-left: 0;
+  padding-right: 0;
+}
+@import "../../../utils/components/block-gallery/styles/style/carousel";
+@import "../../../utils/components/block-gallery/styles/style/flickity";
+@import "../../../utils/components/block-gallery/styles/style/captions";
+@import "../../../utils/components/block-gallery/styles/style/radius";
+@import "../../../utils/components/block-gallery/styles/style/gutter";
+@import "../../../utils/components/block-gallery/styles/style/horizontal-gutter";
+@import "../../../utils/components/block-gallery/styles/style/core-themes";
+
 .wp-block-skt-blocks-image-slider {
   &,
   .skt-blocks-gallery {
@@ -9,6 +28,20 @@
 
   .skt-blocks-gallery--figure {
     height: 100%;
+
+    img {
+      max-width: 100%;
+    }
+  }
+
+  // Cropped galleries: image fills and covers the cell (matches the demo look).
+  .is-cropped & .skt-blocks-gallery--figure img,
+  &.is-cropped .skt-blocks-gallery--figure img,
+  .is-cropped .skt-blocks-gallery--figure img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   @for $i from 2 through 20 {
@@ -242,4 +275,34 @@
   .flickity-enabled {
     height: 100%;
   }
+}
+
+// Responsive visibility (Desktop >=1025, Tablet 768-1024, Mobile <=767).
+@media (max-width: 767px) {
+  .skt-slider-hide.skt-hide-mobile {
+    display: none !important;
+  }
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+  .skt-slider-hide.skt-hide-tablet {
+    display: none !important;
+  }
+}
+@media (min-width: 1025px) {
+  .skt-slider-hide.skt-hide-desktop {
+    display: none !important;
+  }
+}
+
+/* --- Image Slider: include the slide border within the item's dimensions so
+   the border lines up with the image (border is applied inline on
+   .skt-blocks-gallery--item and image height is height - borderWidth*2, which
+   only lines up with border-box). --- */
+.skt-blocks-gallery--item {
+	box-sizing: border-box;
+
+	figure,
+	.skt-blocks-gallery--figure {
+		box-sizing: border-box;
+	}
 }

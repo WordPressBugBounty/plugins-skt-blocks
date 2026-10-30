@@ -90,6 +90,11 @@ registerBlockType("skt-blocks/buttons", {
       type: "number",
       default: 2,
     },
+    hideDesktop: { type: "boolean", default: false },
+    hideTablet: { type: "boolean", default: false },
+    hideMobile: { type: "boolean", default: false },
+    hideLoggedIn: { type: "boolean", default: false },
+    hideLoggedOut: { type: "boolean", default: false },
   },
   skt_blocks_settings_data: {
     skt_blocks_button_buttonAlignment: {

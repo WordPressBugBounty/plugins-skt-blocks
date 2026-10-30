@@ -138,3 +138,29 @@
     }
   }
 }
+
+/* Editor-only carousel preview. The real Flickity carousel runs on the front
+   end; in the editor we show a simple horizontal, scrollable row of images so
+   React fully controls the DOM (this avoids the react-flickity-component +
+   React 18 "removeChild" crash). */
+.wp-block-skt-blocks-image-slider .skt-blocks-carousel-editor-preview {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: flex-start;
+	gap: 10px;
+	overflow-x: auto;
+	width: 100%;
+	padding-bottom: 8px;
+	scroll-snap-type: x mandatory;
+
+	> .skt-blocks-gallery--item,
+	> .skt-blocks--item-thumbnail {
+		flex: 0 0 auto;
+		max-width: 70%;
+		scroll-snap-align: start;
+	}
+
+	> .skt-blocks--item-thumbnail {
+		max-width: 120px;
+	}
+}

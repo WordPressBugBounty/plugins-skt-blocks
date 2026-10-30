@@ -112,6 +112,77 @@ export default class Inspector extends Component {
     setAttributes({ responsiveDesign: !responsiveDesign });
   }
 
+  // Switch the editor's device preview when a responsive tab is clicked.
+  sktSetPreviewDevice(tabName) {
+    const deviceType =
+      tabName === "tablet"
+        ? "Tablet"
+        : tabName === "mobile"
+        ? "Mobile"
+        : "Desktop";
+    const ed = wp.data.dispatch("core/editor");
+    if (ed && typeof ed.setDeviceType === "function") {
+      ed.setDeviceType(deviceType);
+    } else {
+      const ep = wp.data.dispatch("core/edit-post");
+      if (ep && typeof ep.__experimentalSetPreviewDeviceType === "function") {
+        ep.__experimentalSetPreviewDeviceType(deviceType);
+      }
+    }
+  }
+
+  // Render a single RangeControl with Desktop/Tablet/Mobile tabs. The base
+  // attribute (e.g. "resImageBorderWidth") holds the desktop value; tablet and
+  // mobile use "<base>Tablet" / "<base>Mobile".
+  sktResponsiveRange(label, baseKey, min, max, step) {
+    const a = this.props.attributes;
+    const sa = this.props.setAttributes;
+    return (
+      <TabPanel
+        className="skt-blocks-size-type-field-tabs skt-blocks-inline-margin"
+        activeClass="active-tab"
+        onSelect={(t) => this.sktSetPreviewDevice(t)}
+        tabs={[
+          {
+            name: "desktop",
+            title: <Dashicon icon="desktop" />,
+            className: "skt-blocks-responsive-tabs",
+          },
+          {
+            name: "tablet",
+            title: <Dashicon icon="tablet" />,
+            className: "skt-blocks-responsive-tabs",
+          },
+          {
+            name: "mobile",
+            title: <Dashicon icon="smartphone" />,
+            className: "skt-blocks-responsive-tabs",
+          },
+        ]}
+      >
+        {(tab) => {
+          const suffix =
+            tab.name === "tablet"
+              ? "Tablet"
+              : tab.name === "mobile"
+              ? "Mobile"
+              : "";
+          return (
+            <RangeControl
+              label={__(label, "skt-blocks")}
+              value={a[baseKey + suffix]}
+              onChange={(value) => sa({ [baseKey + suffix]: value })}
+              min={min}
+              max={max}
+              step={step || 1}
+              allowReset
+            />
+          );
+        }}
+      </TabPanel>
+    );
+  }
+
   render() {
     // Setup the attributes
     const {
@@ -640,18 +711,12 @@ export default class Inspector extends Component {
               />
               {"none" != resImageBorderStyle && (
                 <Fragment>
-                  <RangeControl
-                    label={__("Border Width", "skt-blocks")}
-                    value={resImageBorderWidth}
-                    onChange={(value) =>
-                      setAttributes({
-                        resImageBorderWidth: value !== undefined ? value : 2,
-                      })
-                    }
-                    min={0}
-                    max={50}
-                    allowReset
-                  />
+                  {this.sktResponsiveRange(
+                    "Border Width",
+                    "resImageBorderWidth",
+                    0,
+                    50
+                  )}
                   <Fragment>
                     <p>
                       {__("Border Color", "skt-blocks")}
@@ -674,21 +739,12 @@ export default class Inspector extends Component {
                     />
                   </Fragment>
 
-                  <RangeControl
-                    label={__(
-                      "Border Radius",
-                      "skt-blocks"
-                    )}
-                    value={resImageBorderRadius}
-                    onChange={(value) =>
-                      setAttributes({
-                        resImageBorderRadius: value !== undefined ? value : "",
-                      })
-                    }
-                    min={0}
-                    max={100}
-                    allowReset
-                  />
+                  {this.sktResponsiveRange(
+                    "Border Radius",
+                    "resImageBorderRadius",
+                    0,
+                    100
+                  )}
                 </Fragment>
               )}
             </PanelBody>
@@ -1020,96 +1076,74 @@ export default class Inspector extends Component {
           title={__("Spacing", "skt-blocks")}
           initialOpen={false}
         >
-          <RangeControl
-            label={__("Content Padding", "atomic-blocks")}
-            value={contentPadding}
-            onChange={(value) =>
-              setAttributes({
-                contentPadding: value !== undefined ? value : 0,
-              })
-            }
-            min={0}
-            max={50}
-            step={1}
-          />
-          <RangeControl
-            label={__("Prefix Bottom Margin", "skt-blocks")}
-            value={resprefixSpace}
-            onChange={(value) =>
-              setAttributes({ resprefixSpace: value !== undefined ? value : 5 })
-            }
-            min={0}
-            max={50}
-            allowReset
-          />
-          <RangeControl
-            label={__("Title Bottom Margin", "skt-blocks")}
-            value={resheadSpace}
-            onChange={(value) =>
-              setAttributes({ resheadSpace: value !== undefined ? value : 10 })
-            }
-            min={0}
-            max={50}
-            allowReset
-          />
-          <RangeControl
-            label={__(
-              "Separator Bottom Margin",
-              "skt-blocks"
-            )}
-            value={sepSpace}
-            onChange={(value) =>
-              setAttributes({ sepSpace: value !== undefined ? value : 10 })
-            }
-            min={0}
-            max={50}
-            allowReset
-          />
-          <RangeControl
-            label={__(
-              "Description Bottom Margin",
-              "skt-blocks"
-            )}
-            value={ressubHeadSpace}
-            onChange={(value) =>
-              setAttributes({
-                ressubHeadSpace: value !== undefined ? value : 10,
-              })
-            }
-            min={0}
-            max={50}
-            allowReset
-          />
-          <hr className="skt-blocks-editor__separator" />
-          <h3>{__("Image/Icon Margin", "skt-blocks")}</h3>
-          <RangeControl
-            label={__("Top Margin", "skt-blocks")}
-            value={iconTopMargin}
-            onChange={(value) => setAttributes({ iconTopMargin: value })}
-            min={0}
-            max={50}
-          />
-          <RangeControl
-            label={__("Bottom Margin", "skt-blocks")}
-            value={iconBottomMargin}
-            onChange={(value) => setAttributes({ iconBottomMargin: value })}
-            min={0}
-            max={50}
-          />
-          <RangeControl
-            label={__("Left Margin", "skt-blocks")}
-            value={iconLeftMargin}
-            onChange={(value) => setAttributes({ iconLeftMargin: value })}
-            min={0}
-            max={50}
-          />
-          <RangeControl
-            label={__("Right Margin", "skt-blocks")}
-            value={iconRightMargin}
-            onChange={(value) => setAttributes({ iconRightMargin: value })}
-            min={0}
-            max={50}
-          />
+          <TabPanel
+            className="skt-blocks-size-type-field-tabs skt-blocks-inline-margin"
+            activeClass="active-tab"
+            onSelect={(t) => this.sktSetPreviewDevice(t)}
+            tabs={[
+              {
+                name: "desktop",
+                title: <Dashicon icon="desktop" />,
+                className: "skt-blocks-responsive-tabs",
+              },
+              {
+                name: "tablet",
+                title: <Dashicon icon="tablet" />,
+                className: "skt-blocks-responsive-tabs",
+              },
+              {
+                name: "mobile",
+                title: <Dashicon icon="smartphone" />,
+                className: "skt-blocks-responsive-tabs",
+              },
+            ]}
+          >
+            {(tab) => {
+              const suffix =
+                tab.name === "tablet"
+                  ? "Tablet"
+                  : tab.name === "mobile"
+                  ? "Mobile"
+                  : "";
+              const a = this.props.attributes;
+              const sa = this.props.setAttributes;
+              const R = (label, key, max, deskReset) => (
+                <RangeControl
+                  label={__(label, "skt-blocks")}
+                  value={a[key + suffix]}
+                  onChange={(value) =>
+                    sa({
+                      [key + suffix]:
+                        value !== undefined
+                          ? value
+                          : suffix === "" && deskReset !== undefined
+                          ? deskReset
+                          : undefined,
+                    })
+                  }
+                  min={0}
+                  max={max}
+                  step={1}
+                  allowReset
+                />
+              );
+              return (
+                <Fragment>
+                  {R("Content Padding", "contentPadding", 50, 0)}
+                  {R("Prefix Bottom Margin", "resprefixSpace", 50)}
+                  {R("Title Bottom Margin", "resheadSpace", 50)}
+                  {R("Separator Bottom Margin", "sepSpace", 50)}
+                  {R("Description Bottom Margin", "ressubHeadSpace", 50)}
+                  <hr className="skt-blocks-editor__separator" />
+                  <h3>{__("Image/Icon Margin", "skt-blocks")}</h3>
+                  {R("Top Margin", "iconTopMargin", 50)}
+                  {R("Bottom Margin", "iconBottomMargin", 50)}
+                  {R("Left Margin", "iconLeftMargin", 50)}
+                  {R("Right Margin", "iconRightMargin", 50)}
+                </Fragment>
+              );
+            }}
+          </TabPanel>
         </PanelBody>
 
         <PanelBody
@@ -1163,32 +1197,79 @@ export default class Inspector extends Component {
               },
             ]}
           />
-          {"none" != blockBorderStyle && (
-            <RangeControl
-              label={__("Border Width", "skt-blocks")}
-              value={blockBorderWidth}
-              onChange={(value) =>
-                setAttributes({
-                  blockBorderWidth: value !== undefined ? value : 1,
-                })
-              }
-              min={0}
-              max={50}
-              allowReset
-            />
-          )}
-          <RangeControl
-            label={__("Border Radius", "skt-blocks")}
-            value={blockBorderRadius}
-            onChange={(value) =>
-              setAttributes({
-                blockBorderRadius: value !== undefined ? value : null,
-              })
-            }
-            min={0}
-            max={1000}
-            allowReset
-          />
+          <TabPanel
+            className="skt-blocks-size-type-field-tabs skt-blocks-inline-margin"
+            activeClass="active-tab"
+            onSelect={(t) => this.sktSetPreviewDevice(t)}
+            tabs={[
+              {
+                name: "desktop",
+                title: <Dashicon icon="desktop" />,
+                className: "skt-blocks-responsive-tabs",
+              },
+              {
+                name: "tablet",
+                title: <Dashicon icon="tablet" />,
+                className: "skt-blocks-responsive-tabs",
+              },
+              {
+                name: "mobile",
+                title: <Dashicon icon="smartphone" />,
+                className: "skt-blocks-responsive-tabs",
+              },
+            ]}
+          >
+            {(tab) => {
+              const suffix =
+                tab.name === "tablet"
+                  ? "Tablet"
+                  : tab.name === "mobile"
+                  ? "Mobile"
+                  : "";
+              const a = this.props.attributes;
+              const sa = this.props.setAttributes;
+              return (
+                <Fragment>
+                  {"none" != blockBorderStyle && (
+                    <RangeControl
+                      label={__("Border Width", "skt-blocks")}
+                      value={a["blockBorderWidth" + suffix]}
+                      onChange={(value) =>
+                        sa({
+                          ["blockBorderWidth" + suffix]:
+                            value !== undefined
+                              ? value
+                              : suffix === ""
+                              ? 1
+                              : undefined,
+                        })
+                      }
+                      min={0}
+                      max={50}
+                      allowReset
+                    />
+                  )}
+                  <RangeControl
+                    label={__("Border Radius", "skt-blocks")}
+                    value={a["blockBorderRadius" + suffix]}
+                    onChange={(value) =>
+                      sa({
+                        ["blockBorderRadius" + suffix]:
+                          value !== undefined
+                            ? value
+                            : suffix === ""
+                            ? null
+                            : undefined,
+                      })
+                    }
+                    min={0}
+                    max={1000}
+                    allowReset
+                  />
+                </Fragment>
+              );
+            }}
+          </TabPanel>
           {"none" != blockBorderStyle && (
             <Fragment>
               <p className="responsive-setting-label">
@@ -1333,19 +1414,12 @@ export default class Inspector extends Component {
                   {"%"}
                 </Button>
               </ButtonGroup>
-              <RangeControl
-                label={__("Width", "skt-blocks")}
-                value={resseperatorWidth}
-                onChange={(value) =>
-                  setAttributes({
-                    resseperatorWidth: value !== undefined ? value : 30,
-                  })
-                }
-                min={0}
-                max={"%" == resseparatorWidthType ? 100 : 500}
-                beforeIcon=""
-                allowReset
-              />
+              {this.sktResponsiveRange(
+                "Width",
+                "resseperatorWidth",
+                0,
+                "%" == resseparatorWidthType ? 100 : 500
+              )}
               <p className="skt-blocks-setting-label">
                 {__("Separator Color", "skt-blocks")}
                 <span className="components-base-control__label">
@@ -1968,6 +2042,46 @@ export default class Inspector extends Component {
               />
             </Fragment>
           )}
+        </PanelBody>
+        <PanelBody
+          title={__("Visibility", "skt-blocks")}
+          initialOpen={false}
+        >
+          <ToggleControl
+            label={__("Hide on Desktop", "skt-blocks")}
+            checked={this.props.attributes.hideDesktop}
+            onChange={(value) =>
+              this.props.setAttributes({ hideDesktop: value })
+            }
+          />
+          <ToggleControl
+            label={__("Hide on Tablet", "skt-blocks")}
+            checked={this.props.attributes.hideTablet}
+            onChange={(value) =>
+              this.props.setAttributes({ hideTablet: value })
+            }
+          />
+          <ToggleControl
+            label={__("Hide on Mobile", "skt-blocks")}
+            checked={this.props.attributes.hideMobile}
+            onChange={(value) =>
+              this.props.setAttributes({ hideMobile: value })
+            }
+          />
+          <ToggleControl
+            label={__("Hide from Logged-in Users", "skt-blocks")}
+            checked={this.props.attributes.hideLoggedIn}
+            onChange={(value) =>
+              this.props.setAttributes({ hideLoggedIn: value })
+            }
+          />
+          <ToggleControl
+            label={__("Hide from Logged-out Users", "skt-blocks")}
+            checked={this.props.attributes.hideLoggedOut}
+            onChange={(value) =>
+              this.props.setAttributes({ hideLoggedOut: value })
+            }
+          />
         </PanelBody>
       </InspectorControls>
     );

@@ -311,6 +311,38 @@ const attributes = {
   marginH: {
     type: "number",
   },
+  marginVTablet: {
+    type: "number",
+  },
+  marginVMobile: {
+    type: "number",
+  },
+  marginHTablet: {
+    type: "number",
+  },
+  marginHMobile: {
+    type: "number",
+  },
+  hideDesktop: {
+    type: "boolean",
+    default: false,
+  },
+  hideTablet: {
+    type: "boolean",
+    default: false,
+  },
+  hideMobile: {
+    type: "boolean",
+    default: false,
+  },
+  hideLoggedIn: {
+    type: "boolean",
+    default: false,
+  },
+  hideLoggedOut: {
+    type: "boolean",
+    default: false,
+  },
   titleSecondaryBackgroundColor: {
     type: "string",
   },

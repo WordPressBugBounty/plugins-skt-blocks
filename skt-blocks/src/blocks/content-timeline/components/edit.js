@@ -255,9 +255,36 @@ export default class Edit extends Component {
 
     let imgopacity = opacity / 100;
 
+    // Editor live preview for responsive (tablet/mobile) padding & spacing.
+    // Desktop stays inline; tablet/mobile come from this in-tree <style> (which
+    // reaches the editor iframe) as media queries, scoped to this block instance.
+    // When the editor device preview is switched, WP resizes the canvas and the
+    // right query fires. Unset values inherit desktop. save.js is untouched.
+    const ctScope = `.wp-block-responsive-content-timeline-${counterId}`;
+    const ctA = this.props.attributes;
+    const ctNum = ( v ) => ( typeof v === "number" && !isNaN( v ) ) ? v : null;
+    const ctRules = ( suffix ) => {
+      let c = "";
+      const ip = ctNum( ctA[ "itemPadding" + suffix ] );
+      if ( ip !== null ) c += `${ctScope} .responsive-timeline__events-inner-new{padding:${ip}px !important;}`;
+      const hs = ctNum( ctA[ "horizontalSpace" + suffix ] );
+      if ( hs !== null ) c += `${ctScope} .responsive-timeline__marker,${ctScope} .responsive-timeline__line{margin-left:${hs}px !important;margin-right:${hs}px !important;}`;
+      const vs = ctNum( ctA[ "verticalSpace" + suffix ] );
+      if ( vs !== null ) c += `${ctScope} .responsive-timeline__field{margin-bottom:${vs}px !important;}`;
+      const hm = ctNum( ctA[ "headingBottomMargin" + suffix ] );
+      if ( hm !== null ) c += `${ctScope} .responsive-timeline__heading{margin-bottom:${hm}px !important;}`;
+      return c;
+    };
+    const ctTablet = ctRules( "Tablet" );
+    const ctMobile = ctRules( "Mobile" );
+    let ctRespCss = "";
+    if ( ctTablet ) ctRespCss += `@media (max-width:1024px){${ctTablet}}`;
+    if ( ctMobile ) ctRespCss += `@media (max-width:767px){${ctMobile}}`;
+
     return [
       // Show the block controls on focus
       <Inspector {...{ setAttributes, ...this.props }} />,
+      ctRespCss ? <Style key="ct-resp">{ctRespCss}</Style> : null,
 
       <Style>
         {`

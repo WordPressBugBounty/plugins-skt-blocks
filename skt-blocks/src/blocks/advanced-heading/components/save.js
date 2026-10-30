@@ -58,7 +58,26 @@ export default class Save extends Component {
       showSubHeading,
       showSeparator,
       block_id,
+      separatorHeightTablet,
+      separatorHeightMobile,
+      separatorWidthTablet,
+      separatorWidthMobile,
+      hideDesktop,
+      hideTablet,
+      hideMobile,
     } = this.props.attributes;
+
+    // Tablet / Mobile separator overrides, only emitted when set.
+    const isSet = (v) => v !== undefined && v !== null && v !== "";
+    const sepRules = (h, w) =>
+      (isSet(h) ? `border-top-width:${h}px !important;` : "") +
+      (isSet(w) ? `width:${w}px !important;` : "");
+    const sepSel = `.skt-blocks-block-advanced-heading.block-${block_id} .responsive-heading-seperator`;
+    const tabletSep = sepRules(separatorHeightTablet, separatorWidthTablet);
+    const mobileSep = sepRules(separatorHeightMobile, separatorWidthMobile);
+    const separatorCss =
+      (tabletSep ? `@media only screen and (max-width: 975px){${sepSel}{${tabletSep}}}` : "") +
+      (mobileSep ? `@media only screen and (max-width: 767px){${sepSel}{${mobileSep}}}` : "");
 
     var seprator_output = "";
     if (seperatorStyle !== "none") {
@@ -78,6 +97,7 @@ export default class Save extends Component {
     }
     return [
       <Fragment>
+        {separatorCss && <Style>{separatorCss}</Style>}
         <Style>
           {`
       @media only screen and (min-width: 976px){
@@ -198,7 +218,13 @@ export default class Save extends Component {
       <div
         className={classnames(
           "skt-blocks-block-advanced-heading",
-          `block-${block_id}`
+          `block-${block_id}`,
+          {
+            "skt-heading-hide": hideDesktop || hideTablet || hideMobile,
+            "skt-hide-desktop": hideDesktop,
+            "skt-hide-tablet": hideTablet,
+            "skt-hide-mobile": hideMobile,
+          }
         )}
       >
         {showHeading && (

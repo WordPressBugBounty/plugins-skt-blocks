@@ -5368,7 +5368,9 @@ if ( ! class_exists( 'Skt_Blocks_Frontend_Styles' ) ) {
 
 			$mobile_selectors = array(
 				' '                                        => array(
-					'padding' => self::get_css_value( $attr['contentPaddingMobile'], 'px' ) . ' !important',
+					'padding'       => '' === $attr['contentPaddingMobile'] ? '' : self::get_css_value( $attr['contentPaddingMobile'], 'px' ) . ' !important',
+					'border-width'  => '' === $attr['blockBorderWidthMobile'] ? '' : self::get_css_value( $attr['blockBorderWidthMobile'], 'px' ) . ' !important',
+					'border-radius' => '' === $attr['blockBorderRadiusMobile'] ? '' : self::get_css_value( $attr['blockBorderRadiusMobile'], 'px' ) . ' !important',
 				),
 				' .skt-blocks-ifb-image-icon-content.skt-blocks-ifb-imgicon-wrap' => array(
 					'margin-bottom' => self::get_css_value( $attr['iconBottomMarginMobile'], 'px' ),
@@ -5395,8 +5397,10 @@ if ( ! class_exists( 'Skt_Blocks_Frontend_Styles' ) ) {
 				),
 
 				' .skt-blocks-ifb-image-content img' => array(
-					'width'     => self::get_css_value( $attr['imageWidthMobile'], 'px' ),
-					'max-width' => self::get_css_value( $attr['imageWidthMobile'], 'px' ),
+					'width'         => self::get_css_value( $attr['imageWidthMobile'], 'px' ),
+					'max-width'     => self::get_css_value( $attr['imageWidthMobile'], 'px' ),
+					'border-width'  => '' === $attr['resImageBorderWidthMobile'] ? '' : self::get_css_value( $attr['resImageBorderWidthMobile'], 'px' ) . ' !important',
+					'border-radius' => '' === $attr['resImageBorderRadiusMobile'] ? '' : self::get_css_value( $attr['resImageBorderRadiusMobile'], 'px' ) . ' !important',
 				),
 				' .skt-blocks-infobox-cta-link' => array(
 					'font-size' => self::get_css_value( $attr['ctaTextFontSizeMobile'], 'px' ),
@@ -5409,6 +5413,7 @@ if ( ! class_exists( 'Skt_Blocks_Frontend_Styles' ) ) {
 				),
 				' .skt-blocks-ifb-separator' => array(
 					'margin-bottom' => self::get_css_value( $attr['sepSpaceMobile'], 'px' ),
+					'width'         => '' === $attr['resseperatorWidthMobile'] ? '' : self::get_css_value( $attr['resseperatorWidthMobile'], $attr['resseparatorWidthType'] ) . ' !important',
 				),
 				' .skt-blocks-ifb-desc' => array(
 					'margin-bottom' => self::get_css_value( $attr['ressubHeadSpaceMobile'], 'px' ),
@@ -5426,7 +5431,9 @@ if ( ! class_exists( 'Skt_Blocks_Frontend_Styles' ) ) {
 
 			$tablet_selectors = array(
 				' '                                        => array(
-					'padding' => self::get_css_value( $attr['contentPaddingTablet'], 'px' ) . ' !important',
+					'padding'       => '' === $attr['contentPaddingTablet'] ? '' : self::get_css_value( $attr['contentPaddingTablet'], 'px' ) . ' !important',
+					'border-width'  => '' === $attr['blockBorderWidthTablet'] ? '' : self::get_css_value( $attr['blockBorderWidthTablet'], 'px' ) . ' !important',
+					'border-radius' => '' === $attr['blockBorderRadiusTablet'] ? '' : self::get_css_value( $attr['blockBorderRadiusTablet'], 'px' ) . ' !important',
 				),
 				' .skt-blocks-ifb-image-icon-content.skt-blocks-ifb-imgicon-wrap' => array(
 					'margin-bottom' => self::get_css_value( $attr['iconBottomMarginTablet'], 'px' ),
@@ -5455,8 +5462,10 @@ if ( ! class_exists( 'Skt_Blocks_Frontend_Styles' ) ) {
 				),
 
 				' .skt-blocks-ifb-image-content img' => array(
-					'width'     => self::get_css_value( $attr['imageWidthTablet'], 'px' ),
-					'max-width' => self::get_css_value( $attr['imageWidthTablet'], 'px' ),
+					'width'         => self::get_css_value( $attr['imageWidthTablet'], 'px' ),
+					'max-width'     => self::get_css_value( $attr['imageWidthTablet'], 'px' ),
+					'border-width'  => '' === $attr['resImageBorderWidthTablet'] ? '' : self::get_css_value( $attr['resImageBorderWidthTablet'], 'px' ) . ' !important',
+					'border-radius' => '' === $attr['resImageBorderRadiusTablet'] ? '' : self::get_css_value( $attr['resImageBorderRadiusTablet'], 'px' ) . ' !important',
 				),
 				' .skt-blocks-infobox-cta-link' => array(
 					'font-size' => self::get_css_value( $attr['ctaTextFontSizeTablet'], 'px' ),
@@ -5469,6 +5478,7 @@ if ( ! class_exists( 'Skt_Blocks_Frontend_Styles' ) ) {
 				),
 				' .skt-blocks-ifb-separator' => array(
 					'margin-bottom' => self::get_css_value( $attr['sepSpaceTablet'], 'px' ),
+					'width'         => '' === $attr['resseperatorWidthTablet'] ? '' : self::get_css_value( $attr['resseperatorWidthTablet'], $attr['resseparatorWidthType'] ) . ' !important',
 				),
 				' .skt-blocks-ifb-desc' => array(
 					'margin-bottom' => self::get_css_value( $attr['ressubHeadSpaceTablet'], 'px' ),
@@ -5619,6 +5629,16 @@ if ( ! class_exists( 'Skt_Blocks_Frontend_Styles' ) ) {
 				'contentPadding'           => 0,
 				'contentPaddingMobile'     => '',
 				'contentPaddingTablet'     => '',
+				'blockBorderWidthTablet'   => '',
+				'blockBorderWidthMobile'   => '',
+				'blockBorderRadiusTablet'  => '',
+				'blockBorderRadiusMobile'  => '',
+				'resImageBorderWidthTablet'  => '',
+				'resImageBorderWidthMobile'  => '',
+				'resImageBorderRadiusTablet' => '',
+				'resImageBorderRadiusMobile' => '',
+				'resseperatorWidthTablet'  => '',
+				'resseperatorWidthMobile'  => '',
 				'opacity'                  => 100,
 				'imageopacity'             => 100,
 				'imgURL'                   => '', // For compatibility with v1.3.2.

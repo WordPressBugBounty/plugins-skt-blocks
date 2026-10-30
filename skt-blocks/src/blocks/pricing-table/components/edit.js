@@ -3,6 +3,7 @@
  */
 import classnames from "classnames";
 import Inspector from "./inspector";
+import { inherited, previewSuffix } from "./responsive-utils";
 import times from "lodash/times";
 import { loadGoogleFont } from "../../../utils/font";
 
@@ -11,6 +12,7 @@ import { loadGoogleFont } from "../../../utils/font";
  */
 const { __, sprintf } = wp.i18n;
 const { Component, Fragment } = wp.element;
+const { withSelect } = wp.data;
 const {
   RichText,
   AlignmentToolbar,
@@ -52,7 +54,7 @@ const getCount = memoize((count) => {
   ]);
 });
 
-export default class Edit extends Component {
+class Edit extends Component {
   constructor() {
     super(...arguments);
   }
@@ -188,11 +190,16 @@ export default class Edit extends Component {
         imageSize,
         imageShape,
         imageWidth,
+        hideDesktop,
+        hideTablet,
+        hideMobile,
         blockId,
       },
       setAttributes,
     } = this.props;
-    setAttributes({ blockId: this.props.clientId });
+    if (this.props.clientId && blockId !== this.props.clientId) {
+      setAttributes({ blockId: this.props.clientId });
+    }
     var boxShadowPositionCSS = boxShadowPosition;
 
     if ("outset" === boxShadowPosition) {
@@ -224,6 +231,9 @@ export default class Edit extends Component {
 
     const innerClasses = classnames(
       "wp-block-skt-blocks-pricing-table__inner",
+      // Editor-only hook so the in-tree column-parity CSS can scope to THIS
+      // block instance. Not added in save.js, so saved markup is unchanged.
+      `skt-cols-${blockId}`,
       {
         "has-columns": count > 1,
         [`has-${count}-columns`]: count,
@@ -242,6 +252,49 @@ export default class Edit extends Component {
       alignStyle = "flex-end";
     }
 
+    const sfx = previewSuffix(this.props.deviceType);
+    const eff = (b) => inherited(this.props.attributes, b, sfx);
+
+    // Editor column parity: the frontend lays columns side by side via
+    // `@media (min-width:600px){flex-basis}` rules in style.scss. In the WP 6.9
+    // iframe editor that stylesheet is enqueued to the PARENT document and never
+    // reaches the iframe canvas, and the canvas is usually narrower than 600px so
+    // the media query would not fire anyway — so columns stack. We mirror the exact
+    // frontend widths here, in the block's own in-tree <style> (which DOES render
+    // inside the iframe), with no media query, so columns sit side by side at any
+    // canvas width. This touches editor markup only; save.js is unchanged.
+    const sktDenMap = {
+      small: { 2: 2, 3: 3, 4: 4 },
+      medium: { 2: 2, 3: 2.975, 4: 4 },
+      large: { 2: 2.01, 3: 3.03, 4: 4.08 },
+      huge: { 2: 2.02, 3: 3.09, 4: 4.15 },
+    };
+    const sktEmMap = {
+      small: { 2: 0.5, 3: 1, 4: 1 },
+      medium: { 2: 1, 3: 1.5, 4: 1.5 },
+      large: { 2: 1.5, 3: 2, 4: 2 },
+      huge: { 2: 2, 3: 2.5, 4: 2.5 },
+    };
+    const sktCols = count > 4 ? 4 : count;
+    const sktGut = sktDenMap[gutter] ? gutter : "medium";
+    const sktDen = (sktDenMap[sktGut] && sktDenMap[sktGut][sktCols]) || sktCols;
+    const sktEm = (sktEmMap[sktGut] && sktEmMap[sktGut][sktCols]) || 0;
+    const sktColWidth = `calc(100% / ${sktDen} - ${sktEm}em)`;
+    const sktEditorColumnsCss =
+      count > 1
+        ? `
+            .wp-block-skt-blocks-pricing-table__inner.has-columns.skt-cols-${blockId} {
+                display: flex;
+                flex-wrap: wrap;
+                width: 100%;
+            }
+            .wp-block-skt-blocks-pricing-table__inner.skt-cols-${blockId} > .wp-block-skt-blocks-pricing-table-item.skt-blocks-${blockId} {
+                flex: 1 1 ${sktColWidth};
+                max-width: ${sktColWidth};
+            }
+          `
+        : "";
+
     return [
       // Show the alignment toolbar on focus
       <BlockControls key="controls">
@@ -252,10 +305,13 @@ export default class Edit extends Component {
       </BlockControls>,
 
       // Show the block controls on focus
-      <Inspector {...{ setAttributes, ...this.props }} />,
-      <Fragment>
-        <Style>
-          {`
+      <Inspector key="inspector" {...{ setAttributes, ...this.props }} />,
+      <style
+        key="styles"
+        dangerouslySetInnerHTML={{
+          __html:
+            sktEditorColumnsCss +
+            `
             .wp-block-skt-blocks-pricing-table-item.skt-blocks-${blockId} .wp-block-skt-blocks-pricing-table-item__button {
                 color: ${ctaColor} !important;
             }
@@ -264,65 +320,59 @@ export default class Edit extends Component {
             }
             .wp-block-skt-blocks-pricing-table-item.skt-blocks-${blockId}.background-type-image{
 	      background-image: linear-gradient(${hexToRgba(
-          "#fff",
-          1 - imgopacity || 0
-        )},${hexToRgba("#fff", 1 - imgopacity || 0)}),url(${backgroundImage});
+                "#fff",
+                1 - imgopacity || 0
+              )},${hexToRgba("#fff", 1 - imgopacity || 0)}),url(${backgroundImage});
           background-position: center center;
           background-attachment: scroll;
           background-repeat: no-repeat;
           background-size: cover;
 	  }
-      `}
-        </Style>
-        {buttonHbackgroundType == "color" && (
-          <Style>
-            {`
+      ` +
+            (buttonHbackgroundType == "color"
+              ? `
       .wp-block-skt-blocks-pricing-table-item.skt-blocks-${blockId} .wp-block-skt-blocks-pricing-table-item__button:hover {
                 background-color: ${ctaHoverBackColor} ;
       }
-      `}
-          </Style>
-        )}
-        {buttonbackgroundType == "color" && (
-          <Style>
-            {`
+      `
+              : "") +
+            (buttonbackgroundType == "color"
+              ? `
       .wp-block-skt-blocks-pricing-table-item.skt-blocks-${blockId} .wp-block-skt-blocks-pricing-table-item__button {
                 background-color: ${ctaBackColor} ;
       }
-
-
-        `}
-          </Style>
-        )}
-        {buttonbackgroundType == "gradient" && (
-          <Style>
-            {`
+        `
+              : "") +
+            (buttonbackgroundType == "gradient"
+              ? `
             .wp-block-skt-blocks-pricing-table-item.skt-blocks-${blockId} .wp-block-skt-blocks-pricing-table-item__button {
                 background-image: linear-gradient(${buttongradientDirection}deg, ${buttonbackgroundColor1} ${buttoncolorLocation1}%, ${buttonbackgroundColor2} ${buttoncolorLocation2}%);
               }
-
-	`}
-          </Style>
-        )}
-        {buttonHbackgroundType == "gradient" && (
-          <Style>
-            {`
+	`
+              : "") +
+            (buttonHbackgroundType == "gradient"
+              ? `
             .wp-block-skt-blocks-pricing-table-item.skt-blocks-${blockId} .wp-block-skt-blocks-pricing-table-item__button:hover {
                 background-image: linear-gradient(${buttonHgradientDirection}deg, ${buttonHbackgroundColor1} ${buttonHcolorLocation1}%, ${buttonHbackgroundColor2} ${buttonHcolorLocation2}%);
               }
-
-	`}
-          </Style>
-        )}
-      </Fragment>,
+	`
+              : ""),
+        }}
+      />,
       <div
-        className={classnames(classes, "image-shape-" + imageShape)}
+        key="content"
+        className={classnames(classes, "image-shape-" + imageShape, {
+          "skt-pricing-hide": hideDesktop || hideTablet || hideMobile,
+          "skt-hide-desktop": hideDesktop,
+          "skt-hide-tablet": hideTablet,
+          "skt-hide-mobile": hideMobile,
+        })}
         style={{
           textAlign: blockAlign,
-          paddingTop: blockTopPadding,
-          paddingBottom: blockBottomPadding,
-          paddingLeft: blockLeftPadding,
-          paddingRight: blockRightPadding,
+          paddingTop: eff("blockTopPadding"),
+          paddingBottom: eff("blockBottomPadding"),
+          paddingLeft: eff("blockLeftPadding"),
+          paddingRight: eff("blockRightPadding"),
 
           backgroundColor:
             blockbackgroundType == "color"
@@ -359,23 +409,41 @@ export default class Edit extends Component {
             />
           )}
         </div>
-        <div className={innerClasses}>
+        <div
+          className={innerClasses}
+          style={
+            count > 1
+              ? { display: "flex", flexWrap: "wrap", width: "100%" }
+              : undefined
+          }
+        >
           {pricingTable.map((test, index) => (
-            <Fragment>
               <div
+                key={`pricing-plan-item-${index}`}
                 className={classnames(
                   "wp-block-skt-blocks-pricing-table-item",
                   `skt-blocks-${blockId}`,
                   backgroundType == "image" ? "background-type-image" : ""
                 )}
                 style={{
-                  paddingTop: columnTopPadding,
-                  paddingBottom: columnBottomPadding,
-                  paddingLeft: columnLeftPadding,
-                  paddingRight: columnRightPadding,
+                  // Editor column parity (inline so no stylesheet or iframe can
+                  // defeat it). Widths mirror the frontend; save.js is untouched.
+                  ...(count > 1
+                    ? {
+                        boxSizing: "border-box",
+                        flexGrow: 1,
+                        flexShrink: 1,
+                        flexBasis: sktColWidth,
+                        maxWidth: sktColWidth,
+                      }
+                    : {}),
+                  paddingTop: eff("columnTopPadding"),
+                  paddingBottom: eff("columnBottomPadding"),
+                  paddingLeft: eff("columnLeftPadding"),
+                  paddingRight: eff("columnRightPadding"),
                   color: textColor,
                   backgroundColor: itemBackgroundColor,
-                  borderWidth: blockBorderWidth,
+                  borderWidth: eff("blockBorderWidth"),
                   borderColor: blockBorderColor,
                   borderStyle: blockBorderStyle,
                   borderRadius: blockBorderRadius,
@@ -468,7 +536,7 @@ export default class Edit extends Component {
                                       ].url
                                 }
                                 alt="image"
-                                width={imageWidth}
+                                width={eff("imageWidth")}
                               />
                             )}
                           </Button>
@@ -508,6 +576,7 @@ export default class Edit extends Component {
                     tagName="span"
                     className="wp-block-skt-blocks-pricing-table-item__title"
                     value={pricingTable[index]["title"]}
+                    identifier={`title-${index}`}
                     placeholder={pricingTable[index]["title"]}
                     onChange={(value) => {
                       var new_content = {
@@ -533,14 +602,14 @@ export default class Edit extends Component {
                       fontWeight: titleFontWeight,
                       fontSize: titleFontSize,
                       fontFamily: titleFontFamily,
-                      marginBottom: titleSpace,
+                      marginBottom: eff("titleSpace"),
                     }}
                   />
                 )}
                 <div
                   className="wp-block-skt-blocks-pricing-table-item__price-wrapper"
                   style={{
-                    marginBottom: priceSpace,
+                    marginBottom: eff("priceSpace"),
                     justifyContent: alignStyle,
                   }}
                 >
@@ -549,6 +618,7 @@ export default class Edit extends Component {
                       tagName="p"
                       className="wp-block-skt-blocks-pricing-table-item__currency"
                       value={pricingTable[index]["currency"]}
+                    identifier={`currency-${index}`}
                       placeholder={__("$", "skt-blocks")}
                       onChange={(value) => {
                         var new_content = {
@@ -583,6 +653,7 @@ export default class Edit extends Component {
                       className="wp-block-skt-blocks-pricing-table-item__amount"
                       placeholder={__("99", "skt-blocks")}
                       value={pricingTable[index]["amount"]}
+                    identifier={`amount-${index}`}
                       onChange={(value) => {
                         var new_content = {
                           title: data_copy[index]["title"],
@@ -615,6 +686,7 @@ export default class Edit extends Component {
                       tagName="p"
                       className="wp-block-skt-blocks-pricing-table-item__price_suffix"
                       value={pricingTable[index]["price_suffix"]}
+                    identifier={`price_suffix-${index}`}
                       placeholder={__(".00", "skt-blocks")}
                       onChange={(value) => {
                         var new_content = {
@@ -649,6 +721,7 @@ export default class Edit extends Component {
                     tagName="p"
                     className="wp-block-skt-blocks-pricing-table-item__sub_price"
                     value={pricingTable[index]["sub_price"]}
+                    identifier={`sub_price-${index}`}
                     placeholder={__(
                       "Sub Price",
                       "skt-blocks"
@@ -678,7 +751,7 @@ export default class Edit extends Component {
                       fontWeight: subpriceFontWeight,
                       fontSize: subpriceFontSize,
                       fontFamily: subpriceFontFamily,
-                      marginBottom: subpriceSpace,
+                      marginBottom: eff("subpriceSpace"),
                     }}
                   />
                 )}
@@ -688,6 +761,7 @@ export default class Edit extends Component {
                     multiline="li"
                     className="wp-block-skt-blocks-pricing-table-item__features"
                     value={pricingTable[index]["features"]}
+                    identifier={`features-${index}`}
                     placeholder={__(
                       "Add features",
                       "skt-blocks"
@@ -714,7 +788,7 @@ export default class Edit extends Component {
                       fontWeight: featuresFontWeight,
                       fontSize: featuresFontSize,
                       fontFamily: featuresFontFamily,
-                      marginBottom: featuresSpace,
+                      marginBottom: eff("featuresSpace"),
                     }}
                     keepPlaceholderOnFocus
                   />
@@ -727,6 +801,7 @@ export default class Edit extends Component {
                         "wp-block-skt-blocks-pricing-table-item__button"
                       )}
                       value={pricingTable[index]["button"]}
+                    identifier={`button-${index}`}
                       placeholder={__("$", "skt-blocks")}
                       onChange={(value) => {
                         var new_content = {
@@ -749,14 +824,14 @@ export default class Edit extends Component {
                       style={{
                         marginLeft: "left" == blockAlign ? 0 : "",
                         marginRight: "right" == blockAlign ? 0 : "",
-                        marginBottom: buttonSpace,
-                        paddingLeft: ctaHpadding,
-                        paddingRight: ctaHpadding,
-                        paddingTop: ctaVpadding,
-                        paddingBottom: ctaVpadding,
+                        marginBottom: eff("buttonSpace"),
+                        paddingLeft: eff("ctaHpadding"),
+                        paddingRight: eff("ctaHpadding"),
+                        paddingTop: eff("ctaVpadding"),
+                        paddingBottom: eff("ctaVpadding"),
                         borderColor: ctaBorderColor,
                         borderRadius: ctaBorderRadius,
-                        borderWidth: ctaBorderWidth,
+                        borderWidth: eff("ctaBorderWidth"),
                         borderStyle: ctaBorderStyle,
                         lineHeight: ctaLineHeight,
                         fontWeight: ctaFontWeight,
@@ -812,10 +887,25 @@ export default class Edit extends Component {
                   </Fragment>
                 )}
               </div>
-            </Fragment>
           ))}
         </div>
       </div>,
     ];
   }
 }
+
+export default withSelect((select) => {
+  let deviceType = "Desktop";
+  try {
+    const editor = select("core/editor");
+    if (editor && editor.getDeviceType) {
+      deviceType = editor.getDeviceType();
+    } else {
+      const editPost = select("core/edit-post");
+      if (editPost && editPost.__experimentalGetPreviewDeviceType) {
+        deviceType = editPost.__experimentalGetPreviewDeviceType();
+      }
+    }
+  } catch (e) {}
+  return { deviceType };
+})(Edit);

@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
 function skt_blocks_gallery_masonry_add_frontend_assets() {
 	if ( has_block( 'skt-blocks/gallery-masonry' ) ) {
 		wp_enqueue_script(

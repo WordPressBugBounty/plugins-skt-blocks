@@ -1,0 +1,10 @@
+
+// Keep hidden blocks visible (dimmed) while editing.
+.editor-styles-wrapper {
+  .skt-expand-hide.skt-hide-desktop,
+  .skt-expand-hide.skt-hide-tablet,
+  .skt-expand-hide.skt-hide-mobile {
+    display: block !important;
+    opacity: 0.55;
+  }
+}

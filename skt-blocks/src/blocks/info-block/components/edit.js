@@ -29,10 +29,11 @@ const {
   URLInput,
 } = wp.editor;
 const { Button, Dashicon, Icon } = wp.components;
+const { withSelect } = wp.data;
 
 let svg_icons = Object.keys(ResponsiveBlocksIcon);
 
-export default class Edit extends Component {
+class Edit extends Component {
   constructor() {
     super(...arguments);
   }
@@ -326,6 +327,81 @@ export default class Edit extends Component {
       );
     }
       let imgopacity = imageopacity / 100;
+
+    // --- Responsive (tablet/mobile) overrides. Desktop stays inline in the
+    // saved markup; tablet/mobile come from these scoped media queries so the
+    // save output never changes (validation-safe). Breakpoints match editor:
+    // tablet <=1024px, mobile <=767px. Only emitted when the attr is set. ---
+    const sktA = this.props.attributes;
+    const sktNum = (k) =>
+      typeof sktA[k] === "number" && !isNaN(sktA[k]) ? sktA[k] : null;
+    const sktRespCSS = (suffix) => {
+      const scope = `.skt-blocks-block-${counterId}`;
+      let css = "";
+      const mt = sktNum("iconTopMargin" + suffix);
+      const mb = sktNum("iconBottomMargin" + suffix);
+      const ml = sktNum("iconLeftMargin" + suffix);
+      const mr = sktNum("iconRightMargin" + suffix);
+      if (mt !== null || mb !== null || ml !== null || mr !== null) {
+        css += `${scope} .skt-blocks-ifb-image-icon-content{`;
+        if (mt !== null) css += `margin-top:${mt}px!important;`;
+        if (mb !== null) css += `margin-bottom:${mb}px!important;`;
+        if (ml !== null) css += `margin-left:${ml}px!important;`;
+        if (mr !== null) css += `margin-right:${mr}px!important;`;
+        css += `}`;
+      }
+      const ps = sktNum("resprefixSpace" + suffix);
+      if (ps !== null)
+        css += `${scope} .skt-blocks-ifb-title-prefix{margin-bottom:${ps}px!important}`;
+      const hs = sktNum("resheadSpace" + suffix);
+      if (hs !== null)
+        css += `${scope} .skt-blocks-ifb-title{margin-bottom:${hs}px!important}`;
+      const ss = sktNum("ressubHeadSpace" + suffix);
+      if (ss !== null)
+        css += `${scope} .skt-blocks-ifb-desc{margin-bottom:${ss}px!important}`;
+      const sp = sktNum("sepSpace" + suffix);
+      const sw = sktNum("resseperatorWidth" + suffix);
+      if (sp !== null || sw !== null) {
+        css += `${scope} .skt-blocks-ifb-separator{`;
+        if (sp !== null) css += `margin-bottom:${sp}px!important;`;
+        if (sw !== null)
+          css += `width:${sw}${sktA.resseparatorWidthType || "%"}!important;`;
+        css += `}`;
+      }
+      const bw = sktNum("resImageBorderWidth" + suffix);
+      const br = sktNum("resImageBorderRadius" + suffix);
+      if (bw !== null || br !== null) {
+        css += `${scope} .skt-blocks-ifb-image-content img{`;
+        if (bw !== null) css += `border-width:${bw}px!important;`;
+        if (br !== null) css += `border-radius:${br}px!important;`;
+        css += `}`;
+      }
+      // Outer box: content padding, border width / radius (inline on the
+      // outer wrapper, which is the parent of the content wrap).
+      const cp = sktNum("contentPadding" + suffix);
+      const bw2 = sktNum("blockBorderWidth" + suffix);
+      const br2 = sktNum("blockBorderRadius" + suffix);
+      if (cp !== null || bw2 !== null || br2 !== null) {
+        css += `.skt-blocks-infobox__outer-wrap:has(> ${scope}){`;
+        if (cp !== null) css += `padding:${cp}px!important;`;
+        if (bw2 !== null) css += `border-width:${bw2}px!important;`;
+        if (br2 !== null) css += `border-radius:${br2}px!important;`;
+        css += `}`;
+      }
+      return css;
+    };
+    // Live preview follows the editor's preview device (Desktop / Tablet /
+    // Mobile) instead of the browser width, so Tablet/Mobile values show up
+    // as soon as they are set. Mobile falls back to Tablet, then Desktop.
+    const sktTabletCSS = sktRespCSS("Tablet");
+    const sktMobileCSS = sktRespCSS("Mobile");
+    let sktResponsiveStyles = "";
+    if (this.props.deviceType === "Tablet") {
+      sktResponsiveStyles = sktTabletCSS;
+    } else if (this.props.deviceType === "Mobile") {
+      sktResponsiveStyles = sktTabletCSS + sktMobileCSS;
+    }
+
     return [
       <Fragment>
         {(imgiconPosition == "above-title" ||
@@ -435,6 +511,9 @@ export default class Edit extends Component {
 }
 `}
         </Style>
+        {"" !== sktResponsiveStyles && (
+          <Style>{sktResponsiveStyles}</Style>
+        )}
         <InfoBlock {...this.props}>
           <div
             className={classnames(
@@ -1089,3 +1168,20 @@ export default class Edit extends Component {
     ];
   }
 }
+
+// Re-render the editor preview whenever the preview device changes.
+export default withSelect((select) => {
+  let deviceType = "Desktop";
+  try {
+    const editor = select("core/editor");
+    if (editor && editor.getDeviceType) {
+      deviceType = editor.getDeviceType();
+    } else {
+      const editPost = select("core/edit-post");
+      if (editPost && editPost.__experimentalGetPreviewDeviceType) {
+        deviceType = editPost.__experimentalGetPreviewDeviceType();
+      }
+    }
+  } catch (e) {}
+  return { deviceType };
+})(Edit);

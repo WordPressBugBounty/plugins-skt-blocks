@@ -8,6 +8,12 @@ import BoxShadowControl from "../../../utils/components/box-shadow";
 import fontOptions from "../../../utils/googlefonts";
 import { loadGoogleFont } from "../../../utils/font";
 import BoxShadowControlHelper from "../../../utils/components/box-shadow-helper";
+import {
+  DEVICE_TABS,
+  deviceSuffix,
+  inherited,
+  setPreviewDevice,
+} from "./responsive-utils";
 
 const { __ } = wp.i18n;
 const { Component, Fragment } = wp.element;
@@ -330,40 +336,6 @@ export default class Inspector extends Component {
               })
             }
           />
-        </PanelBody>
-        <PanelColorSettings
-          title={__("Colors and Background", "skt-blocks")}
-          initialOpen={false}
-          colorSettings={[
-            {
-              label: __("Text Color", "skt-blocks"),
-              value: testimonialTextColor,
-              onChange: (colorValue) =>
-                setAttributes({ testimonialTextColor: colorValue }),
-            },
-            {
-              label: __("Name Color", "skt-blocks"),
-              value: testimonialNameColor,
-              onChange: (colorValue) =>
-                setAttributes({ testimonialNameColor: colorValue }),
-            },
-            {
-              label: __(
-                "Title/Designation Color",
-                "skt-blocks"
-              ),
-              value: testimonialTitleColor,
-              onChange: (colorValue) =>
-                setAttributes({ testimonialTitleColor: colorValue }),
-            },
-            {
-              label: __("Background Color", "skt-blocks"),
-              value: testimonialBackgroundColor,
-              onChange: (colorValue) =>
-                setAttributes({ testimonialBackgroundColor: colorValue }),
-            },
-          ]}
-        >
           <ToggleControl
             label="Gradient Background"
             checked={bgGradient}
@@ -497,7 +469,40 @@ export default class Inspector extends Component {
               { value: "inherit", label: __("Inherit") },
             ]}
           />
-        </PanelColorSettings>
+          <PanelColorSettings
+          title={__("Colors and Background", "skt-blocks")}
+          initialOpen={false}
+          colorSettings={[
+            {
+              label: __("Text Color", "skt-blocks"),
+              value: testimonialTextColor,
+              onChange: (colorValue) =>
+                setAttributes({ testimonialTextColor: colorValue }),
+            },
+            {
+              label: __("Name Color", "skt-blocks"),
+              value: testimonialNameColor,
+              onChange: (colorValue) =>
+                setAttributes({ testimonialNameColor: colorValue }),
+            },
+            {
+              label: __(
+                "Title/Designation Color",
+                "skt-blocks"
+              ),
+              value: testimonialTitleColor,
+              onChange: (colorValue) =>
+                setAttributes({ testimonialTitleColor: colorValue }),
+            },
+            {
+              label: __("Background Color", "skt-blocks"),
+              value: testimonialBackgroundColor,
+              onChange: (colorValue) =>
+                setAttributes({ testimonialBackgroundColor: colorValue }),
+            },
+          ]}
+        ></PanelColorSettings>
+        </PanelBody>
         <PanelBody
           title={__("Typography", "skt-blocks")}
           initialOpen={false}
@@ -708,18 +713,31 @@ export default class Inspector extends Component {
               setAttributes({ imageSize: newImageSize })
             }
           />
-          <RangeControl
-            label={__("Width", "skt-blocks")}
-            value={imageWidth}
-            onChange={(value) =>
-              this.props.setAttributes({
-                imageWidth: value,
-              })
-            }
-            min={0}
-            max={300}
-            step={1}
-          />
+          <TabPanel
+            className="skt-testimonial-device-tabs"
+            tabs={DEVICE_TABS}
+            initialTabName={(this.props.deviceType || "Desktop").toLowerCase()}
+            onSelect={setPreviewDevice}
+          >
+            {(tab) => {
+              const s = deviceSuffix(tab.name);
+              return (
+                <RangeControl
+                  label={__("Width", "skt-blocks")}
+                  value={inherited(this.props.attributes, "imageWidth", s)}
+                  onChange={(value) =>
+                    this.props.setAttributes({
+                      ["imageWidth" + s]: value,
+                    })
+                  }
+                  min={0}
+                  max={180}
+                  step={1}
+                  allowReset
+                />
+              );
+            }}
+          </TabPanel>
         </PanelBody>
         <PanelBody
           title={__("Border", "skt-blocks")}
@@ -770,29 +788,42 @@ export default class Inspector extends Component {
           />
           {"none" != borderStyle && (
             <Fragment>
-              <RangeControl
-                label={__("Border Width", "skt-blocks")}
-                value={borderWidth}
-                onChange={(value) =>
-                  setAttributes({
-                    borderWidth: value,
-                  })
-                }
-                min={0}
-                max={50}
-              />
-              <RangeControl
-                label={__("Border Radius", "skt-blocks")}
-                value={borderRadius}
-                onChange={(value) =>
-                  this.props.setAttributes({
-                    borderRadius: value,
-                  })
-                }
-                min={0}
-                max={50}
-                step={1}
-              />
+              <TabPanel
+                className="skt-testimonial-device-tabs"
+                tabs={DEVICE_TABS}
+                initialTabName={(this.props.deviceType || "Desktop").toLowerCase()}
+                onSelect={setPreviewDevice}
+              >
+                {(tab) => {
+                  const s = deviceSuffix(tab.name);
+                  const attrs = this.props.attributes;
+                  return (
+                    <Fragment>
+                      <RangeControl
+                        label={__("Border Width", "skt-blocks")}
+                        value={inherited(attrs, "borderWidth", s)}
+                        onChange={(value) =>
+                          setAttributes({ ["borderWidth" + s]: value })
+                        }
+                        min={0}
+                        max={50}
+                        allowReset
+                      />
+                      <RangeControl
+                        label={__("Border Radius", "skt-blocks")}
+                        value={inherited(attrs, "borderRadius", s)}
+                        onChange={(value) =>
+                          setAttributes({ ["borderRadius" + s]: value })
+                        }
+                        min={0}
+                        max={50}
+                        step={1}
+                        allowReset
+                      />
+                    </Fragment>
+                  );
+                }}
+              </TabPanel>
             </Fragment>
           )}
           {"none" != borderStyle && (
@@ -815,31 +846,88 @@ export default class Inspector extends Component {
               />
             </Fragment>
           )}
-          <BoxShadowControl
-            setAttributes={setAttributes}
-            label={__("Box Shadow", "skt-blocks")}
-            boxShadowColor={{ value: boxShadowColor, label: __("Color") }}
-            boxShadowHOffset={{
-              value: boxShadowHOffset,
-              label: __("Horizontal", "skt-blocks"),
-            }}
-            boxShadowVOffset={{
-              value: boxShadowVOffset,
-              label: __("Vertical", "skt-blocks"),
-            }}
-            boxShadowBlur={{
-              value: boxShadowBlur,
-              label: __("Blur", "skt-blocks"),
-            }}
-            boxShadowSpread={{
-              value: boxShadowSpread,
-              label: __("Spread", "skt-blocks"),
-            }}
-            boxShadowPosition={{
-              value: boxShadowPosition,
-              label: __("Position", "skt-blocks"),
-            }}
-          />
+          <PanelBody
+            title={__("Box Shadow", "skt-blocks")}
+            initialOpen={false}
+          >
+            <p className="responsive-setting-label">
+              {__("Color", "skt-blocks")}
+              <span className="components-base-control__label">
+                <span
+                  className="component-color-indicator"
+                  style={{ backgroundColor: boxShadowColor }}
+                ></span>
+              </span>
+            </p>
+            <ColorPalette
+              value={boxShadowColor}
+              onChange={(colorValue) =>
+                setAttributes({
+                  boxShadowColor: colorValue !== undefined ? colorValue : "",
+                })
+              }
+              allowReset
+            />
+            <SelectControl
+              label={__("Position", "skt-blocks")}
+              value={boxShadowPosition}
+              onChange={(value) => setAttributes({ boxShadowPosition: value })}
+              options={[
+                { value: "inset", label: __("Inset") },
+                { value: "outset", label: __("Outset") },
+              ]}
+            />
+            <TabPanel
+              className="skt-testimonial-device-tabs"
+              tabs={DEVICE_TABS}
+              initialTabName={(this.props.deviceType || "Desktop").toLowerCase()}
+              onSelect={setPreviewDevice}
+            >
+              {(tab) => {
+                const s = deviceSuffix(tab.name);
+                const attrs = this.props.attributes;
+                const shadowControl = (base, label, min) => (
+                  <RangeControl
+                    label={label}
+                    value={inherited(attrs, base, s)}
+                    onChange={(value) =>
+                      setAttributes({
+                        [base + s]:
+                          value !== undefined
+                            ? value
+                            : s === ""
+                            ? 0
+                            : undefined,
+                      })
+                    }
+                    min={min}
+                    max={100}
+                    allowReset
+                  />
+                );
+                return (
+                  <Fragment>
+                    {shadowControl(
+                      "boxShadowHOffset",
+                      __("Horizontal", "skt-blocks"),
+                      -100
+                    )}
+                    {shadowControl(
+                      "boxShadowVOffset",
+                      __("Vertical", "skt-blocks"),
+                      -100
+                    )}
+                    {shadowControl("boxShadowBlur", __("Blur", "skt-blocks"), 0)}
+                    {shadowControl(
+                      "boxShadowSpread",
+                      __("Spread", "skt-blocks"),
+                      0
+                    )}
+                  </Fragment>
+                );
+              }}
+            </TabPanel>
+          </PanelBody>
           <BoxShadowControlHelper
             setAttributes={setAttributes}
             label={__("Hover Box Shadow")}
@@ -985,6 +1073,33 @@ export default class Inspector extends Component {
             min={-50}
             max={100}
             step={1}
+          />
+        </PanelBody>
+        <PanelBody title={__("Visibility", "skt-blocks")} initialOpen={false}>
+          <ToggleControl
+            label={__("Hide on Desktop", "skt-blocks")}
+            checked={this.props.attributes.hideDesktop}
+            onChange={(value) => setAttributes({ hideDesktop: value })}
+          />
+          <ToggleControl
+            label={__("Hide on Tablet", "skt-blocks")}
+            checked={this.props.attributes.hideTablet}
+            onChange={(value) => setAttributes({ hideTablet: value })}
+          />
+          <ToggleControl
+            label={__("Hide on Mobile", "skt-blocks")}
+            checked={this.props.attributes.hideMobile}
+            onChange={(value) => setAttributes({ hideMobile: value })}
+          />
+          <ToggleControl
+            label={__("Hide from Logged-in Users", "skt-blocks")}
+            checked={this.props.attributes.hideLoggedIn}
+            onChange={(value) => setAttributes({ hideLoggedIn: value })}
+          />
+          <ToggleControl
+            label={__("Hide from Logged-out Users", "skt-blocks")}
+            checked={this.props.attributes.hideLoggedOut}
+            onChange={(value) => setAttributes({ hideLoggedOut: value })}
           />
         </PanelBody>
       </InspectorControls>

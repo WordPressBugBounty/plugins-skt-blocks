@@ -48,3 +48,21 @@
   max-width: none;
   padding: 0;
 }
+.responsive-count-item .responsive-count-item__features ul,
+.responsive-count-item .responsive-count-item__features li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+
+// Keep the block visible/selectable in the editor even when it is hidden on
+// the current device. Editor only.
+.editor-styles-wrapper {
+  .skt-countup-hide.skt-hide-desktop,
+  .skt-countup-hide.skt-hide-tablet,
+  .skt-countup-hide.skt-hide-mobile {
+    display: block !important;
+    opacity: 0.55;
+  }
+}

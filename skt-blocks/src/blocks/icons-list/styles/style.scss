@@ -131,3 +131,21 @@
   width: 100%;
   height: 100%;
 }
+
+
+// Responsive visibility (Desktop >=1025, Tablet 768-1024, Mobile <=767).
+@media (max-width: 767px) {
+  .skt-blocks-icon-list__outer-wrap.skt-hide-mobile {
+    display: none !important;
+  }
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+  .skt-blocks-icon-list__outer-wrap.skt-hide-tablet {
+    display: none !important;
+  }
+}
+@media (min-width: 1025px) {
+  .skt-blocks-icon-list__outer-wrap.skt-hide-desktop {
+    display: none !important;
+  }
+}

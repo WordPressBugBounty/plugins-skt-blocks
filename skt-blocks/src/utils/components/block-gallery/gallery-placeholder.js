@@ -95,7 +95,7 @@ class GalleryPlaceholder extends Component {
     });
     this.props.setAttributes({
       images: newImages.map((image) => ({
-        ...helper.pickRelevantMediaFiles(image),
+        ...helper.pickRelevantMediaFiles(image, images),
         caption: this.selectCaption(image, images, attachmentCaptions),
         imgLink: this.selectImgLink(image, images, imgLinks),
       })),
@@ -111,7 +111,12 @@ class GalleryPlaceholder extends Component {
   componentDidMount() {
     const { attributes } = this.props;
     const { images } = attributes;
-    if (every(images, ({ url }) => isBlobURL(url))) {
+    if (
+      images &&
+      images.length > 0 &&
+      typeof mediaUpload === "function" &&
+      every(images, ({ url }) => isBlobURL(url))
+    ) {
       const filesList = map(images, ({ url }) => getBlobByURL(url));
       forEach(images, ({ url }) => revokeBlobURL(url));
       mediaUpload({

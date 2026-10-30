@@ -1,0 +1,115 @@
+.wp-block-skt-blocks-skt-section {
+	box-sizing: border-box;
+
+	> * {
+		box-sizing: border-box;
+	}
+
+	// Link colours (only applied when the matching class/var is present).
+	&.has-skt-link-color a {
+		color: var(--skt-section-link);
+	}
+
+	&.has-skt-link-hover a:hover {
+		color: var(--skt-section-link-hover);
+	}
+
+	// Background overlay layer. Rendered as a ::before so it never becomes a
+	// flex item (absolute positioning takes it out of flow). The color/gradient
+	// and opacity come from CSS variables set inline by the block.
+	&.has-skt-overlay {
+		position: relative;
+		isolation: isolate;
+
+		&::before {
+			content: "";
+			position: absolute;
+			inset: 0;
+			background: var(--skt-section-overlay, transparent);
+			opacity: var(--skt-section-overlay-opacity, 1);
+			z-index: 0;
+			pointer-events: none;
+			// Follow the section's rounded corners so the overlay doesn't
+			// spill outside a border-radius.
+			border-radius: inherit;
+		}
+
+		// Keep the actual content above the overlay.
+		> * {
+			position: relative;
+			z-index: 1;
+		}
+	}
+}
+
+// Overlay Link: makes the whole section clickable. The anchor covers the
+// section; real interactive elements inside stay clickable above it.
+.wp-block-skt-blocks-skt-section.has-skt-overlay-link {
+	position: relative;
+}
+.skt-section-overlay-link {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	border-radius: inherit;
+	text-indent: -9999px;
+	overflow: hidden;
+}
+.has-skt-overlay-link
+	:where(a:not(.skt-section-overlay-link), button, input, select, textarea, label, [tabindex]) {
+	position: relative;
+	z-index: 2;
+}
+
+// Responsive visibility (frontend). Breakpoints: mobile <=767, tablet 768-1024,
+// desktop >=1025. In the editor these are neutralised (see styles.editor.scss)
+// so hidden sections stay selectable.
+@media (max-width: 767px) {
+	.wp-block-skt-blocks-skt-section.skt-hide-mobile {
+		display: none !important;
+	}
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+	.wp-block-skt-blocks-skt-section.skt-hide-tablet {
+		display: none !important;
+	}
+}
+
+@media (min-width: 1025px) {
+	.wp-block-skt-blocks-skt-section.skt-hide-desktop {
+		display: none !important;
+	}
+}
+
+// Sticky (frontend). Offset via CSS var; z-index keeps it above siblings.
+// position:sticky is applied per breakpoint so "Sticky Breakpoint" can limit it.
+.wp-block-skt-blocks-skt-section.skt-sticky {
+	z-index: 100;
+}
+
+.wp-block-skt-blocks-skt-section.skt-sticky-always {
+	position: sticky;
+	top: var(--skt-sticky-offset, 0px);
+}
+
+@media (min-width: 1025px) {
+	.wp-block-skt-blocks-skt-section.skt-sticky-desktop {
+		position: sticky;
+		top: var(--skt-sticky-offset, 0px);
+	}
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+	.wp-block-skt-blocks-skt-section.skt-sticky-tablet {
+		position: sticky;
+		top: var(--skt-sticky-offset, 0px);
+	}
+}
+
+@media (max-width: 767px) {
+	.wp-block-skt-blocks-skt-section.skt-sticky-mobile {
+		position: sticky;
+		top: var(--skt-sticky-offset, 0px);
+	}
+}

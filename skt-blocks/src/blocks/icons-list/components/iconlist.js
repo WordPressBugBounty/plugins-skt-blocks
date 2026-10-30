@@ -34,6 +34,9 @@ export default class IconList extends Component {
         border,
         fontSize,
         maincounterId,
+        hideDesktop,
+        hideTablet,
+        hideMobile,
       },
       setAttributes,
     } = this.props;
@@ -53,7 +56,12 @@ export default class IconList extends Component {
           iconPosition == "top"
             ? "skt-blocks-icon-list__icon-at-top"
             : "",
-          `skt-blocks-${this.props.clientId}`
+          `skt-blocks-${this.props.clientId}`,
+          {
+            "skt-hide-desktop": hideDesktop,
+            "skt-hide-tablet": hideTablet,
+            "skt-hide-mobile": hideMobile,
+          }
         )}
       >
         {this.props.children}

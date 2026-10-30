@@ -111,7 +111,12 @@ export default class InfoBlock extends Component {
         className={classnames(
           this.props.className,
           "skt-blocks-infobox__outer-wrap",
-          "responsive-blocks-block-team"
+          "responsive-blocks-block-team",
+          {
+            "skt-hide-desktop": this.props.attributes.hideDesktop,
+            "skt-hide-tablet": this.props.attributes.hideTablet,
+            "skt-hide-mobile": this.props.attributes.hideMobile,
+          }
         )}
         style={{
           borderWidth: blockBorderWidth,

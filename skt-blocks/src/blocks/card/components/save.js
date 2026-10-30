@@ -106,6 +106,35 @@ export default class Save extends Component {
       blockbotmargin,
       blockleftmargin,
       blockrightmargin,
+      imageheightTablet,
+      imageheightMobile,
+      vPaddingTablet,
+      vPaddingMobile,
+      hPaddingTablet,
+      hPaddingMobile,
+      vMarginTablet,
+      vMarginMobile,
+      hMarginTablet,
+      hMarginMobile,
+      titleSpaceTablet,
+      titleSpaceMobile,
+      subtitleSpaceTablet,
+      subtitleSpaceMobile,
+      contenttopSpaceTablet,
+      contenttopSpaceMobile,
+      contentSpaceTablet,
+      contentSpaceMobile,
+      blockmarginTablet,
+      blockmarginMobile,
+      blockbotmarginTablet,
+      blockbotmarginMobile,
+      blockleftmarginTablet,
+      blockleftmarginMobile,
+      blockrightmarginTablet,
+      blockrightmarginMobile,
+      hideDesktop,
+      hideTablet,
+      hideMobile,
       bgimageSize,
       bgimagePosition,
       bgimageRepeat,
@@ -127,6 +156,36 @@ export default class Save extends Component {
         ? null
         : "has-background-dim-" + 10 * Math.round(ratio / 10);
     };
+
+    // Tablet / Mobile values as CSS variables, only when set, so existing
+    // blocks keep exactly the same markup.
+    const isSet = (v) => v !== undefined && v !== null && v !== "";
+    const vars = {};
+    const extra = {};
+    [
+      ["ih", imageheightTablet, imageheightMobile],
+      ["bpv", vPaddingTablet, vPaddingMobile],
+      ["bph", hPaddingTablet, hPaddingMobile],
+      ["bmv", vMarginTablet, vMarginMobile],
+      ["bmh", hMarginTablet, hMarginMobile],
+      ["ts", titleSpaceTablet, titleSpaceMobile],
+      ["ss", subtitleSpaceTablet, subtitleSpaceMobile],
+      ["ct", contenttopSpaceTablet, contenttopSpaceMobile],
+      ["cb", contentSpaceTablet, contentSpaceMobile],
+      ["mt", blockmarginTablet, blockmarginMobile],
+      ["mb", blockbotmarginTablet, blockbotmarginMobile],
+      ["ml", blockleftmarginTablet, blockleftmarginMobile],
+      ["mr", blockrightmarginTablet, blockrightmarginMobile],
+    ].forEach(([k, t, m]) => {
+      if (isSet(t)) {
+        vars[`--card-${k}-tablet`] = `${t}px`;
+        extra[`has-card-${k}-tablet`] = true;
+      }
+      if (isSet(m)) {
+        vars[`--card-${k}-mobile`] = `${m}px`;
+        extra[`has-card-${k}-mobile`] = true;
+      }
+    });
 
     return [
       <Fragment>
@@ -165,9 +224,17 @@ export default class Save extends Component {
       <div
         className={classnames(
           `skt-blocks-${counterId}`,
-          `responsive-columns__stack-${stack}`
+          `responsive-columns__stack-${stack}`,
+          extra,
+          {
+            "skt-card-hide": hideDesktop || hideTablet || hideMobile,
+            "skt-hide-desktop": hideDesktop,
+            "skt-hide-tablet": hideTablet,
+            "skt-hide-mobile": hideMobile,
+          }
         )}
         style={{
+          ...vars,
           marginBottom: blockbotmargin,
           marginTop: blockmargin,
           marginLeft: blockleftmargin,

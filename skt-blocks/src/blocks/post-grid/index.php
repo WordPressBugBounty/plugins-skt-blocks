@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) exit;
 /**
  * Server-side rendering for the post grid block
  *
@@ -13,6 +14,14 @@
  * @return string HTML content for the post grid.
  */
 function skt_blocks_render_block_core_latest_posts( $attributes ) {
+
+	// Visibility: hide for logged-in / logged-out users (output-only).
+	if ( ! empty( $attributes['hideLoggedIn'] ) && is_user_logged_in() ) {
+		return '';
+	}
+	if ( ! empty( $attributes['hideLoggedOut'] ) && ! is_user_logged_in() ) {
+		return '';
+	}
 
 	/**
 	* Global post object.
@@ -64,7 +73,6 @@ function skt_blocks_render_block_core_latest_posts( $attributes ) {
 		);
 	}
 	
-
 	$meta_styles = '';
 	/* Meta Color */
 	if ( ! empty( $attributes['metaColor'] ) ) {
@@ -243,6 +251,62 @@ margin-bottom: ' . esc_attr( $attributes['rowGapMobile'] ) . 'px;
 
 	$post_grid_markup  = '';
 	$post_grid_markup .= $global_styles;
+
+	// --- Responsive (tablet/mobile) spacing + device visibility. Emitted as a
+	// separate scoped <style> added to the output only (dynamic block, so there
+	// is no saved markup to invalidate). Values are applied only when set, so
+	// unset devices inherit the desktop values via the CSS cascade. ---
+	$skt_pg_scope = '.block-id-' . esc_attr( $attributes['postGridBlockId'] ) . '.skt-blocks-block-post-grid';
+	$skt_pg_num   = function ( $k ) use ( $attributes ) {
+		return ( isset( $attributes[ $k ] ) && is_numeric( $attributes[ $k ] ) && '' !== $attributes[ $k ] ) ? floatval( $attributes[ $k ] ) : null;
+	};
+	$skt_pg_build = function ( $suffix, $cp_key ) use ( $skt_pg_num, $skt_pg_scope ) {
+		$c  = '';
+		$cg = $skt_pg_num( 'columnGap' . $suffix );
+		if ( null !== $cg ) {
+			$c .= $skt_pg_scope . ' .skt-blocks-post-grid-item{margin-left:' . ( $cg / 2 ) . 'px !important;margin-right:' . ( $cg / 2 ) . 'px !important;}';
+		}
+		$cp = $skt_pg_num( $cp_key );
+		if ( null !== $cp ) {
+			$c .= $skt_pg_scope . ' .skt-blocks-post-grid-items article{padding:' . $cp . 'px !important;}';
+			$c .= $skt_pg_scope . ' .skt-blocks-block-post-grid-text{padding:' . $cp . 'px !important;}';
+		}
+		$tb = $skt_pg_num( 'titleBottomSpacing' . $suffix );
+		if ( null !== $tb ) {
+			$c .= $skt_pg_scope . ' header .skt-blocks-block-post-grid-title{margin-bottom:' . $tb . 'px !important;}';
+		}
+		$mb = $skt_pg_num( 'metaBottomSpacing' . $suffix );
+		if ( null !== $mb ) {
+			$c .= $skt_pg_scope . ' .skt-blocks-block-post-grid-byline{margin-bottom:' . $mb . 'px !important;}';
+		}
+		$rm = $skt_pg_num( 'readMoreTopSpacing' . $suffix );
+		if ( null !== $rm ) {
+			$c .= $skt_pg_scope . ' .skt-blocks-block-post-grid-text .skt-blocks-block-post-grid-excerpt a{margin-top:' . $rm . 'px !important;}';
+		}
+		return $c;
+	};
+	$skt_pg_tablet = $skt_pg_build( 'Tablet', 'contentPaddingTablet' );
+	$skt_pg_mobile = $skt_pg_build( 'Mobile', 'contentPaddingMobile' );
+
+	$skt_pg_resp = '';
+	if ( '' !== $skt_pg_tablet ) {
+		$skt_pg_resp .= '@media (max-width:976px){' . $skt_pg_tablet . '}';
+	}
+	if ( '' !== $skt_pg_mobile ) {
+		$skt_pg_resp .= '@media (max-width:767px){' . $skt_pg_mobile . '}';
+	}
+	if ( ! empty( $attributes['hideDesktop'] ) ) {
+		$skt_pg_resp .= '@media (min-width:1025px){' . $skt_pg_scope . '{display:none !important;}}';
+	}
+	if ( ! empty( $attributes['hideTablet'] ) ) {
+		$skt_pg_resp .= '@media (min-width:768px) and (max-width:1024px){' . $skt_pg_scope . '{display:none !important;}}';
+	}
+	if ( ! empty( $attributes['hideMobile'] ) ) {
+		$skt_pg_resp .= '@media (max-width:767px){' . $skt_pg_scope . '{display:none !important;}}';
+	}
+	if ( '' !== $skt_pg_resp ) {
+		$post_grid_markup .= '<style type="text/css">' . $skt_pg_resp . '</style>';
+	}
 
 	$grid_query = new WP_Query( $grid_query );
 
@@ -884,6 +948,25 @@ function skt_blocks_register_block_core_latest_posts() {
 					'type'    => 'number',
 					'default' => '',
 				),
+				// Responsive (tablet/mobile) spacing. Default '' = unset, so the
+				// device falls back to the desktop value via the CSS cascade and
+				// nothing is forced. Content Padding mobile reuses mobileContentPadding.
+				'columnGapTablet'                => array( 'type' => 'number', 'default' => '' ),
+				'columnGapMobile'                => array( 'type' => 'number', 'default' => '' ),
+				'contentPaddingTablet'           => array( 'type' => 'number', 'default' => '' ),
+				'contentPaddingMobile'           => array( 'type' => 'number', 'default' => '' ),
+				'titleBottomSpacingTablet'       => array( 'type' => 'number', 'default' => '' ),
+				'titleBottomSpacingMobile'       => array( 'type' => 'number', 'default' => '' ),
+				'metaBottomSpacingTablet'        => array( 'type' => 'number', 'default' => '' ),
+				'metaBottomSpacingMobile'        => array( 'type' => 'number', 'default' => '' ),
+				'readMoreTopSpacingTablet'       => array( 'type' => 'number', 'default' => '' ),
+				'readMoreTopSpacingMobile'       => array( 'type' => 'number', 'default' => '' ),
+				// Visibility.
+				'hideDesktop'                    => array( 'type' => 'boolean', 'default' => false ),
+				'hideTablet'                     => array( 'type' => 'boolean', 'default' => false ),
+				'hideMobile'                     => array( 'type' => 'boolean', 'default' => false ),
+				'hideLoggedIn'                   => array( 'type' => 'boolean', 'default' => false ),
+				'hideLoggedOut'                  => array( 'type' => 'boolean', 'default' => false ),
 				'blockBorderWidth'                      => array(
 					'type'    => 'number',
 					'default' => '0',

@@ -15,7 +15,13 @@ import {
   PanelColorSettings,
   ColorPalette,
 } from "@wordpress/block-editor";
-import { PanelBody, RangeControl, SelectControl } from "@wordpress/components";
+import {
+  PanelBody,
+  RangeControl,
+  SelectControl,
+  TabPanel,
+  ToggleControl,
+} from "@wordpress/components";
 
 /**
  * Inspector controls
@@ -55,6 +61,13 @@ class Inspector extends Component {
       colorLocation2,
       gradientDirection,
       backgroundType,
+      customColor,
+      customBackgroundColor,
+      hideDesktop,
+      hideTablet,
+      hideMobile,
+      hideLoggedIn,
+      hideLoggedOut,
     } = attributes;
 
     // Background Type Options
@@ -73,62 +86,65 @@ class Inspector extends Component {
           <PanelBody
             title={__("Divider settings", "skt-blocks")}
           >
-            <ResponsiveBaseControl
-              {...this.props}
-              label={__(
-                "Shape height in pixels",
-                "skt-blocks"
-              )}
-              height={shapeHeight}
-              heightTablet={shapeHeightTablet}
-              heightMobile={shapeHeightMobile}
-              onChange={(event) => {
-                setAttributes({
-                  shapeHeight: parseInt(event.target.value, 10),
-                });
+            <TabPanel
+              className="skt-shape-divider-device-tabs"
+              tabs={[
+                { name: "desktop", title: __("Desktop", "skt-blocks") },
+                { name: "tablet", title: __("Tablet", "skt-blocks") },
+                { name: "mobile", title: __("Mobile", "skt-blocks") },
+              ]}
+            >
+              {(tab) => {
+                const s =
+                  tab.name === "desktop"
+                    ? ""
+                    : tab.name === "tablet"
+                    ? "Tablet"
+                    : "Mobile";
+                const shapeVal = attributes["shapeHeight" + s];
+                const bgVal = attributes["backgroundHeight" + s];
+                return (
+                  <Fragment>
+                    <RangeControl
+                      label={__("Shape height in pixels", "skt-blocks")}
+                      value={shapeVal}
+                      onChange={(value) =>
+                        setAttributes({
+                          ["shapeHeight" + s]:
+                            value === undefined
+                              ? s === ""
+                                ? 100
+                                : undefined
+                              : value,
+                        })
+                      }
+                      min={40}
+                      max={1000}
+                      step={1}
+                      allowReset
+                    />
+                    <RangeControl
+                      label={__("Background height in pixels", "skt-blocks")}
+                      value={bgVal}
+                      onChange={(value) =>
+                        setAttributes({
+                          ["backgroundHeight" + s]:
+                            value === undefined
+                              ? s === ""
+                                ? 50
+                                : undefined
+                              : value,
+                        })
+                      }
+                      min={20}
+                      max={1000}
+                      step={1}
+                      allowReset
+                    />
+                  </Fragment>
+                );
               }}
-              onChangeTablet={(event) => {
-                setAttributes({
-                  shapeHeightTablet: parseInt(event.target.value, 10),
-                });
-              }}
-              onChangeMobile={(event) => {
-                setAttributes({
-                  shapeHeightMobile: parseInt(event.target.value, 10),
-                });
-              }}
-              sync={syncHeight}
-              type="shapeHeight"
-              min="40"
-            />
-            <ResponsiveBaseControl
-              {...this.props}
-              label={__(
-                "Background height in pixels",
-                "skt-blocks"
-              )}
-              height={backgroundHeight}
-              heightTablet={backgroundHeightTablet}
-              heightMobile={backgroundHeightMobile}
-              onChange={(event) => {
-                setAttributes({
-                  backgroundHeight: parseInt(event.target.value, 10),
-                });
-              }}
-              onChangeTablet={(event) => {
-                setAttributes({
-                  backgroundHeightTablet: parseInt(event.target.value, 10),
-                });
-              }}
-              onChangeMobile={(event) => {
-                setAttributes({
-                  backgroundHeightMobile: parseInt(event.target.value, 10),
-                });
-              }}
-              sync={syncHeight}
-              type="backgroundHeight"
-              min="20"
-            />
+            </TabPanel>
           </PanelBody>
           <PanelBody
             title={__("Background", "skt-blocks")}
@@ -150,8 +166,12 @@ class Inspector extends Component {
                   initialOpen={false}
                   colorSettings={[
                     {
-                      value: backgroundColor.color,
-                      onChange: setBackgroundColor,
+                      value: backgroundColor.color || customBackgroundColor,
+                      onChange: (value) =>
+                        setAttributes({
+                          backgroundColor: undefined,
+                          customBackgroundColor: value,
+                        }),
                       label: __(
                         "Background color",
                         "skt-blocks"
@@ -230,18 +250,49 @@ class Inspector extends Component {
                 />
               </Fragment>
             )}
+            <PanelColorSettings
+              title={__("Shape Color", "skt-blocks")}
+              initialOpen={false}
+              colorSettings={[
+                {
+                  value: color.color || customColor,
+                  onChange: (value) =>
+                    setAttributes({ color: undefined, customColor: value }),
+                  label: __("Shape color", "skt-blocks"),
+                },
+              ]}
+            ></PanelColorSettings>
           </PanelBody>
-          <PanelColorSettings
-            title={__("Shape Color", "skt-blocks")}
+          <PanelBody
+            title={__("Visibility", "skt-blocks")}
             initialOpen={false}
-            colorSettings={[
-              {
-                value: color.color,
-                onChange: setColor,
-                label: __("Shape color", "skt-blocks"),
-              },
-            ]}
-          ></PanelColorSettings>
+          >
+            <ToggleControl
+              label={__("Hide on Desktop", "skt-blocks")}
+              checked={hideDesktop}
+              onChange={(value) => setAttributes({ hideDesktop: value })}
+            />
+            <ToggleControl
+              label={__("Hide on Tablet", "skt-blocks")}
+              checked={hideTablet}
+              onChange={(value) => setAttributes({ hideTablet: value })}
+            />
+            <ToggleControl
+              label={__("Hide on Mobile", "skt-blocks")}
+              checked={hideMobile}
+              onChange={(value) => setAttributes({ hideMobile: value })}
+            />
+            <ToggleControl
+              label={__("Hide from Logged-in Users", "skt-blocks")}
+              checked={hideLoggedIn}
+              onChange={(value) => setAttributes({ hideLoggedIn: value })}
+            />
+            <ToggleControl
+              label={__("Hide from Logged-out Users", "skt-blocks")}
+              checked={hideLoggedOut}
+              onChange={(value) => setAttributes({ hideLoggedOut: value })}
+            />
+          </PanelBody>
         </InspectorControls>
       </Fragment>
     );

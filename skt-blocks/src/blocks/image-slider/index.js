@@ -19,6 +19,11 @@ import { __ } from "@wordpress/i18n";
 const attributes = {
   ...GalleryAttributes,
   ...metadata.attributes,
+  hideDesktop: { type: "boolean", default: false },
+  hideTablet: { type: "boolean", default: false },
+  hideMobile: { type: "boolean", default: false },
+  hideLoggedIn: { type: "boolean", default: false },
+  hideLoggedOut: { type: "boolean", default: false },
 };
 import { registerBlockType } from "@wordpress/blocks";
 

@@ -84,6 +84,44 @@ registerBlockType("skt-blocks/expand", {
       type: "number",
       default: 18,
     },
+    titleSpaceTablet: {
+      type: "number",
+    },
+    titleSpaceMobile: {
+      type: "number",
+    },
+    textSpaceTablet: {
+      type: "number",
+    },
+    textSpaceMobile: {
+      type: "number",
+    },
+    linkSpaceTablet: {
+      type: "number",
+    },
+    linkSpaceMobile: {
+      type: "number",
+    },
+    hideDesktop: {
+      type: "boolean",
+      default: false,
+    },
+    hideTablet: {
+      type: "boolean",
+      default: false,
+    },
+    hideMobile: {
+      type: "boolean",
+      default: false,
+    },
+    hideLoggedIn: {
+      type: "boolean",
+      default: false,
+    },
+    hideLoggedOut: {
+      type: "boolean",
+      default: false,
+    },
     titleFontFamily: {
       type: "string",
     },

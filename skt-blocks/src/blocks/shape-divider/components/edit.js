@@ -40,6 +40,46 @@ class Edit extends Component {
   componentDidMount() {
     this.getBrowserWidth();
     window.addEventListener("resize", this.getBrowserWidth.bind(this));
+
+    // Adjust the margins of the adjacent blocks when this divider is first
+    // added. This must run AFTER mount (not during render): updating sibling
+    // blocks' attributes while this block is rendering throws in React 18 /
+    // modern WordPress ("Cannot update a component while rendering a
+    // different component"), which shows the block error box in the editor.
+    const { clientId, attributes, setAttributes } = this.props;
+
+    if (attributes.justAdded) {
+      const prevBlockClientId = wp.data
+        .select("core/block-editor")
+        .getPreviousBlockClientId(clientId);
+      const nextBlockClientId = wp.data
+        .select("core/block-editor")
+        .getNextBlockClientId(clientId);
+
+      if (prevBlockClientId) {
+        wp.data
+          .dispatch("core/block-editor")
+          .updateBlockAttributes(prevBlockClientId, {
+            noBottomMargin: true,
+            marginBottom: 0,
+            marginBottomTablet: 0,
+            marginBottomMobile: 0,
+          });
+      }
+
+      if (nextBlockClientId) {
+        wp.data
+          .dispatch("core/block-editor")
+          .updateBlockAttributes(nextBlockClientId, {
+            noTopMargin: true,
+            marginTop: 0,
+            marginTopTablet: 0,
+            marginTopMobile: 0,
+          });
+      }
+
+      setAttributes({ justAdded: false });
+    }
   }
 
   UNSAFE_componentWillMount() {
@@ -132,7 +172,9 @@ class Edit extends Component {
       backgroundHeightMobile,
       verticalFlip,
       horizontalFlip,
-      justAdded,
+      hideDesktop,
+      hideTablet,
+      hideMobile,
       backgroundColor1,
       backgroundColor2,
       colorLocation1,
@@ -140,6 +182,8 @@ class Edit extends Component {
       gradientDirection,
       backgroundType,
       align,
+      customColor,
+      customBackgroundColor,
     } = attributes;
 
     let shapeHeightResizer = {
@@ -148,7 +192,7 @@ class Edit extends Component {
     };
 
     let backgroundHeightResizer = {
-      target: "shapeHeight",
+      target: "backgroundHeight",
       value: backgroundHeight,
     };
 
@@ -178,42 +222,16 @@ class Edit extends Component {
       };
     }
 
-    //modify blocks when added
-    if (justAdded) {
-      const prevBlockClientId = wp.data
-        .select("core/block-editor")
-        .getPreviousBlockClientId(clientId);
-      const nextBlockClientId = wp.data
-        .select("core/block-editor")
-        .getNextBlockClientId(clientId);
-
-      if (prevBlockClientId) {
-        wp.data
-          .dispatch("core/block-editor")
-          .updateBlockAttributes(prevBlockClientId, {
-            noBottomMargin: true,
-            marginBottom: 0,
-            marginBottomTablet: 0,
-            marginBottomMobile: 0,
-          });
-      }
-
-      if (nextBlockClientId) {
-        wp.data
-          .dispatch("core/block-editor")
-          .updateBlockAttributes(nextBlockClientId, {
-            noTopMargin: true,
-            marginTop: 0,
-            marginTopTablet: 0,
-            marginTopMobile: 0,
-          });
-      }
-      setAttributes({ justAdded: false });
-    }
-
     let classes = classnames(className, {
       "is-vertically-flipped": verticalFlip,
       "is-horizontally-flipped": horizontalFlip,
+      "skt-hide-desktop": hideDesktop,
+      "skt-hide-tablet": hideTablet,
+      "skt-hide-mobile": hideMobile,
+      "has-shape-height-tablet": !!shapeHeightTablet,
+      "has-shape-height-mobile": !!shapeHeightMobile,
+      "has-bg-height-tablet": !!backgroundHeightTablet,
+      "has-bg-height-mobile": !!backgroundHeightMobile,
     });
 
     if (
@@ -234,9 +252,23 @@ class Edit extends Component {
         <div
           className={classes}
           style={{
-            color: this.props.color.color,
+            "--skt-sd-shape-tablet": shapeHeightTablet
+              ? shapeHeightTablet + "px"
+              : undefined,
+            "--skt-sd-shape-mobile": shapeHeightMobile
+              ? shapeHeightMobile + "px"
+              : undefined,
+            "--skt-sd-bg-tablet": backgroundHeightTablet
+              ? backgroundHeightTablet + "px"
+              : undefined,
+            "--skt-sd-bg-mobile": backgroundHeightMobile
+              ? backgroundHeightMobile + "px"
+              : undefined,
+            color: this.props.color.color || customColor,
             backgroundColor:
-              backgroundType == "color" ? backgroundColor.color : null,
+              backgroundType == "color"
+                ? backgroundColor.color || customBackgroundColor
+                : null,
             backgroundImage:
               backgroundType == "gradient"
                 ? generateBackgroundImageEffect(
@@ -249,138 +281,51 @@ class Edit extends Component {
                 : undefined,
           }}
         >
-          <ResizableBox
+          <div
             className={classnames(
               "wp-block-skt-blocks-shape-divider__svg-wrapper",
               {
                 "is-selected": isSelected,
-                "is-resizing": this.state.resizing,
               }
             )}
-            size={{
-              height: shapeHeightResizer.value,
-            }}
-            minHeight="20"
-            enable={{
-              top: false,
-              right: false,
-              bottom: true,
-              left: false,
-              topRight: false,
-              bottomRight: false,
-              bottomLeft: false,
-              topLeft: false,
-            }}
-            onResizeStop={(_event, _direction, _elt, delta) => {
-              switch (shapeHeightResizer.target) {
-                case "shapeHeightTablet":
-                  setAttributes({
-                    shapeHeightTablet: parseInt(
-                      shapeHeightResizer.value + delta.height,
-                      10
-                    ),
-                  });
-                  break;
-
-                case "shapeHeightMobile":
-                  setAttributes({
-                    shapeHeightMobile: parseInt(
-                      shapeHeightResizer.value + delta.height,
-                      10
-                    ),
-                  });
-                  break;
-
-                default:
-                  setAttributes({
-                    shapeHeight: parseInt(
-                      shapeHeightResizer.value + delta.height,
-                      10
-                    ),
-                  });
-                  break;
-              }
-
-              this.setState({ resizing: false });
-
-              //update meta
-              this.saveMeta("shapeHeight");
-            }}
-            onResizeStart={() => {
-              this.setState({ resizing: true });
+            style={{
+              position: "relative",
+              minHeight: shapeHeightResizer.value
+                ? shapeHeightResizer.value + "px"
+                : undefined,
+              height: shapeHeightResizer.value
+                ? shapeHeightResizer.value + "px"
+                : undefined,
             }}
           >
             {getDividerFromStyle(className)}
-          </ResizableBox>
-          <ResizableBox
+          </div>
+          <div
             className={classnames(
               "wp-block-skt-blocks-shape-divider__alt-wrapper",
               {
                 "is-selected": isSelected,
-                "is-resizing": this.state.resizingAlt,
               }
             )}
-            size={{
-              height: backgroundHeightResizer.value,
-            }}
-            minWidth="100%"
-            minHeight="20"
-            enable={{
-              top: false,
-              right: false,
-              bottom: true,
-              left: false,
-              topRight: false,
-              bottomRight: false,
-              bottomLeft: false,
-              topLeft: false,
-            }}
-            onResizeStop={(_event, _direction, _elt, delta) => {
-              switch (backgroundHeightResizer.target) {
-                case "backgroundHeightTablet":
-                  setAttributes({
-                    backgroundHeightTablet: parseInt(
-                      backgroundHeightResizer.value + delta.height,
-                      10
-                    ),
-                  });
-                  break;
-
-                case "backgroundHeightMobile":
-                  setAttributes({
-                    backgroundHeightMobile: parseInt(
-                      backgroundHeightResizer.value + delta.height,
-                      10
-                    ),
-                  });
-                  break;
-
-                default:
-                  setAttributes({
-                    backgroundHeight: parseInt(
-                      backgroundHeightResizer.value + delta.height,
-                      10
-                    ),
-                  });
-                  break;
-              }
-
-              this.setState({ resizingAlt: false });
-              this.saveMeta("backgroundHeight");
-            }}
-            onResizeStart={() => {
-              this.setState({ resizingAlt: true });
+            style={{
+              position: "relative",
+              minHeight: backgroundHeightResizer.value
+                ? backgroundHeightResizer.value + "px"
+                : undefined,
+              height: backgroundHeightResizer.value
+                ? backgroundHeightResizer.value + "px"
+                : undefined,
             }}
           >
             {isSelected && (
               <InlineColorPicker
-                value={this.props.color.color}
+                value={this.props.color.color || customColor}
                 onChange={(color) =>
                   setAttributes({ color: null, customColor: color })
                 }
               />
             )}
-          </ResizableBox>
+          </div>
         </div>
       </Fragment>
     );

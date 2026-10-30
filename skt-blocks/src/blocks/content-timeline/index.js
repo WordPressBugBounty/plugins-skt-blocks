@@ -128,6 +128,25 @@ registerBlockType("skt-blocks/content-timeline", {
       type: "number",
       default: 15,
     },
+
+    // Responsive (tablet/mobile) overrides. Default unset = inherit desktop via
+    // the CSS cascade. Applied through the editor in-tree <style> + a PHP
+    // render_block filter, so save.js (saved markup) is never changed.
+    itemPaddingTablet: { type: "number" },
+    itemPaddingMobile: { type: "number" },
+    horizontalSpaceTablet: { type: "number" },
+    horizontalSpaceMobile: { type: "number" },
+    verticalSpaceTablet: { type: "number" },
+    verticalSpaceMobile: { type: "number" },
+    headingBottomMarginTablet: { type: "number" },
+    headingBottomMarginMobile: { type: "number" },
+    // Visibility.
+    hideDesktop: { type: "boolean", default: false },
+    hideTablet: { type: "boolean", default: false },
+    hideMobile: { type: "boolean", default: false },
+    hideLoggedIn: { type: "boolean", default: false },
+    hideLoggedOut: { type: "boolean", default: false },
+
     dateLineHeight: {
       type: "number",
       default: 1,

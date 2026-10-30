@@ -6,6 +6,12 @@ import icon from "./icon";
 import metadata from "./components/block.json";
 import save from "./components/save";
 
+// Import block styles (editor + frontend). Without these the block's SVG
+// loses its `fill: currentColor` and `height:100%` rules, so the shape shows
+// as a default black graphic and ignores the height controls.
+import "./styles/style.scss";
+import "./styles/styles.editor.scss";
+
 /**
  * WordPress dependencies
  */

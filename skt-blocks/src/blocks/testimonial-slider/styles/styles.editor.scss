@@ -49,3 +49,13 @@ left: 30px;
 .skt-blocks-tm__content.skin-type-bubble.center-aligned .skt-blocks-testinomial-text-wrap:before {
 right:49%;
 }
+
+// Keep hidden blocks visible (dimmed) while editing.
+.editor-styles-wrapper {
+  .skt-slider-hide.skt-hide-desktop,
+  .skt-slider-hide.skt-hide-tablet,
+  .skt-slider-hide.skt-hide-mobile {
+    display: block !important;
+    opacity: 0.55;
+  }
+}

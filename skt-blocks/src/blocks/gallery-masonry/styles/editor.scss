@@ -109,3 +109,54 @@
     display: none;
   }
 }
+
+/* Editor-only masonry preview. The real masonry runs on the front end; here we
+   use CSS multi-columns so React controls the DOM and images actually render.
+   Column count follows the Size (has-grid-*) class so the M/L/XL setting is
+   visible in the editor too. */
+.wp-block-skt-blocks-gallery-masonry .skt-blocks-masonry-editor-preview {
+	display: block;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	column-gap: 15px;
+	columns: 2;
+
+	&.has-grid-sml {
+		columns: 4;
+	}
+	&.has-grid-med {
+		columns: 3;
+	}
+	&.has-grid-lrg {
+		columns: 2;
+	}
+	&.has-grid-xlrg {
+		columns: 1;
+	}
+
+	> .skt-blocks-gallery--item {
+		display: block;
+		width: auto;
+		margin: 0 0 15px;
+		break-inside: avoid;
+
+		img {
+			display: block;
+			width: 100%;
+			height: auto;
+		}
+	}
+}
+
+
+// Keep the gallery visible/selectable in the editor even when it is hidden on
+// the current device. Editor only.
+.editor-styles-wrapper {
+  .wp-block-skt-blocks-gallery-masonry.skt-hide-desktop,
+  .wp-block-skt-blocks-gallery-masonry.skt-hide-tablet,
+  .wp-block-skt-blocks-gallery-masonry.skt-hide-mobile {
+    display: block !important;
+    opacity: 0.55;
+  }
+}

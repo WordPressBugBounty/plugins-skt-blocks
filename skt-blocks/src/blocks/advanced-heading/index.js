@@ -71,6 +71,38 @@ registerBlockType("skt-blocks/advanced-heading", {
       type: "number",
       default: 20,
     },
+    separatorHeightTablet: {
+      type: "number",
+    },
+    separatorHeightMobile: {
+      type: "number",
+    },
+    separatorWidthTablet: {
+      type: "number",
+    },
+    separatorWidthMobile: {
+      type: "number",
+    },
+    hideDesktop: {
+      type: "boolean",
+      default: false,
+    },
+    hideTablet: {
+      type: "boolean",
+      default: false,
+    },
+    hideMobile: {
+      type: "boolean",
+      default: false,
+    },
+    hideLoggedIn: {
+      type: "boolean",
+      default: false,
+    },
+    hideLoggedOut: {
+      type: "boolean",
+      default: false,
+    },
     separatorWidthType: {
       type: "string",
       default: "%",

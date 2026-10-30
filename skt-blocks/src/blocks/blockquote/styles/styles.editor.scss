@@ -46,3 +46,13 @@
     }
   }
 }
+
+// Keep hidden blocks visible (dimmed) while editing.
+.editor-styles-wrapper {
+  .skt-quote-hide.skt-hide-desktop,
+  .skt-quote-hide.skt-hide-tablet,
+  .skt-quote-hide.skt-hide-mobile {
+    display: block !important;
+    opacity: 0.55;
+  }
+}

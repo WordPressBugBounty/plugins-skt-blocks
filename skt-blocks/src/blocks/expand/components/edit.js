@@ -3,6 +3,7 @@
  */
 import classnames from "classnames";
 import Inspector from "./inspector";
+import { inherited, previewSuffix } from "./responsive-utils";
 import { loadGoogleFont } from "../../../utils/font";
 
 /**
@@ -10,9 +11,10 @@ import { loadGoogleFont } from "../../../utils/font";
  */
 const { __ } = wp.i18n;
 const { Component, Fragment } = wp.element;
+const { withSelect } = wp.data;
 const { RichText, BlockControls, AlignmentToolbar } = wp.editor;
 
-export default class Edit extends Component {
+class Edit extends Component {
   constructor() {
     super(...arguments);
   }
@@ -46,10 +48,16 @@ export default class Edit extends Component {
         textColor,
         linkColor,
         titleColor,
+        hideDesktop,
+        hideTablet,
+        hideMobile,
       },
       setAttributes,
       isSelected,
     } = this.props;
+
+    const sfx = previewSuffix(this.props.deviceType);
+    const eff = (b) => inherited(this.props.attributes, b, sfx);
 
     return [
       <BlockControls key="controls">
@@ -61,7 +69,14 @@ export default class Edit extends Component {
 
       <Inspector {...{ setAttributes, ...this.props }} />,
       <Fragment>
-        <div className="skt-blocks-block-expand">
+        <div
+          className={classnames("skt-blocks-block-expand", {
+            "skt-expand-hide": hideDesktop || hideTablet || hideMobile,
+            "skt-hide-desktop": hideDesktop,
+            "skt-hide-tablet": hideTablet,
+            "skt-hide-mobile": hideMobile,
+          })}
+        >
           <div
             className="skt-blocks-expand-block-content"
             style={{ textAlign: expandAlignment }}
@@ -76,7 +91,7 @@ export default class Edit extends Component {
                 value={blockTitle}
                 className="skt-blocks-expand-title"
                 style={{
-                  marginBottom: titleSpace,
+                  marginBottom: eff("titleSpace"),
                   fontFamily: titleFontFamily,
                   fontSize: titleFontSize,
                   fontWeight: titleFontWeight,
@@ -99,7 +114,7 @@ export default class Edit extends Component {
               value={expandLessText}
               className="skt-blocks-expand-less-text"
               style={{
-                marginBottom: textSpace,
+                marginBottom: eff("textSpace"),
                 fontFamily: textFontFamily,
                 fontSize: textFontSize,
                 fontWeight: textFontWeight,
@@ -118,7 +133,7 @@ export default class Edit extends Component {
                   value={moreLabel}
                   className="skt-blocks-expand-more-toggle-text"
                   style={{
-                    marginBottom: linkSpace,
+                    marginBottom: eff("linkSpace"),
                     fontFamily: linkFontFamily,
                     fontSize: linkFontSize,
                     fontWeight: linkFontWeight,
@@ -142,7 +157,7 @@ export default class Edit extends Component {
                   value={expandMoreText}
                   className="skt-blocks-expand-more-text"
                   style={{
-                    marginBottom: textSpace,
+                    marginBottom: eff("textSpace"),
                     fontFamily: textFontFamily,
                     fontSize: textFontSize,
                     fontWeight: textFontWeight,
@@ -161,7 +176,7 @@ export default class Edit extends Component {
                       value={lessLabel}
                       className="skt-blocks-expand-less-toggle-text"
                       style={{
-                        marginBottom: linkSpace,
+                        marginBottom: eff("linkSpace"),
                         fontFamily: linkFontFamily,
                         fontSize: linkFontSize,
                         fontWeight: linkFontWeight,
@@ -182,3 +197,19 @@ export default class Edit extends Component {
     ];
   }
 }
+
+export default withSelect((select) => {
+  let deviceType = "Desktop";
+  try {
+    const editor = select("core/editor");
+    if (editor && editor.getDeviceType) {
+      deviceType = editor.getDeviceType();
+    } else {
+      const editPost = select("core/edit-post");
+      if (editPost && editPost.__experimentalGetPreviewDeviceType) {
+        deviceType = editPost.__experimentalGetPreviewDeviceType();
+      }
+    }
+  } catch (e) {}
+  return { deviceType };
+})(Edit);

@@ -27,6 +27,7 @@ const {
   TextControl,
   TabPanel,
   Icon,
+  Dashicon,
 } = wp.components;
 let svg_icons = Object.keys(ResponsiveBlocksIcon);
 /**
@@ -59,6 +60,42 @@ export default class Inspector extends Component {
   }
 
   render() {
+    // One RangeControl with Desktop / Tablet / Mobile tabs. Desktop writes the
+    // base attribute; tablet/mobile write <base>Tablet / <base>Mobile. `def`
+    // keeps the desktop default on reset; tablet/mobile reset to undefined and
+    // inherit desktop via the render CSS.
+    const respRange = ( label, base, min, max, def ) => (
+      <TabPanel
+        className=" responsive-size-type-field-tabs  responsive-size-type-field__common-tabs  responsive-inline-margin"
+        activeClass="active-tab"
+        tabs={ [
+          { name: "desktop", title: <Dashicon icon="desktop" />, className: " responsive-desktop-tab  responsive-responsive-tabs" },
+          { name: "tablet", title: <Dashicon icon="tablet" />, className: " responsive-tablet-tab  responsive-responsive-tabs" },
+          { name: "mobile", title: <Dashicon icon="smartphone" />, className: " responsive-mobile-tab  responsive-responsive-tabs" },
+        ] }
+      >
+        { ( tab ) => {
+          const key =
+            tab.name === "tablet" ? base + "Tablet" : tab.name === "mobile" ? base + "Mobile" : base;
+          const isDesktop = tab.name === "desktop";
+          return (
+            <RangeControl
+              label={ __( label, "skt-blocks" ) }
+              value={ this.props.attributes[ key ] }
+              onChange={ ( value ) =>
+                this.props.setAttributes( {
+                  [ key ]: value !== undefined ? value : ( isDesktop ? def : undefined ),
+                } )
+              }
+              min={ min }
+              max={ max }
+              allowReset
+            />
+          );
+        } }
+      </TabPanel>
+    );
+
     // Setup the attributes
     const {
       attributes: {
@@ -436,19 +473,7 @@ export default class Inspector extends Component {
               />
             </Fragment>
           )}
-          <RangeControl
-            label={__("Padding", "skt-blocks")}
-            value={itemPadding}
-            onChange={(value) =>
-              this.props.setAttributes({
-                itemPadding: value !== undefined ? value : 20,
-              })
-            }
-            min={1}
-            max={200}
-            step={1}
-            allowReset
-          />
+          { respRange( "Padding", "itemPadding", 1, 200, 20 ) }
         </PanelBody>
 
         <PanelBody
@@ -660,47 +685,38 @@ export default class Inspector extends Component {
           title={__("Spacing", "skt-blocks")}
           initialOpen={false}
         >
-          <RangeControl
-            label={__("Horizontal Spacing", "skt-blocks")}
-            value={horizontalSpace}
-            onChange={(value) =>
-              this.props.setAttributes({
-                horizontalSpace: value !== undefined ? value : 0,
-              })
-            }
-            min={0}
-            max={50}
-            step={1}
-            allowReset
+          { respRange( "Horizontal Spacing", "horizontalSpace", 0, 50, 0 ) }
+          { respRange( "Vertical Spacing", "verticalSpace", 0, 50, 15 ) }
+          { respRange( "Heading Bottom Margin", "headingBottomMargin", 0, 50, 15 ) }
+        </PanelBody>
+        <PanelBody
+          title={__("Visibility", "skt-blocks")}
+          initialOpen={false}
+        >
+          <ToggleControl
+            label={__("Hide on Desktop", "skt-blocks")}
+            checked={!!this.props.attributes.hideDesktop}
+            onChange={(value) => this.props.setAttributes({ hideDesktop: value })}
           />
-          <RangeControl
-            label={__("Vertical Spacing", "skt-blocks")}
-            value={verticalSpace}
-            onChange={(value) =>
-              this.props.setAttributes({
-                verticalSpace: value !== undefined ? value : 15,
-              })
-            }
-            min={0}
-            max={50}
-            step={1}
-            allowReset
+          <ToggleControl
+            label={__("Hide on Tablet", "skt-blocks")}
+            checked={!!this.props.attributes.hideTablet}
+            onChange={(value) => this.props.setAttributes({ hideTablet: value })}
           />
-          <RangeControl
-            label={__(
-              "Heading Bottom Margin",
-              "skt-blocks"
-            )}
-            value={headingBottomMargin}
-            onChange={(value) =>
-              this.props.setAttributes({
-                headingBottomMargin: value !== undefined ? value : 15,
-              })
-            }
-            min={0}
-            max={50}
-            step={1}
-            allowReset
+          <ToggleControl
+            label={__("Hide on Mobile", "skt-blocks")}
+            checked={!!this.props.attributes.hideMobile}
+            onChange={(value) => this.props.setAttributes({ hideMobile: value })}
+          />
+          <ToggleControl
+            label={__("Hide for Logged In Users", "skt-blocks")}
+            checked={!!this.props.attributes.hideLoggedIn}
+            onChange={(value) => this.props.setAttributes({ hideLoggedIn: value })}
+          />
+          <ToggleControl
+            label={__("Hide for Logged Out Users", "skt-blocks")}
+            checked={!!this.props.attributes.hideLoggedOut}
+            onChange={(value) => this.props.setAttributes({ hideLoggedOut: value })}
           />
         </PanelBody>
 

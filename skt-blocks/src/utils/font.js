@@ -21,7 +21,7 @@ const subsets = {
 export const getGoogleFontURL = (fontName) => {
   const family = fontName.replace(/ /g, "+");
   const subset = `&subset=latin`;
-  return `https: 
+  return `https://fonts.googleapis.com/css?family=${family}${subset}`;
 };
 
 export const isWebFont = (fontName) =>
@@ -30,21 +30,44 @@ export const isWebFont = (fontName) =>
 /**
  * Load the stylesheet of a Google Font.
  *
+ * WordPress 6.x renders the editor canvas inside an iframe, so a <link> added
+ * to the top document's <head> never reaches the editor preview. To fix this
+ * we also RETURN a <link> element: blocks call this as
+ * `{fontFamily && loadGoogleFont(fontFamily)}`, so the returned element renders
+ * inside the block output — which lives in the iframe — and the font loads in
+ * the editor reliably on every render (not just the first time). The front end
+ * is unaffected (save output does not call this).
+ *
  * @param {string} fontName The name of the font
+ * @return {Object|null} A <link> React element for the font, or null.
  */
 export const loadGoogleFont = (fontName) => {
-  if (loadedFonts.includes(fontName)) {
-    return;
-  }
-  if (document && isWebFont(fontName)) {
-    const link = document.createElement("link");
-    link.setAttribute("href", getGoogleFontURL(fontName));
-    link.setAttribute("rel", "stylesheet");
-    link.setAttribute("type", "text/css");
-    document.querySelector("head").appendChild(link);
+  if (!fontName || !isWebFont(fontName)) {
+    return null;
   }
 
-  loadedFonts.push(fontName);
+  const href = getGoogleFontURL(fontName);
+
+  // Keep adding it to the top document too (covers the editor chrome and any
+  // non-iframe context). Deduped so we only append once per session.
+  if (typeof document !== "undefined" && !loadedFonts.includes(fontName)) {
+    const link = document.createElement("link");
+    link.setAttribute("href", href);
+    link.setAttribute("rel", "stylesheet");
+    link.setAttribute("type", "text/css");
+    const head = document.querySelector("head");
+    if (head) {
+      head.appendChild(link);
+    }
+    loadedFonts.push(fontName);
+  }
+
+  // Rendered inside the block -> loads the font inside the editor iframe.
+  return wp.element.createElement("link", {
+    rel: "stylesheet",
+    type: "text/css",
+    href,
+  });
 };
 
 export const getFontFamily = (fontName) => {

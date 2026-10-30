@@ -57,3 +57,50 @@
     }
   }
 }
+
+// Responsive visibility (Desktop >=1025, Tablet 768-1024, Mobile <=767).
+@media (max-width: 767px) {
+  .skt-quote-hide.skt-hide-mobile {
+    display: none !important;
+  }
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+  .skt-quote-hide.skt-hide-tablet {
+    display: none !important;
+  }
+}
+@media (min-width: 1025px) {
+  .skt-quote-hide.skt-hide-desktop {
+    display: none !important;
+  }
+}
+
+// Responsive padding (Tablet <=1024px, Mobile <=767px) via CSS variables.
+@media (max-width: 1024px) {
+  .skt-blocks-block-quote.has-bq-pt-tablet {
+    padding-top: var(--bq-pt-tablet) !important;
+  }
+  .skt-blocks-block-quote.has-bq-pb-tablet {
+    padding-bottom: var(--bq-pb-tablet) !important;
+  }
+  .skt-blocks-block-quote.has-bq-pl-tablet {
+    padding-left: var(--bq-pl-tablet) !important;
+  }
+  .skt-blocks-block-quote.has-bq-pr-tablet {
+    padding-right: var(--bq-pr-tablet) !important;
+  }
+}
+@media (max-width: 767px) {
+  .skt-blocks-block-quote.has-bq-pt-mobile {
+    padding-top: var(--bq-pt-mobile) !important;
+  }
+  .skt-blocks-block-quote.has-bq-pb-mobile {
+    padding-bottom: var(--bq-pb-mobile) !important;
+  }
+  .skt-blocks-block-quote.has-bq-pl-mobile {
+    padding-left: var(--bq-pl-mobile) !important;
+  }
+  .skt-blocks-block-quote.has-bq-pr-mobile {
+    padding-right: var(--bq-pr-mobile) !important;
+  }
+}

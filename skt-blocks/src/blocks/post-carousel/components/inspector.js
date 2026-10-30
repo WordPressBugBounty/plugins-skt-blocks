@@ -105,6 +105,46 @@ export default class Inspector extends Component {
   render() {
     // Setup the attributes
     const { attributes, setAttributes, latestPosts, postCount } = this.props;
+
+    // One RangeControl with Desktop / Tablet / Mobile tabs. Desktop writes the
+    // base attribute; tablet/mobile write <base>Tablet / <base>Mobile. Unset
+    // tablet/mobile inherit desktop (handled in render CSS). `def` keeps the
+    // desktop default on reset.
+    const respRange = ( label, base, min, max, def ) => (
+      <TabPanel
+        className=" responsive-size-type-field-tabs  responsive-size-type-field__common-tabs  responsive-inline-margin"
+        activeClass="active-tab"
+        tabs={ [
+          { name: "desktop", title: <Dashicon icon="desktop" />, className: " responsive-desktop-tab  responsive-responsive-tabs" },
+          { name: "tablet", title: <Dashicon icon="tablet" />, className: " responsive-tablet-tab  responsive-responsive-tabs" },
+          { name: "mobile", title: <Dashicon icon="smartphone" />, className: " responsive-mobile-tab  responsive-responsive-tabs" },
+        ] }
+      >
+        { ( tab ) => {
+          const key =
+            tab.name === "tablet"
+              ? base + "Tablet"
+              : tab.name === "mobile"
+              ? base + "Mobile"
+              : base;
+          const isDesktop = tab.name === "desktop";
+          return (
+            <RangeControl
+              label={ __( label, "skt-blocks" ) }
+              value={ attributes[ key ] }
+              onChange={ ( value ) =>
+                setAttributes( {
+                  [ key ]: value !== undefined ? value : ( isDesktop ? def : undefined ),
+                } )
+              }
+              min={ min }
+              max={ max }
+              allowReset
+            />
+          );
+        } }
+      </TabPanel>
+    );
     const {
       displayPostExcerpt,
       displayPostDate,
@@ -1169,102 +1209,43 @@ export default class Inspector extends Component {
           title={__("Spacing", "skt-blocks")}
           initialOpen={false}
         >
-          <RangeControl
-            label={__("Content Padding", "skt-blocks")}
-            value={contentPadding}
-            onChange={(value) =>
-              setAttributes({
-                contentPadding: value !== undefined ? value : 20,
-              })
-            }
-            min={0}
-            max={500}
-            allowReset
+          { respRange( "Content Padding", "contentPadding", 0, 500, 20 ) }
+          { respRange( "Gap Between Content & Dots", "rowGap", 0, 50, 20 ) }
+          { respRange( "Column Gap", "columnGap", 0, 50, 20 ) }
+          { respRange( "Title Top Margin", "imageSpace", 0, 50, undefined ) }
+          { respRange( "Title Bottom Margin", "titleSpace", 0, 50, undefined ) }
+          { respRange( "Meta Bottom Margin", "dateSpace", 0, 50, 20 ) }
+          { respRange( "Excerpt Bottom Margin", "excerptSpace", 0, 50, 20 ) }
+          { respRange( "CTA Bottom Margin", "ctaSpace", 0, 50, 20 ) }
+        </PanelBody>
+        <PanelBody
+          title={__("Visibility", "skt-blocks")}
+          initialOpen={false}
+        >
+          <ToggleControl
+            label={__("Hide on Desktop", "skt-blocks")}
+            checked={!!attributes.hideDesktop}
+            onChange={(value) => setAttributes({ hideDesktop: value })}
           />
-          <RangeControl
-            label={__(
-              "Content Padding Mobile",
-              "skt-blocks"
-            )}
-            value={contentPaddingMobile}
-            onChange={(value) =>
-              setAttributes({
-                contentPaddingMobile: value !== undefined ? value : 20,
-              })
-            }
-            min={0}
-            max={500}
-            allowReset
+          <ToggleControl
+            label={__("Hide on Tablet", "skt-blocks")}
+            checked={!!attributes.hideTablet}
+            onChange={(value) => setAttributes({ hideTablet: value })}
           />
-          <RangeControl
-            label={__("Gap Between Content & Dots")}
-            value={rowGap}
-            onChange={(value) =>
-              setAttributes({ rowGap: value !== undefined ? value : 20 })
-            }
-            min={0}
-            max={50}
-            allowReset
+          <ToggleControl
+            label={__("Hide on Mobile", "skt-blocks")}
+            checked={!!attributes.hideMobile}
+            onChange={(value) => setAttributes({ hideMobile: value })}
           />
-          <RangeControl
-            label={__("Column Gap")}
-            value={columnGap}
-            onChange={(value) =>
-              setAttributes({ columnGap: value !== undefined ? value : 20 })
-            }
-            min={0}
-            max={50}
-            allowReset
+          <ToggleControl
+            label={__("Hide for Logged In Users", "skt-blocks")}
+            checked={!!attributes.hideLoggedIn}
+            onChange={(value) => setAttributes({ hideLoggedIn: value })}
           />
-          <RangeControl
-            label={__("Title Top Margin")}
-            value={imageSpace}
-            onChange={(value) =>
-              setAttributes({ imageSpace: value !== undefined ? value : "" })
-            }
-            min={0}
-            max={50}
-            allowReset
-          />
-          <RangeControl
-            label={__("Title Bottom Margin")}
-            value={titleSpace}
-            onChange={(value) =>
-              setAttributes({ titleSpace: value !== undefined ? value : "" })
-            }
-            min={0}
-            max={50}
-            allowReset
-          />
-          <RangeControl
-            label={__("Meta Bottom Margin")}
-            value={dateSpace}
-            onChange={(value) =>
-              setAttributes({ dateSpace: value !== undefined ? value : "" })
-            }
-            min={0}
-            max={50}
-            allowReset
-          />
-          <RangeControl
-            label={__("Excerpt Bottom Margin")}
-            value={excerptSpace}
-            onChange={(value) =>
-              setAttributes({ excerptSpace: value !== undefined ? value : "" })
-            }
-            min={0}
-            max={50}
-            allowReset
-          />
-          <RangeControl
-            label={__("CTA Bottom Margin")}
-            value={ctaSpace}
-            onChange={(value) =>
-              setAttributes({ ctaSpace: value !== undefined ? value : "" })
-            }
-            min={0}
-            max={50}
-            allowReset
+          <ToggleControl
+            label={__("Hide for Logged Out Users", "skt-blocks")}
+            checked={!!attributes.hideLoggedOut}
+            onChange={(value) => setAttributes({ hideLoggedOut: value })}
           />
         </PanelBody>
 

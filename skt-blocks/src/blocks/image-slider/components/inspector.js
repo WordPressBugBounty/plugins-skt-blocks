@@ -333,6 +333,33 @@ getThumbnailNavigationHelp(checked) {
               />
             </PanelColorSettings>
             <SliderPanel {...this.props} />
+            <PanelBody title={__("Visibility", "skt-blocks")} initialOpen={false}>
+              <ToggleControl
+                label={__("Hide on Desktop", "skt-blocks")}
+                checked={!!attributes.hideDesktop}
+                onChange={(value) => setAttributes({ hideDesktop: value })}
+              />
+              <ToggleControl
+                label={__("Hide on Tablet", "skt-blocks")}
+                checked={!!attributes.hideTablet}
+                onChange={(value) => setAttributes({ hideTablet: value })}
+              />
+              <ToggleControl
+                label={__("Hide on Mobile", "skt-blocks")}
+                checked={!!attributes.hideMobile}
+                onChange={(value) => setAttributes({ hideMobile: value })}
+              />
+              <ToggleControl
+                label={__("Hide from Logged-in Users", "skt-blocks")}
+                checked={!!attributes.hideLoggedIn}
+                onChange={(value) => setAttributes({ hideLoggedIn: value })}
+              />
+              <ToggleControl
+                label={__("Hide from Logged-out Users", "skt-blocks")}
+                checked={!!attributes.hideLoggedOut}
+                onChange={(value) => setAttributes({ hideLoggedOut: value })}
+              />
+            </PanelBody>
           </InspectorControls>
           <InspectorAdvancedControls>
             <ToggleControl

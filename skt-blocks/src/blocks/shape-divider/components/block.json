@@ -1,4 +1,5 @@
 {
+  "apiVersion": 3,
   "name": "skt-blocks/shape-divider",
   "category": "layout",
   "attributes": {
@@ -21,6 +22,9 @@
       "default": 100
     },
     "shapeHeightTablet": {
+      "type": "number"
+    },
+    "shapeHeightMobile": {
       "type": "number"
     },
     "backgroundHeight": {
@@ -94,6 +98,26 @@
     "backgroundType": {
       "type": "string",
       "default": "none"
+    },
+    "hideDesktop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideTablet": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideMobile": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideLoggedIn": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideLoggedOut": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

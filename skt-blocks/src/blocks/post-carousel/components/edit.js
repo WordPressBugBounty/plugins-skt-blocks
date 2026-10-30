@@ -177,12 +177,15 @@ class LatestPostsBlock extends Component {
             borderWidth: arrowBorderSize,
           }}
         >
-          <Dashicon
-            icon="arrow-right-alt2"
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 256 512"
             height={arrowSize}
             width={arrowSize}
-            style={{ fill: arrowDotsColor }}
-          />
+            fill={arrowDotsColor}
+          >
+            <path d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+          </svg>
         </button>
       );
     }
@@ -202,12 +205,15 @@ class LatestPostsBlock extends Component {
             borderWidth: arrowBorderSize,
           }}
         >
-          <Dashicon
-            icon="arrow-left-alt2"
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 256 512"
             height={arrowSize}
             width={arrowSize}
-            style={{ fill: arrowDotsColor }}
-          />
+            fill={arrowDotsColor}
+          >
+            <path d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"></path>
+          </svg>
         </button>
       );
     }
@@ -226,7 +232,10 @@ class LatestPostsBlock extends Component {
       slidesToScroll: 1,
       autoplaySpeed: attributes.autoplaySpeed,
       autoplay: attributes.autoplay,
-      infinite: attributes.infiniteLoop,
+      // Only loop when there is more than one post; a single post with infinite
+      // gets cloned and appears repeated (e.g. shown 3x). With 2+ posts the loop,
+      // arrows and dots work normally.
+      infinite: attributes.infiniteLoop && displayPosts.length > 1,
       pauseOnHover: pauseOnHover,
       speed: attributes.transitionSpeed,
       arrows: arrows,
@@ -252,8 +261,48 @@ class LatestPostsBlock extends Component {
         },
       ],
     };
+
+    // Editor live preview for responsive (tablet/mobile) spacing. Desktop stays
+    // inline on the elements; tablet/mobile are emitted here into an in-tree
+    // <Style> (reaches the editor iframe) as media queries, scoped to this
+    // block. When the user switches the editor device preview, WP resizes the
+    // canvas and the matching query fires. Unset values inherit desktop. Mirrors index.php.
+    const pcScope = `.block-${block_id}`;
+    const pcAttr = this.props.attributes;
+    const pcNum = ( v ) => ( typeof v === "number" && !isNaN( v ) ) ? v : null;
+    const pcRules = ( suffix, cpKey ) => {
+      let c = "";
+      const cp = pcNum( pcAttr[ cpKey ] );
+      if ( cp !== null ) c += `${pcScope} .skt-blocks-block-post-carousel-text-wrap{padding:${cp}px !important;}`;
+      const rg = pcNum( pcAttr[ "rowGap" + suffix ] );
+      if ( rg !== null ) c += `${pcScope} .slick-slide{margin-bottom:${rg}px !important;}`;
+      const cg = pcNum( pcAttr[ "columnGap" + suffix ] );
+      if ( cg !== null ) c += `${pcScope} .slick-slide>div:first-child{margin-left:${cg / 2}px !important;margin-right:${cg / 2}px !important;}`;
+      const is = pcNum( pcAttr[ "imageSpace" + suffix ] );
+      const ts = pcNum( pcAttr[ "titleSpace" + suffix ] );
+      if ( is !== null || ts !== null ) {
+        c += `${pcScope} .skt-blocks-block-post-carousel-title{`;
+        if ( is !== null ) c += `margin-top:${is}px !important;`;
+        if ( ts !== null ) c += `margin-bottom:${ts}px !important;`;
+        c += `}`;
+      }
+      const ds = pcNum( pcAttr[ "dateSpace" + suffix ] );
+      if ( ds !== null ) c += `${pcScope} .skt-blocks-block-post-carousel-byline{margin-bottom:${ds}px !important;}`;
+      const es = pcNum( pcAttr[ "excerptSpace" + suffix ] );
+      if ( es !== null ) c += `${pcScope} .skt-blocks-block-post-carousel-excerpt p{margin-bottom:${es}px !important;}`;
+      const cs = pcNum( pcAttr[ "ctaSpace" + suffix ] );
+      if ( cs !== null ) c += `${pcScope} .skt-blocks-block-post-carousel-more-link{margin-bottom:${cs}px !important;}`;
+      return c;
+    };
+    const pcTablet = pcRules( "Tablet", "contentPaddingTablet" );
+    const pcMobile = pcRules( "Mobile", "contentPaddingMobile" );
+    let pcRespCss = "";
+    if ( pcTablet ) pcRespCss += `@media (max-width:976px){${pcTablet}}`;
+    if ( pcMobile ) pcRespCss += `@media (max-width:767px){${pcMobile}}`;
+
     return (
       <Fragment>
+        {pcRespCss && <Style>{pcRespCss}</Style>}
         <Inspector
           {...{ setAttributes, ...this.props }}
           postCount={latestPosts && latestPosts.length}

@@ -141,7 +141,52 @@ export default class Edit extends Component {
       boxShadowPositionCSS = "";
     }
 
+    // Editor live preview for responsive (tablet/mobile) spacing. Desktop stays
+    // inline on the elements; tablet/mobile come from this in-tree <style> (which
+    // reaches the editor iframe) as media queries. When the editor device preview
+    // is switched, WP resizes the canvas and the right query fires. Unset values
+    // inherit desktop. save.js is untouched, so saved markup stays validation-safe.
+    const ctaScope = `.skt-blocks-cta-${counterId}`;
+    const ctaA = this.props.attributes;
+    const ctaNum = ( v ) => ( typeof v === "number" && !isNaN( v ) ) ? v : null;
+    const ctaRules = ( suffix ) => {
+      let c = "";
+      const tp = ctaNum( ctaA[ "topPadding" + suffix ] );
+      const bp = ctaNum( ctaA[ "bottomPadding" + suffix ] );
+      const lp = ctaNum( ctaA[ "leftPadding" + suffix ] );
+      const rp = ctaNum( ctaA[ "rightPadding" + suffix ] );
+      if ( tp !== null || bp !== null || lp !== null || rp !== null ) {
+        c += `${ctaScope}{`;
+        if ( tp !== null ) c += `padding-top:${tp}px !important;`;
+        if ( bp !== null ) c += `padding-bottom:${bp}px !important;`;
+        if ( lp !== null ) c += `padding-left:${lp}px !important;`;
+        if ( rp !== null ) c += `padding-right:${rp}px !important;`;
+        c += `}`;
+      }
+      const ts = ctaNum( ctaA[ "titleSpace" + suffix ] );
+      if ( ts !== null ) c += `${ctaScope} .skt-blocks-cta-title{margin-bottom:${ts}px !important;}`;
+      const ss = ctaNum( ctaA[ "subtitleSpace" + suffix ] );
+      if ( ss !== null ) c += `${ctaScope} .skt-blocks-cta-text{margin-bottom:${ss}px !important;}`;
+      const bs = ctaNum( ctaA[ "buttonSpace" + suffix ] );
+      if ( bs !== null ) c += `${ctaScope} .skt-blocks-cta-button-wrapper{margin-bottom:${bs}px !important;}`;
+      const vp = ctaNum( ctaA[ "buttonvPadding" + suffix ] );
+      const hp = ctaNum( ctaA[ "buttonhPadding" + suffix ] );
+      if ( vp !== null || hp !== null ) {
+        c += `${ctaScope} .skt-blocks-cta-button-wrapper{`;
+        if ( vp !== null ) c += `padding-top:${vp}px !important;padding-bottom:${vp}px !important;`;
+        if ( hp !== null ) c += `padding-left:${hp}px !important;padding-right:${hp}px !important;`;
+        c += `}`;
+      }
+      return c;
+    };
+    const ctaTablet = ctaRules( "Tablet" );
+    const ctaMobile = ctaRules( "Mobile" );
+    let ctaRespCss = "";
+    if ( ctaTablet ) ctaRespCss += `@media (max-width:1024px){${ctaTablet}}`;
+    if ( ctaMobile ) ctaRespCss += `@media (max-width:767px){${ctaMobile}}`;
+
     return [
+      ctaRespCss ? <Style key="skt-cta-resp">{ctaRespCss}</Style> : null,
       // Show the alignment toolbar on focus
       <BlockControls
         key={
@@ -192,7 +237,20 @@ export default class Edit extends Component {
   		  }
 		  .skt-blocks-cta-${counterId} .skt-blocks-cta-button__icon svg {
 			  fill: ${icon_color};
+			  width: 1em;
+			  height: 1em;
   		  }
+		  .skt-blocks-cta-${counterId} .skt-blocks-cta-button-shape-square { border-radius: 0; }
+		  .skt-blocks-cta-${counterId} .skt-blocks-cta-button-shape-rounded { border-radius: 4px; }
+		  .skt-blocks-cta-${counterId} .skt-blocks-cta-button-shape-circular { border-radius: 100px; }
+		  .skt-blocks-cta-${counterId} .skt-blocks-cta-button-size-small .skt-blocks-cta-button,
+		  .skt-blocks-cta-${counterId} .skt-blocks-cta-button-size-small .skt-blocks-cta-button__icon { font-size: 14px; }
+		  .skt-blocks-cta-${counterId} .skt-blocks-cta-button-size-medium .skt-blocks-cta-button,
+		  .skt-blocks-cta-${counterId} .skt-blocks-cta-button-size-medium .skt-blocks-cta-button__icon { font-size: 20px; }
+		  .skt-blocks-cta-${counterId} .skt-blocks-cta-button-size-large .skt-blocks-cta-button,
+		  .skt-blocks-cta-${counterId} .skt-blocks-cta-button-size-large .skt-blocks-cta-button__icon { font-size: 26px; }
+		  .skt-blocks-cta-${counterId} .skt-blocks-cta-button-size-extralarge .skt-blocks-cta-button,
+		  .skt-blocks-cta-${counterId} .skt-blocks-cta-button-size-extralarge .skt-blocks-cta-button__icon { font-size: 32px; }
 	  `}
         </Style>
         {buttonbackgroundType == "color" && (

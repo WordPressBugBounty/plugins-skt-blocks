@@ -1142,3 +1142,15 @@ i.fipicon-angle-left:before {
   border: 1px solid #f5f5f5;
   color: #424242;
 }
+
+/* --- Info Block: in the editor, never actually hide the block (user must be
+   able to select/edit it). Show it dimmed instead so the hidden state is
+   visible without removing it from the canvas. --- */
+.editor-styles-wrapper {
+	.skt-blocks-infobox__outer-wrap.skt-hide-desktop,
+	.skt-blocks-infobox__outer-wrap.skt-hide-tablet,
+	.skt-blocks-infobox__outer-wrap.skt-hide-mobile {
+		display: flex !important;
+		opacity: 0.55;
+	}
+}

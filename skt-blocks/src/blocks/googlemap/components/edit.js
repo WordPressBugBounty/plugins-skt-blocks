@@ -13,8 +13,9 @@ const { __ } = wp.i18n;
 const { Component, Fragment } = wp.element;
 const { Button, Placeholder } = wp.components;
 const { ENTER } = wp.keycodes;
+const { withSelect } = wp.data;
 
-export default class Edit extends Component {
+class Edit extends Component {
   constructor() {
     super(...arguments);
     this.state = {
@@ -30,10 +31,24 @@ export default class Edit extends Component {
   render() {
     // Setup the attributes
     const {
-      attributes: { address, zoom, height, pinned },
+      attributes: { address, zoom, height, heightTablet, heightMobile, pinned },
       setAttributes,
       isSelected,
     } = this.props;
+
+    // Resolve the height for the editor's current preview device. Tablet/Mobile
+    // inherit the next larger value when unset, mirroring the frontend @media CSS.
+    const dt = this.props.deviceType;
+    let sktEffHeight = height ? height : 400;
+    if (dt === "Tablet") {
+      sktEffHeight = heightTablet ? heightTablet : sktEffHeight;
+    } else if (dt === "Mobile") {
+      sktEffHeight = heightMobile
+        ? heightMobile
+        : heightTablet
+        ? heightTablet
+        : sktEffHeight;
+    }
 
     const renderMap = (event) => {
       if (event) {
@@ -62,7 +77,7 @@ export default class Edit extends Component {
             <div
               style={{
                 width: "100%",
-                height: height ? height : 400,
+                height: sktEffHeight,
                 position: "absolute",
               }}
             />
@@ -70,7 +85,7 @@ export default class Edit extends Component {
               <iframe
                 title={__("Google Map", "skt-blocks")}
                 frameBorder="0"
-                style={{ width: "100%", minHeight: height ? height : 400 }}
+                style={{ width: "100%", minHeight: sktEffHeight }}
                 src={`https://www.google.com/maps?q=${encodeURIComponent(
                   address
                 )}&output=embed&z=${zoom}`}
@@ -114,3 +129,17 @@ export default class Edit extends Component {
     ];
   }
 }
+
+export default withSelect((select) => {
+  let deviceType = null;
+  const editPost = select("core/edit-post");
+  if (editPost && editPost.__experimentalGetPreviewDeviceType) {
+    deviceType = editPost.__experimentalGetPreviewDeviceType();
+  } else {
+    const editor = select("core/editor");
+    if (editor && editor.getDeviceType) {
+      deviceType = editor.getDeviceType();
+    }
+  }
+  return { deviceType };
+})(Edit);

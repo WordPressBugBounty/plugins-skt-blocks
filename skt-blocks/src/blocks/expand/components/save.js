@@ -45,13 +45,51 @@ export default class Save extends Component {
         textColor,
         linkColor,
         titleColor,
+        titleSpaceTablet,
+        titleSpaceMobile,
+        textSpaceTablet,
+        textSpaceMobile,
+        linkSpaceTablet,
+        linkSpaceMobile,
+        hideDesktop,
+        hideTablet,
+        hideMobile,
       },
       setAttributes,
     } = this.props;
 
+    // Tablet / Mobile spacing as CSS variables, only when set, so existing
+    // blocks keep exactly the same markup.
+    const isSet = (v) => v !== undefined && v !== null && v !== "";
+    const vars = {};
+    const extra = {};
+    [
+      ["title", titleSpaceTablet, titleSpaceMobile],
+      ["text", textSpaceTablet, textSpaceMobile],
+      ["link", linkSpaceTablet, linkSpaceMobile],
+    ].forEach(([k, t, m]) => {
+      if (isSet(t)) {
+        vars[`--exp-${k}-tablet`] = `${t}px`;
+        extra[`has-exp-${k}-tablet`] = true;
+      }
+      if (isSet(m)) {
+        vars[`--exp-${k}-mobile`] = `${m}px`;
+        extra[`has-exp-${k}-mobile`] = true;
+      }
+    });
+    const wrapClasses = classnames("skt-blocks-block-expand", extra, {
+      "skt-expand-hide": hideDesktop || hideTablet || hideMobile,
+      "skt-hide-desktop": hideDesktop,
+      "skt-hide-tablet": hideTablet,
+      "skt-hide-mobile": hideMobile,
+    });
+
     return (
       <Fragment>
-        <div className="skt-blocks-block-expand">
+        <div
+          className={wrapClasses}
+          style={Object.keys(vars).length ? vars : undefined}
+        >
           <div
             className="skt-blocks-expand-block-content"
             style={{ textAlign: expandAlignment }}

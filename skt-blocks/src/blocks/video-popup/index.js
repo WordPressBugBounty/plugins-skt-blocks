@@ -3,10 +3,7 @@
  */
 import Edit from "./components/edit";
 import Save from "./components/save";
-import {
-  createBackgroundAttributes,
-  createResponsiveAttributes,
-} from "./util/index.js";
+import { createBackgroundAttributes } from "./util/index.js";
 
 // Import CSS.
 import "./styles/style.scss";
@@ -158,6 +155,15 @@ registerBlockType("skt-blocks/video-popup", {
       type: "string",
       default: "",
     },
+
+    // --- Visibility. Device hide + logged-in/out are applied only through the
+    // editor <style> and the PHP render_block filter (never the saved markup),
+    // so these default to false and save output is unchanged (validation-safe). ---
+    hideDesktop: { type: "boolean", default: false },
+    hideTablet: { type: "boolean", default: false },
+    hideMobile: { type: "boolean", default: false },
+    hideLoggedIn: { type: "boolean", default: false },
+    hideLoggedOut: { type: "boolean", default: false },
   },
   /* Render the block in the editor. */
   edit: (props) => {

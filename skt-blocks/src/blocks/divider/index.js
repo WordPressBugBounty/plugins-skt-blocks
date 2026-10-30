@@ -7,6 +7,11 @@ import classnames from "classnames";
 import Edit from "./components/edit";
 import Save from "./components/save";
 
+// Block styles (front end + editor). These were missing, so the Dots/Asterisks
+// divider styles never got their front-end CSS and showed a raw bar + box.
+import "./styles/style.scss";
+import "./styles/styles.editor.scss";
+
 // Components
 const { __ } = wp.i18n;
 
@@ -57,6 +62,17 @@ registerBlockType("skt-blocks/divider", {
       type: "string",
       default: "center",
     },
+    spacerHeightTablet: { type: "number" },
+    spacerHeightMobile: { type: "number" },
+    spacerDividerHeightTablet: { type: "number" },
+    spacerDividerHeightMobile: { type: "number" },
+    spacerDividerWidthTablet: { type: "number" },
+    spacerDividerWidthMobile: { type: "number" },
+    hideDesktop: { type: "boolean", default: false },
+    hideTablet: { type: "boolean", default: false },
+    hideMobile: { type: "boolean", default: false },
+    hideLoggedIn: { type: "boolean", default: false },
+    hideLoggedOut: { type: "boolean", default: false },
   },
 
   skt_blocks_settings_data: {

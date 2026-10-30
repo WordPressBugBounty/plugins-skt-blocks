@@ -367,6 +367,46 @@ export default class Inspector extends Component {
               max={500}
             />
           </PanelBody>
+          <PanelBody
+            title={__("Visibility", "skt-blocks")}
+            initialOpen={false}
+          >
+            <ToggleControl
+              label={__("Hide on Desktop", "skt-blocks")}
+              checked={this.props.attributes.hideDesktop}
+              onChange={(value) =>
+                this.props.setAttributes({ hideDesktop: value })
+              }
+            />
+            <ToggleControl
+              label={__("Hide on Tablet", "skt-blocks")}
+              checked={this.props.attributes.hideTablet}
+              onChange={(value) =>
+                this.props.setAttributes({ hideTablet: value })
+              }
+            />
+            <ToggleControl
+              label={__("Hide on Mobile", "skt-blocks")}
+              checked={this.props.attributes.hideMobile}
+              onChange={(value) =>
+                this.props.setAttributes({ hideMobile: value })
+              }
+            />
+            <ToggleControl
+              label={__("Hide from Logged-in Users", "skt-blocks")}
+              checked={this.props.attributes.hideLoggedIn}
+              onChange={(value) =>
+                this.props.setAttributes({ hideLoggedIn: value })
+              }
+            />
+            <ToggleControl
+              label={__("Hide from Logged-out Users", "skt-blocks")}
+              checked={this.props.attributes.hideLoggedOut}
+              onChange={(value) =>
+                this.props.setAttributes({ hideLoggedOut: value })
+              }
+            />
+          </PanelBody>
         </InspectorControls>
       </Fragment>
     );

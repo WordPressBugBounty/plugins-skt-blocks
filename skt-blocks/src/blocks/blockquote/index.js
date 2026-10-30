@@ -94,6 +94,50 @@ registerBlockType("skt-blocks/blockquote", {
       type: "number",
       default: 70,
     },
+    topPaddingTablet: {
+      type: "number",
+    },
+    topPaddingMobile: {
+      type: "number",
+    },
+    bottomPaddingTablet: {
+      type: "number",
+    },
+    bottomPaddingMobile: {
+      type: "number",
+    },
+    leftPaddingTablet: {
+      type: "number",
+    },
+    leftPaddingMobile: {
+      type: "number",
+    },
+    rightPaddingTablet: {
+      type: "number",
+    },
+    rightPaddingMobile: {
+      type: "number",
+    },
+    hideDesktop: {
+      type: "boolean",
+      default: false,
+    },
+    hideTablet: {
+      type: "boolean",
+      default: false,
+    },
+    hideMobile: {
+      type: "boolean",
+      default: false,
+    },
+    hideLoggedIn: {
+      type: "boolean",
+      default: false,
+    },
+    hideLoggedOut: {
+      type: "boolean",
+      default: false,
+    },
     quoteHposition: {
       type: "number",
       default: 30,

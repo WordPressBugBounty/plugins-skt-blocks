@@ -14,6 +14,7 @@ import AuthorName
 import Company from "./Company";
 import Description from "./Description";
 import Style from "style-it";
+import { DEVICE_TABS, deviceSuffix, inherited, previewSuffix, setPreviewDevice } from "./responsive-utils"
 import fontOptions from "../../../utils/googlefonts";
 import {loadGoogleFont} from "../../../utils/font";
 
@@ -44,6 +45,7 @@ const {
 
 
 const { Component, Fragment } = wp.element
+const { withSelect } = wp.data
 
 class edit extends Component {
 
@@ -507,62 +509,46 @@ class edit extends Component {
 		// Margin Settings.
 		const marginSettings = (
 			<PanelBody title={ __( "Spacing" ) } initialOpen={ false } >
-				<RangeControl
-					label={ __( "Gap Between Content & Dots" ) }
-					value={ rowGap }
-					onChange={ ( value ) => setAttributes( { rowGap: value } ) }
-					min={ 0 }
-					max={ 50 }
-					allowReset
-				/>
-				<RangeControl
-					label={ __( "Row Gap" ) }
-					value={ columnGap }
-					onChange={ ( value ) => setAttributes( { columnGap: value } ) }
-					min={ 0 }
-					max={ 50 }
-					allowReset
-				/>
-				<RangeControl
-					label={ __( "Content Padding" ) }
-					value={ contentPadding }
-					onChange={ ( value ) => setAttributes( { contentPadding: value } ) }
-					min={ 0 }
-					max={ 50 }
-					allowReset
-				/>
-				<RangeControl
-					label={ __( "Testimonial Bottom Margin" ) }
-					value={ descSpace }
-					onChange={ ( value ) => setAttributes( { descSpace: value } ) }
-					min={ 0 }
-					max={ 50 }
-					allowReset
-				/>
-				<RangeControl
-					label={ __( "Name Bottom Margin" ) }
-					value={ nameSpace }
-					onChange={ ( value ) => setAttributes( { nameSpace: value } ) }
-					min={ 0 }
-					max={ 50 }
-					allowReset
-				/>
-				<RangeControl
-					label={ __( "Image Horizontal Padding" ) }
-					value={ imgHrPadding }
-					onChange={ ( value ) => setAttributes( { imgHrPadding: value } ) }
-					min={ 0 }
-					max={ 50 }
-					allowReset
-				/>
-				<RangeControl
-					label={ __( "Image Vertical Padding" ) }
-					value={ imgVrPadding }
-					onChange={ ( value ) => setAttributes( { imgVrPadding: value } ) }
-					min={ 0 }
-					max={ 50 }
-					allowReset
-				/>
+				<TabPanel
+					className="rbea-inspect-tabs rbea-inspect-tabs-col-3"
+					activeClass="active-tab"
+					initialTabName={ ( this.props.deviceType || "Desktop" ).toLowerCase() }
+					onSelect={ setPreviewDevice }
+					tabs={ DEVICE_TABS.map( ( t ) => ( { ...t, className: "rbea-normal-tab" } ) ) }
+				>
+					{ ( tab ) => {
+						const sfx = deviceSuffix( tab.name )
+						// Desktop writes the base attr (keeping its default on reset);
+						// tablet/mobile write <base>Tablet / <base>Mobile and reset to
+						// undefined so they inherit from desktop.
+						const rng = ( label, base, def, min, max ) => (
+							<RangeControl
+								label={ __( label ) }
+								value={ inherited( this.props.attributes, base, sfx ) }
+								onChange={ ( value ) =>
+									setAttributes( {
+										[ base + sfx ]:
+											value !== undefined ? value : ( sfx ? undefined : def ),
+									} )
+								}
+								min={ min }
+								max={ max }
+								allowReset
+							/>
+						)
+						return (
+							<div>
+								{ rng( "Gap Between Content & Dots", "rowGap", 10, 0, 50 ) }
+								{ rng( "Row Gap", "columnGap", 10, 0, 50 ) }
+								{ rng( "Content Padding", "contentPadding", 5, 0, 50 ) }
+								{ rng( "Testimonial Bottom Margin", "descSpace", 15, 0, 50 ) }
+								{ rng( "Name Bottom Margin", "nameSpace", 5, 0, 50 ) }
+								{ rng( "Image Horizontal Padding", "imgHrPadding", 10, 0, 50 ) }
+								{ rng( "Image Vertical Padding", "imgVrPadding", 10, 0, 50 ) }
+							</div>
+						)
+					} }
+				</TabPanel>
 			</PanelBody>
 		)
 
@@ -733,22 +719,18 @@ class edit extends Component {
 		function NextArrow( props ) {
 			return (
 				<button type="button" data-role="none" className="slick-next slick-arrow" aria-label="Next" tabIndex="0" role="button" style={{ "borderColor" : arrowColor, "borderRadius" : arrowBorderRadius, "borderWidth" : arrowBorderSize }}>
-        <Dashicon
-            icon="arrow-right-alt2"
-            height={arrowSize}
-            width={arrowSize}
-            /></button>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" height={arrowSize} width={arrowSize} fill={arrowColor}>
+            <path d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
+        </svg></button>
 			)
 		}
 
 		function PrevArrow( props ) {
 			return (
 				<button type="button" data-role="none" className="slick-prev slick-arrow" aria-label="Previous" tabIndex="0" role="button" style={{ "borderColor" : arrowColor, "borderRadius" : arrowBorderRadius, "borderWidth" : arrowBorderSize }}>
-        <Dashicon
-            icon="arrow-left-alt2"
-            height={arrowSize}
-            width={arrowSize}
-            /></button>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" height={arrowSize} width={arrowSize} fill={arrowColor}>
+            <path d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"></path>
+        </svg></button>
 			)
 		}
 
@@ -760,7 +742,10 @@ class edit extends Component {
 			slidesToScroll : 1,
 			autoplaySpeed : autoplaySpeed,
 			autoplay : autoplay,
-			infinite : infiniteLoop,
+			// Only loop when there is more than one testimonial; a single item with
+			// infinite gets cloned and appears repeated. With 2+ items the loop,
+			// arrows and dots work normally.
+			infinite : infiniteLoop && test_block.length > 1,
 			pauseOnHover : pauseOnHover,
 			speed : transitionSpeed,
 			arrows : arrows,
@@ -1125,14 +1110,29 @@ class edit extends Component {
 							value={ imageSize }
 							onChange={ ( value ) => setAttributes( { imageSize: value } ) }
 						/>
-					 <RangeControl
-							label={ __( "Width" ) }
-							value={ imageWidth }
-							onChange={ ( value ) => setAttributes( { imageWidth: value } ) }
-							min={ 0 }
-							max={ 500 }
-							allowReset
-						/>
+					<TabPanel
+							className="rbea-inspect-tabs rbea-inspect-tabs-col-3"
+							activeClass="active-tab"
+							initialTabName={ ( this.props.deviceType || "Desktop" ).toLowerCase() }
+							onSelect={ setPreviewDevice }
+							tabs={ DEVICE_TABS.map( ( t ) => ( { ...t, className: "rbea-normal-tab" } ) ) }
+						>
+							{ ( tab ) => {
+								const sfx = deviceSuffix( tab.name )
+								return (
+									<div>
+										<RangeControl
+											label={ __( "Width" ) }
+											value={ inherited( this.props.attributes, "imageWidth", sfx ) }
+											onChange={ ( value ) => setAttributes( { [ "imageWidth" + sfx ]: value !== undefined ? value : ( sfx ? undefined : 60 ) } ) }
+											min={ 0 }
+											max={ 500 }
+											allowReset
+										/>
+									</div>
+								)
+							} }
+						</TabPanel>
 					</Fragment>
 					}
 
@@ -1142,11 +1142,44 @@ class edit extends Component {
 
 				{ marginSettings }
 				{ background_settings }
+			<PanelBody title={ __( "Visibility" ) } initialOpen={ false }>
+				<ToggleControl
+					label={ __( "Hide on Desktop" ) }
+					checked={ !! this.props.attributes.hideDesktop }
+					onChange={ ( value ) => setAttributes( { hideDesktop: value } ) }
+				/>
+				<ToggleControl
+					label={ __( "Hide on Tablet" ) }
+					checked={ !! this.props.attributes.hideTablet }
+					onChange={ ( value ) => setAttributes( { hideTablet: value } ) }
+				/>
+				<ToggleControl
+					label={ __( "Hide on Mobile" ) }
+					checked={ !! this.props.attributes.hideMobile }
+					onChange={ ( value ) => setAttributes( { hideMobile: value } ) }
+				/>
+				<ToggleControl
+					label={ __( "Hide from Logged-in Users" ) }
+					checked={ !! this.props.attributes.hideLoggedIn }
+					onChange={ ( value ) => setAttributes( { hideLoggedIn: value } ) }
+				/>
+				<ToggleControl
+					label={ __( "Hide from Logged-out Users" ) }
+					checked={ !! this.props.attributes.hideLoggedOut }
+					onChange={ ( value ) => setAttributes( { hideLoggedOut: value } ) }
+				/>
+			</PanelBody>
 			</InspectorControls>
 		)
 
 		return (
 			<Fragment>
+            {/* Full dynamic CSS (spacing, font sizes, responsive tablet/mobile)
+                rendered in-tree so it reaches the WP 6.9 editor iframe canvas.
+                The componentDidMount copy is injected into the parent document's
+                <head>, which the iframe does not see, so without this the Spacing
+                / responsive changes never show in the editor. */}
+            <Style>{ TestimonialStyle( this.props ) }</Style>
             <Style>
             {`
              .skt-blocks-slick-carousel.skt-blocks-block-${ this.props.clientId.substr( 0, 8 ) } ul.slick-dots li button:before, ul.slick-dots li.slick-active button:before, .slick-arrow span {
@@ -1174,10 +1207,23 @@ class edit extends Component {
 					/>
 				</BlockControls>
 				{inspect_control}
+				{ ( () => {
+					// Live image width for the device selected in the editor preview.
+					const w = inherited( this.props.attributes, "imageWidth", previewSuffix( this.props.deviceType ) )
+					return w !== undefined && w !== null && w !== "" ? (
+						<style>{ `.skt-blocks-block-${ this.props.clientId.substr( 0, 8 ) } .skt-blocks-tm__image img{width:${ w }px !important;max-width:${ w }px !important;}` }</style>
+					) : null
+				} )() }
 				<div className={ classnames(
 					className,
 					"skt-blocks-testomonial__outer-wrap skt-blocks-slick-carousel skt-blocks-tm__arrow-outside",
-					`skt-blocks-block-${ this.props.clientId.substr( 0, 8 ) }`
+					`skt-blocks-block-${ this.props.clientId.substr( 0, 8 ) }`,
+					{
+						"skt-slider-hide": this.props.attributes.hideDesktop || this.props.attributes.hideTablet || this.props.attributes.hideMobile,
+						"skt-hide-desktop": this.props.attributes.hideDesktop,
+						"skt-hide-tablet": this.props.attributes.hideTablet,
+						"skt-hide-mobile": this.props.attributes.hideMobile,
+					}
 				) }
 				>
 					<Slider
@@ -1259,4 +1305,18 @@ class edit extends Component {
 	}
 }
 
-export default edit
+export default withSelect( ( select ) => {
+	let deviceType = "Desktop"
+	try {
+		const editor = select( "core/editor" )
+		if ( editor && editor.getDeviceType ) {
+			deviceType = editor.getDeviceType()
+		} else {
+			const editPost = select( "core/edit-post" )
+			if ( editPost && editPost.__experimentalGetPreviewDeviceType ) {
+				deviceType = editPost.__experimentalGetPreviewDeviceType()
+			}
+		}
+	} catch ( e ) {}
+	return { deviceType }
+} )( edit )
