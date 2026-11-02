@@ -4,7 +4,7 @@ Tags: gutenberg blocks, page builder, WordPress blocks, blocks, editor
 Requires at least: 5.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.7
+Stable tag: 2.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,6 +75,14 @@ e.g.
 6. Post-TimeLine Block
 
 == Changelog ==
+
+= 2.8 =
+
+* Fixed: JavaScript error "can't access lexical declaration before initialization" in the Info Box block that stopped template import after the WordPress update.
+* Fixed: "Attempt Block Recovery" / block validation errors on imported templates and existing pages (Section, Advanced Columns, Info Box, Team, Multi Buttons and other blocks).
+* Fixed: Column block hover box-shadow default value restored (blur 0, spread 0).
+* Improved: Added backward compatibility for content saved by older plugin versions, so it is upgraded automatically without losing any settings.
+
 = 2.7 =
 * Added the new Flex Block.
 * Added the Visibility option to all supported blocks.

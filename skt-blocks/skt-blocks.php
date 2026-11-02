@@ -9,7 +9,7 @@
  * License: 	  GPLv2 or later
  * License URI:   http://www.gnu.org/licenses/gpl-2.0.html 
  * Domain Path:   /languages
- * Version:       2.7
+ * Version:       2.8
  *
  * @package       SKT Blocks
  */
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 define( 'SKT_BLOCKS_URL', trailingslashit( plugin_dir_url( __FILE__ ) ) );
 define( 'SKT_BLOCKS_DIR', trailingslashit( plugin_dir_path( __FILE__ ) ) );
-define( 'SKT_BLOCKS_VER', '2.7' );
+define( 'SKT_BLOCKS_VER', '2.8' );
 define( 'SKT_BLOCKS_BASENAME', plugin_basename( __FILE__ ) );
 
 // Skt Blocks plugin's main file.
