@@ -1,0 +1,149 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "skt-blocks/site-footer",
+  "title": "Site Footer",
+  "category": "skt_blocks",
+  "description": "A flexible site footer container. Drop columns, menus, logo, text and buttons inside, and control the layout per device.",
+  "keywords": [
+    "footer",
+    "site footer",
+    "bottom",
+    "copyright",
+    "links"
+  ],
+  "textdomain": "skt-blocks",
+  "supports": {
+    "anchor": true,
+    "customClassName": true,
+    "html": false,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "reusable": true
+  },
+  "attributes": {
+    "uniqueId": {
+      "type": "string",
+      "default": ""
+    },
+    "tagName": {
+      "type": "string",
+      "default": "footer"
+    },
+    "contentWidth": {
+      "type": "string",
+      "default": "contained"
+    },
+    "innerWidth": {
+      "type": "number",
+      "default": 1200
+    },
+    "innerWidthTablet": {
+      "type": "number"
+    },
+    "innerWidthMobile": {
+      "type": "number"
+    },
+    "horizontalAlignment": {
+      "type": "string",
+      "default": "space-between"
+    },
+    "verticalAlignment": {
+      "type": "string",
+      "default": "center"
+    },
+    "gap": {
+      "type": "number",
+      "default": 20
+    },
+    "gapTablet": {
+      "type": "number"
+    },
+    "gapMobile": {
+      "type": "number"
+    },
+    "minHeight": {
+      "type": "number"
+    },
+    "minHeightTablet": {
+      "type": "number"
+    },
+    "minHeightMobile": {
+      "type": "number"
+    },
+    "wrapMobile": {
+      "type": "boolean",
+      "default": true
+    },
+    "paddingUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "marginUnit": {
+      "type": "string",
+      "default": "px"
+    },
+    "paddingTop": {
+      "type": "number",
+      "default": 0
+    },
+    "paddingTopTablet": {
+      "type": "number"
+    },
+    "paddingTopMobile": {
+      "type": "number"
+    },
+    "paddingRight": {
+      "type": "number",
+      "default": 0
+    },
+    "paddingRightTablet": {
+      "type": "number"
+    },
+    "paddingRightMobile": {
+      "type": "number"
+    },
+    "paddingBottom": {
+      "type": "number",
+      "default": 0
+    },
+    "paddingBottomTablet": {
+      "type": "number"
+    },
+    "paddingBottomMobile": {
+      "type": "number"
+    },
+    "paddingLeft": {
+      "type": "number",
+      "default": 0
+    },
+    "paddingLeftTablet": {
+      "type": "number"
+    },
+    "paddingLeftMobile": {
+      "type": "number"
+    },
+    "marginTop": {
+      "type": "number",
+      "default": 0
+    },
+    "marginTopTablet": {
+      "type": "number"
+    },
+    "marginTopMobile": {
+      "type": "number"
+    },
+    "marginBottom": {
+      "type": "number",
+      "default": 0
+    },
+    "marginBottomTablet": {
+      "type": "number"
+    },
+    "marginBottomMobile": {
+      "type": "number"
+    }
+  }
+}

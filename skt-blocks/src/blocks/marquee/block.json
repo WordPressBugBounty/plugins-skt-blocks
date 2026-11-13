@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "skt-blocks/marquee",
+  "title": "Text Marquee",
+  "category": "skt_blocks",
+  "description": "Scrolling text that moves continuously across the screen. Control direction, speed, pause-on-hover and styling.",
+  "keywords": ["marquee", "scroll", "ticker", "news", "moving text", "slider"],
+  "textdomain": "skt-blocks",
+  "supports": {
+    "anchor": true,
+    "customClassName": true,
+    "html": false,
+    "align": ["wide", "full"]
+  },
+  "attributes": {
+    "uniqueId": { "type": "string", "default": "" },
+    "text": { "type": "string", "default": "Your scrolling text goes here" },
+
+    "direction": { "type": "string", "default": "left" },
+    "speed": { "type": "number", "default": 20 },
+    "pauseOnHover": { "type": "boolean", "default": true },
+    "gap": { "type": "number", "default": 50 },
+    "verticalHeight": { "type": "number", "default": 120 },
+
+    "fontSize": { "type": "number" },
+    "fontSizeTablet": { "type": "number" },
+    "fontSizeMobile": { "type": "number" },
+    "fontWeight": { "type": "string", "default": "400" },
+    "textTransform": { "type": "string", "default": "none" },
+
+    "textColor": { "type": "string" },
+    "backgroundColor": { "type": "string" },
+    "paddingY": { "type": "number", "default": 10 }
+  }
+}

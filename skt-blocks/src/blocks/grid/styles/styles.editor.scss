@@ -1,0 +1,164 @@
+/* Grid Block — editor-only tweaks so the preview matches the front end. */
+
+/* Layout preset picker in the inspector. */
+.skt-grid-layout-presets {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-bottom: 12px;
+}
+.skt-grid-ctrl-label {
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	margin: 12px 0 4px;
+	color: #757575;
+}
+.skt-grid-ctrl-help {
+	font-size: 12px;
+	font-style: italic;
+	color: #757575;
+	margin: 4px 0 12px;
+}
+/* Device switcher (Desktop / Tablet / Mobile) synced to the editor preview. */
+.skt-grid-device-tabs {
+	display: flex;
+	gap: 4px;
+	margin: 4px 0 12px;
+
+	.skt-grid-device-tab {
+		flex: 1 1 0;
+		padding: 5px 8px;
+		font-size: 12px;
+		font-weight: 500;
+		line-height: 1.2;
+		cursor: pointer;
+		color: #1e1e1e;
+		background: #f0f0f0;
+		border: 1px solid #ddd;
+		border-radius: 3px;
+
+		&:hover {
+			border-color: var(--wp-admin-theme-color, #007cba);
+		}
+		&.is-active {
+			color: #fff;
+			background: var(--wp-admin-theme-color, #007cba);
+			border-color: var(--wp-admin-theme-color, #007cba);
+		}
+	}
+}
+.skt-grid-layout-preset {
+	display: flex;
+	gap: 2px;
+	align-items: stretch;
+	width: 46px;
+	height: 26px;
+	padding: 3px;
+	background: #fff;
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	cursor: pointer;
+
+	span {
+		display: block;
+		flex-grow: 1;
+		flex-basis: 0;
+		background: #c7c7c7;
+		border-radius: 1px;
+	}
+
+	&:hover {
+		border-color: var(--wp-admin-theme-color, #007cba);
+	}
+	&.is-active {
+		border-color: var(--wp-admin-theme-color, #007cba);
+		box-shadow: 0 0 0 1px var(--wp-admin-theme-color, #007cba);
+
+		span {
+			background: var(--wp-admin-theme-color, #007cba);
+		}
+	}
+}
+.skt-grid-layout-custom {
+	width: auto;
+	padding: 0 10px;
+	font-size: 11px;
+	font-weight: 600;
+	color: #1e1e1e;
+	/* Gray fill like the predefined layout preview bars, with "Custom" text. */
+	background: #c7c7c7;
+	align-items: center;
+	justify-content: center;
+
+	/* Selected: turn blue with white text, like a chosen predefined layout. */
+	&.is-active {
+		color: #fff;
+		background: var(--wp-admin-theme-color, #007cba);
+	}
+}
+
+.wp-block-skt-blocks-grid-column.skt-grid-column {
+	/* Let the column shrink to its grid basis even when inner content is wide
+	   (a flex item defaults to min-width:auto and would otherwise overflow).
+	   NOTE: this is on the COLUMN only — never on its children, so blocks like
+	   the Shape Divider (absolutely-positioned SVG) keep their own sizing. */
+	min-width: 0;
+	box-sizing: border-box;
+
+	/* Visible, selectable column box in the editor (even when empty). */
+	min-height: 60px;
+	outline: 1px dashed rgba(0, 0, 0, 0.25);
+	outline-offset: -1px;
+	border-radius: 2px;
+
+	/* In the editor, Full/Wide alignment is applied via [data-align] and tries
+	   to break the block out to the page width, which collapses it inside a
+	   narrow column (e.g. the Shape Divider SVG vanishes). Keep such blocks at
+	   the column width so they render exactly like the front end. */
+	[data-align="full"],
+	[data-align="wide"] {
+		max-width: 100% !important;
+		width: 100% !important;
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+		left: auto !important;
+		right: auto !important;
+	}
+
+	/* GENERAL: every block placed directly in a Grid Column must fill the column
+	   width in the editor. Some blocks (Flipbox, Shape Divider) have
+	   absolutely-positioned internals that collapse to near-zero width when the
+	   wrapper is not given an explicit width here. */
+	> .block-editor-block-list__block {
+		width: 100% !important;
+		max-width: 100% !important;
+	}
+
+	/* Shape Divider wrappers can collapse to zero width inside a narrow column
+	   in the editor; force them to the full column width so the SVG shows. */
+	.wp-block-skt-blocks-shape-divider,
+	.wp-block-skt-blocks-shape-divider__svg-wrapper,
+	.wp-block-skt-blocks-shape-divider__alt-wrapper {
+		width: 100% !important;
+	}
+
+	/* Flipbox outer wrappers (its inner flip faces are absolute and need a
+	   sized ancestor). */
+	.wp-block-skt-blocks-flipbox,
+	.wp-block-skt-blocks-flipbox__inner {
+		width: 100% !important;
+	}
+
+	/* Flipbox button in the editor is a <p> (block-level), so it fills the
+	   column width and looks oversized. Keep it sized to its text and centered,
+	   matching the front end. Scoped to the Grid Column only. */
+	.wp-block-skt-blocks-flipbox-item__button {
+		display: inline-block !important;
+		width: auto !important;
+		max-width: 100% !important;
+		height: auto !important;
+		flex: 0 0 auto !important;
+		align-self: center !important;
+	}
+}

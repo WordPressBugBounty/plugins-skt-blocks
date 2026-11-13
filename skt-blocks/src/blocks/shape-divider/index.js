@@ -2,6 +2,7 @@
  * Internal dependencies
  */
 import edit from "./components/edit";
+import deprecated from "./deprecated";
 import icon from "./icon";
 import metadata from "./components/block.json";
 import save from "./components/save";
@@ -90,6 +91,7 @@ registerBlockType("skt-blocks/shape-divider", {
     },
   ],
   attributes,
+  deprecated,
   edit,
   save,
 });

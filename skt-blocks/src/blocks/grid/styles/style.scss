@@ -1,0 +1,36 @@
+/* Grid Block — frontend baseline. Per-instance layout (columns, gaps) is
+   emitted as scoped <style> by the block itself. */
+.skt-grid {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.skt-grid > .wp-block-skt-blocks-grid-column {
+	box-sizing: border-box;
+	min-height: 1px;
+}
+
+/* Background overlay layer. Rendered as a ::before (absolute, out of flow) so it
+   never becomes a flex column. Colour/gradient + opacity come from CSS vars set
+   inline by the block. */
+.skt-grid.has-skt-grid-overlay {
+	position: relative;
+	isolation: isolate;
+
+	&::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: var(--skt-grid-overlay, transparent);
+		opacity: var(--skt-grid-overlay-opacity, 1);
+		z-index: 0;
+		pointer-events: none;
+		border-radius: inherit;
+	}
+
+	/* Keep the columns above the overlay. */
+	> .wp-block-skt-blocks-grid-column {
+		position: relative;
+		z-index: 1;
+	}
+}

@@ -1,0 +1,23 @@
+/* Text Marquee — editor-only tweaks.
+   The live scroll + colours come from the block's scoped editor <style>
+   (getMarqueeEditorCSS). Here we just keep the editable copy usable: make the
+   RichText behave like inline text and give an empty marquee some height. */
+
+.skt-marquee {
+	min-height: 1.5em;
+}
+
+.skt-marquee .skt-marquee__content.rich-text,
+.skt-marquee .skt-marquee__content {
+	outline: none;
+	min-width: 1ch;
+}
+
+/* Inspector labels (shared helper classes used across SKT new blocks). */
+.skt-sh-ctrl-label {
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	margin: 12px 0 4px;
+	color: #757575;
+}

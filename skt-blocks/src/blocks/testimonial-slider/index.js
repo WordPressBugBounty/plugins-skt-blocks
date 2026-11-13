@@ -3,6 +3,7 @@
  */
 
 import classnames from "classnames"
+import deprecated from "./deprecated";
 import edit from "./components/edit"
 import save from "./components/save"
 import "./styles/style.scss"
@@ -434,6 +435,7 @@ registerBlockType( "skt-blocks/testimonial-slider", {
             default: "tablet"
         }
     },
+	deprecated,
 	edit,
 	save,
 	example: {},

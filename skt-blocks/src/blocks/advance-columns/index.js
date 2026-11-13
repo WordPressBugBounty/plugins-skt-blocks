@@ -248,6 +248,11 @@ registerBlockType("skt-blocks/advance-columns", {
     blockId: {
       type: "string",
     },
+    hideDesktop: { type: "boolean", default: false },
+    hideTablet: { type: "boolean", default: false },
+    hideMobile: { type: "boolean", default: false },
+    hideLoggedIn: { type: "boolean", default: false },
+    hideLoggedOut: { type: "boolean", default: false },
     height: {
       type: "string",
       default: "normal",

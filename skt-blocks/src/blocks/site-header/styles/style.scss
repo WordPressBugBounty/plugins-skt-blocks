@@ -1,0 +1,44 @@
+/* Site Header — front-end baseline. Per-instance layout comes from the block's
+   own scoped <style> (.skt-site-header-<id> .skt-site-header__inner). */
+.skt-site-header {
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.skt-site-header__inner {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: center;
+	justify-content: space-between;
+	column-gap: 20px;
+	row-gap: 20px;
+	max-width: 1200px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 100%;
+	box-sizing: border-box;
+
+	/* Let flex items shrink instead of overflowing. */
+	> * {
+		min-width: 0;
+	}
+}
+
+/* Sticky: once the front-end JS adds .skt-sh-is-stuck, fix the header to the
+   top. The per-instance background / box-shadow come from the block's scoped
+   <style>; this is just the generic positioning. */
+.skt-site-header.skt-sh-is-stuck {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	width: 100%;
+	z-index: 9999;
+}
+
+/* Placeholder the JS inserts so content doesn't jump when the header fixes. */
+.skt-sh-placeholder {
+	flex: none;
+}
+

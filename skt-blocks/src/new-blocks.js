@@ -15,5 +15,26 @@
 
 import "./blocks/skt-section/index.js";
 
+// Grid Block (parent) + Grid Column (child). The child MUST register before or
+// alongside the parent so the parent's inner template resolves.
+import "./blocks/grid-column/index.js";
+import "./blocks/grid/index.js";
+
+// Site Header (flexible header container: logo + nav + buttons inside).
+import "./blocks/site-header/index.js";
+
+// Site Footer (same layout controls as Site Header, no sticky; default tag <footer>).
+import "./blocks/site-footer/index.js";
+
+// Tabs (parent) + Tab (child). The child registers first.
+import "./blocks/tab/index.js";
+import "./blocks/tabs/index.js";
+
 // Add future new blocks here, one import per block:
 // import "./blocks/your-next-block/index.js";
+
+// Text Marquee (scrolling text ticker).
+import "./blocks/text-marquee/index.js";
+
+// Before/After Comparison Slider.
+import "./blocks/before-after-slider/index.js";

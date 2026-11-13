@@ -1,0 +1,209 @@
+.skt-compare {
+	--skt-pos: 50%;
+	--skt-handle: #fff;
+	--skt-icon: #111;
+	--skt-line: 3px;
+	--skt-knob: 44px;
+	position: relative;
+	width: 100%;
+	box-sizing: border-box;
+
+	.skt-compare__stage {
+		position: relative;
+		overflow: hidden;
+		width: 100%;
+		line-height: 0;
+		user-select: none;
+		-webkit-user-select: none;
+		touch-action: pan-y;
+		cursor: ew-resize;
+	}
+
+	&--vertical .skt-compare__stage {
+		touch-action: pan-x;
+		cursor: ns-resize;
+	}
+
+	.skt-compare__img {
+		display: block;
+		width: 100%;
+		height: auto;
+		max-width: none;
+		margin: 0;
+		-webkit-user-drag: none;
+		pointer-events: none;
+	}
+
+	// The "before" image overlays the "after" one and is clipped by the slider.
+	.skt-compare__img--before {
+		position: absolute;
+		inset: 0;
+		height: 100%;
+		clip-path: inset(0 calc(100% - var(--skt-pos)) 0 0);
+	}
+	&--vertical .skt-compare__img--before {
+		clip-path: inset(0 0 calc(100% - var(--skt-pos)) 0);
+	}
+
+	// With a fixed aspect ratio both images fill the stage.
+	&--ratio .skt-compare__img--after {
+		position: absolute;
+		inset: 0;
+		height: 100%;
+	}
+
+	.skt-compare__handle {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: var(--skt-pos);
+		width: var(--skt-line);
+		margin-left: calc(var(--skt-line) / -2);
+		background: var(--skt-handle);
+		pointer-events: none;
+		z-index: 3;
+	}
+	&--vertical .skt-compare__handle {
+		top: var(--skt-pos);
+		bottom: auto;
+		left: 0;
+		right: 0;
+		width: auto;
+		height: var(--skt-line);
+		margin-left: 0;
+		margin-top: calc(var(--skt-line) / -2);
+	}
+
+	.skt-compare__knob {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: var(--skt-knob);
+		height: var(--skt-knob);
+		transform: translate(-50%, -50%);
+		background: var(--skt-handle);
+		border-radius: 50%;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+		box-sizing: border-box;
+
+		// Two arrows pointing left / right.
+		&::before,
+		&::after {
+			content: "";
+			position: absolute;
+			top: 50%;
+			width: 0;
+			height: 0;
+			border-style: solid;
+			border-width: calc(var(--skt-knob) * 0.14) calc(var(--skt-knob) * 0.18);
+			transform: translateY(-50%);
+		}
+		&::before {
+			left: 18%;
+			border-color: transparent var(--skt-icon) transparent transparent;
+			border-left-width: 0;
+		}
+		&::after {
+			right: 18%;
+			border-color: transparent transparent transparent var(--skt-icon);
+			border-right-width: 0;
+		}
+	}
+	&--vertical .skt-compare__knob {
+		&::before,
+		&::after {
+			top: auto;
+			left: 50%;
+			transform: translateX(-50%);
+			border-width: calc(var(--skt-knob) * 0.18) calc(var(--skt-knob) * 0.14);
+		}
+		&::before {
+			top: 18%;
+			left: 50%;
+			border-color: transparent transparent var(--skt-icon) transparent;
+			border-top-width: 0;
+		}
+		&::after {
+			bottom: 18%;
+			right: auto;
+			border-color: var(--skt-icon) transparent transparent transparent;
+			border-bottom-width: 0;
+		}
+	}
+	&--square .skt-compare__knob {
+		border-radius: 0;
+	}
+	&--rounded .skt-compare__knob {
+		border-radius: 10px;
+	}
+	&--noknob .skt-compare__knob {
+		display: none;
+	}
+
+	.skt-compare__label {
+		position: absolute;
+		z-index: 2;
+		padding: 4px 10px;
+		line-height: 1.4;
+		pointer-events: none;
+		white-space: nowrap;
+	}
+	// horizontal: before = left, after = right; start/center/end = top/middle/bottom
+	.skt-compare__label--before {
+		left: 12px;
+	}
+	.skt-compare__label--after {
+		right: 12px;
+	}
+	&--label-start .skt-compare__label {
+		top: 12px;
+	}
+	&--label-center .skt-compare__label {
+		top: 50%;
+		transform: translateY(-50%);
+	}
+	&--label-end .skt-compare__label {
+		bottom: 12px;
+	}
+	// vertical: before = top, after = bottom; start/center/end = left/middle/right
+	&--vertical {
+		.skt-compare__label--before {
+			top: 12px;
+			bottom: auto;
+			right: auto;
+			left: 12px;
+			transform: none;
+		}
+		.skt-compare__label--after {
+			bottom: 12px;
+			top: auto;
+			right: auto;
+			left: 12px;
+			transform: none;
+		}
+		&.skt-compare--label-center .skt-compare__label {
+			left: 50%;
+			transform: translateX(-50%);
+		}
+		&.skt-compare--label-end .skt-compare__label {
+			left: auto;
+			right: 12px;
+		}
+	}
+
+	.skt-compare__range {
+		// Keyboard / screen-reader control; pointer dragging is handled on the stage.
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		opacity: 0;
+		pointer-events: none;
+		z-index: 4;
+	}
+	.skt-compare__stage:focus-within {
+		outline: 2px solid #2563eb;
+		outline-offset: -2px;
+	}
+}

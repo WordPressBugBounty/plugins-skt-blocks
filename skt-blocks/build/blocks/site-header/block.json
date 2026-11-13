@@ -1,0 +1,105 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "skt-blocks/site-header",
+  "title": "Site Header",
+  "category": "skt_blocks",
+  "description": "A flexible site header container. Drop a logo, navigation and buttons inside, and control the layout, sticky and transparent behaviour per device.",
+  "keywords": [
+    "header",
+    "site header",
+    "navigation",
+    "logo",
+    "sticky",
+    "nav"
+  ],
+  "textdomain": "skt-blocks",
+  "supports": {
+    "anchor": true,
+    "customClassName": true,
+    "html": false,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "reusable": true
+  },
+  "attributes": {
+    "uniqueId": {
+      "type": "string",
+      "default": ""
+    },
+    "tagName": {
+      "type": "string",
+      "default": "header"
+    },
+    "contentWidth": {
+      "type": "string",
+      "default": "contained"
+    },
+    "innerWidth": {
+      "type": "number",
+      "default": 1200
+    },
+    "innerWidthTablet": {
+      "type": "number"
+    },
+    "innerWidthMobile": {
+      "type": "number"
+    },
+    "horizontalAlignment": {
+      "type": "string",
+      "default": "space-between"
+    },
+    "verticalAlignment": {
+      "type": "string",
+      "default": "center"
+    },
+    "gap": {
+      "type": "number",
+      "default": 20
+    },
+    "gapTablet": {
+      "type": "number"
+    },
+    "gapMobile": {
+      "type": "number"
+    },
+    "minHeight": {
+      "type": "number"
+    },
+    "minHeightTablet": {
+      "type": "number"
+    },
+    "minHeightMobile": {
+      "type": "number"
+    },
+    "wrapMobile": {
+      "type": "boolean",
+      "default": true
+    },
+    "stickyBehaviour": {
+      "type": "string",
+      "default": "none"
+    },
+    "stickyOn": {
+      "type": "string",
+      "default": "all"
+    },
+    "stickyThreshold": {
+      "type": "number",
+      "default": 0
+    },
+    "stickyBackground": {
+      "type": "string"
+    },
+    "stickyBoxShadow": {
+      "type": "boolean",
+      "default": true
+    },
+    "stickyTransition": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

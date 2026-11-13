@@ -5,7 +5,18 @@
   word-break: break-all;
 
   .wp-block-skt-blocks-flipbox-item__button {
-    width: auto;
+    /* The button carries the WP core class `wp-block-button__link`, so the
+       active theme's button rules (height / min-height / flex-grow / width)
+       can stretch it to fill the flip card. Pin it to its own content size and
+       center it, overriding the theme, without touching the block's own
+       padding / colours (those stay as set). */
+    display: inline-block !important;
+    width: auto !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    flex: 0 0 auto !important;
+    align-self: center !important;
   }
   .skt-blocks-section-background-image-wrap,
   .skt-blocks-section-back-background-image-wrap {

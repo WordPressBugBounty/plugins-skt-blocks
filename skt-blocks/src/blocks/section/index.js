@@ -323,4 +323,24 @@ registerBlockType("skt-blocks/section", {
   save: (props) => {
     return <Save {...props} />;
   },
+
+  /* Legacy-markup compatibility: older SKT template content saved the <section>
+     WITHOUT an inline background-color and with a box-shadow string that had no
+     trailing position part. This deprecation re-renders the SAME Save component
+     in "legacy" mode so that old content validates and upgrades silently (no
+     "Attempt Block Recovery"). It reuses the existing Save (no new import), so
+     it cannot cause a build/init error. attributes is omitted -> WP reuses the
+     block's current attributes for parsing. */
+  deprecated: [
+    {
+      save: (props) => {
+        return (
+          <Save
+            {...props}
+            attributes={{ ...props.attributes, sktLegacy: true }}
+          />
+        );
+      },
+    },
+  ],
 });

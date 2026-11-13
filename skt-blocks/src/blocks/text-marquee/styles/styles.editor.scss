@@ -1,0 +1,13 @@
+.skt-marquee-items {
+	.skt-marquee-item-row {
+		display: flex;
+		align-items: flex-start;
+		gap: 6px;
+		margin-bottom: 8px;
+
+		.components-base-control {
+			flex: 1;
+			margin-bottom: 0;
+		}
+	}
+}

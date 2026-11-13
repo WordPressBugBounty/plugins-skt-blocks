@@ -681,46 +681,39 @@ export default class Inspector extends Component {
           title={__("Padding", "skt-blocks")}
           initialOpen={false}
         >
-          <RangeControl
-            label={__("Box Top Padding", "skt-blocks")}
-            value={boxPaddingTop}
-            onChange={(newCount) => {
-              setAttributes({ boxPaddingTop: newCount });
+          <TabPanel
+            className=" responsive-size-type-field-tabs  responsive-size-type-field__common-tabs  responsive-inline-margin"
+            activeClass="active-tab"
+            tabs={[
+              { name: "desktop", title: <Dashicon icon="desktop" />, className: " responsive-desktop-tab  responsive-responsive-tabs" },
+              { name: "tablet", title: <Dashicon icon="tablet" />, className: " responsive-tablet-tab  responsive-responsive-tabs" },
+              { name: "mobile", title: <Dashicon icon="smartphone" />, className: " responsive-mobile-tab  responsive-responsive-tabs" },
+            ]}
+          >
+            {(tab) => {
+              const sfx = tab.name === "tablet" ? "Tablet" : tab.name === "mobile" ? "Mobile" : "";
+              const A = this.props.attributes;
+              const r = (label, base, min, max) => (
+                <RangeControl
+                  label={label}
+                  value={A[base + sfx]}
+                  onChange={(v) => setAttributes({ [base + sfx]: v })}
+                  min={min}
+                  max={max}
+                  step={1}
+                  allowReset
+                />
+              );
+              return (
+                <Fragment>
+                  {r(__("Box Top Padding", "skt-blocks"), "boxPaddingTop", 1, 500)}
+                  {r(__("Box Left Padding", "skt-blocks"), "boxPaddingLeft", 1, 500)}
+                  {r(__("Box Right Padding", "skt-blocks"), "boxPaddingRight", 1, 50)}
+                  {r(__("Box Bottom Padding", "skt-blocks"), "boxPaddingBottom", 1, 50)}
+                </Fragment>
+              );
             }}
-            min={1}
-            max={500}
-            step={1}
-          />
-          <RangeControl
-            label={__("Box Left Padding", "skt-blocks")}
-            value={boxPaddingLeft}
-            onChange={(newCount) => {
-              setAttributes({ boxPaddingLeft: newCount });
-            }}
-            min={1}
-            max={500}
-            step={1}
-          />
-          <RangeControl
-            label={__("Box Right Padding", "skt-blocks")}
-            value={boxPaddingRight}
-            onChange={(newCount) => {
-              setAttributes({ boxPaddingRight: newCount });
-            }}
-            min={1}
-            max={50}
-            step={1}
-          />
-          <RangeControl
-            label={__("Box Bottom Padding", "skt-blocks")}
-            value={boxPaddingBottom}
-            onChange={(newCount) => {
-              setAttributes({ boxPaddingBottom: newCount });
-            }}
-            min={1}
-            max={50}
-            step={1}
-          />
+          </TabPanel>
         </PanelBody>
         <PanelBody
           title={__("Hover Effect", "skt-blocks")}
@@ -741,26 +734,37 @@ export default class Inspector extends Component {
           title={__("Spacing", "skt-blocks")}
           initialOpen={false}
         >
-          <RangeControl
-            label={__("Title Spacing", "skt-blocks")}
-            value={titleSpacing}
-            onChange={(newCount) => {
-              setAttributes({ titleSpacing: newCount });
+          <TabPanel
+            className=" responsive-size-type-field-tabs  responsive-size-type-field__common-tabs  responsive-inline-margin"
+            activeClass="active-tab"
+            tabs={[
+              { name: "desktop", title: <Dashicon icon="desktop" />, className: " responsive-desktop-tab  responsive-responsive-tabs" },
+              { name: "tablet", title: <Dashicon icon="tablet" />, className: " responsive-tablet-tab  responsive-responsive-tabs" },
+              { name: "mobile", title: <Dashicon icon="smartphone" />, className: " responsive-mobile-tab  responsive-responsive-tabs" },
+            ]}
+          >
+            {(tab) => {
+              const sfx = tab.name === "tablet" ? "Tablet" : tab.name === "mobile" ? "Mobile" : "";
+              const A = this.props.attributes;
+              const r = (label, base, min, max) => (
+                <RangeControl
+                  label={label}
+                  value={A[base + sfx]}
+                  onChange={(v) => setAttributes({ [base + sfx]: v })}
+                  min={min}
+                  max={max}
+                  step={1}
+                  allowReset
+                />
+              );
+              return (
+                <Fragment>
+                  {r(__("Title Spacing", "skt-blocks"), "titleSpacing", -50, 100)}
+                  {r(__("Description Spacing", "skt-blocks"), "descriptionSpacing", -50, 100)}
+                </Fragment>
+              );
             }}
-            min={-50}
-            max={100}
-            step={1}
-          />
-          <RangeControl
-            label={__("Description Spacing", "skt-blocks")}
-            value={descriptionSpacing}
-            onChange={(newCount) => {
-              setAttributes({ descriptionSpacing: newCount });
-            }}
-            min={-50}
-            max={100}
-            step={1}
-          />
+          </TabPanel>
         </PanelBody>
         <PanelBody
           title={__("Arrow", "skt-blocks")}
@@ -795,6 +799,36 @@ export default class Inspector extends Component {
             min={0}
             max={100}
             step={1}
+          />
+        </PanelBody>
+        <PanelBody
+          title={__("Visibility", "skt-blocks")}
+          initialOpen={false}
+        >
+          <ToggleControl
+            label={__("Hide on Desktop", "skt-blocks")}
+            checked={!!this.props.attributes.hideDesktop}
+            onChange={(value) => setAttributes({ hideDesktop: value })}
+          />
+          <ToggleControl
+            label={__("Hide on Tablet", "skt-blocks")}
+            checked={!!this.props.attributes.hideTablet}
+            onChange={(value) => setAttributes({ hideTablet: value })}
+          />
+          <ToggleControl
+            label={__("Hide on Mobile", "skt-blocks")}
+            checked={!!this.props.attributes.hideMobile}
+            onChange={(value) => setAttributes({ hideMobile: value })}
+          />
+          <ToggleControl
+            label={__("Hide for Logged In Users", "skt-blocks")}
+            checked={!!this.props.attributes.hideLoggedIn}
+            onChange={(value) => setAttributes({ hideLoggedIn: value })}
+          />
+          <ToggleControl
+            label={__("Hide for Logged Out Users", "skt-blocks")}
+            checked={!!this.props.attributes.hideLoggedOut}
+            onChange={(value) => setAttributes({ hideLoggedOut: value })}
           />
         </PanelBody>
       </InspectorControls>

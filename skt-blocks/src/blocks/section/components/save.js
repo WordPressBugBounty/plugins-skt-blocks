@@ -111,6 +111,14 @@ export default class Save extends Component {
 
     const { hideDesktop: hideD, hideTablet: hideT, hideMobile: hideM } = this.props.attributes;
 
+    // Legacy-markup mode: only true when this save is rendered by the
+    // `deprecated` entry (old template content). It reproduces the OLD saved
+    // markup — no inline background-color on <section>, and a box-shadow string
+    // without the trailing position part — so Gutenberg validates & upgrades
+    // old content silently (no Attempt Block Recovery). It NEVER affects normal
+    // (current) saves because sktLegacy is undefined there.
+    const sktLegacy = this.props.attributes.sktLegacy;
+
     return (
       <div
         id={anchor}
@@ -267,8 +275,9 @@ export default class Save extends Component {
             borderColor: blockBorderColor,
             borderStyle: blockBorderStyle,
             borderRadius: blockBorderRadius,
-            backgroundColor:
-              backgroundType == "color"
+            backgroundColor: sktLegacy
+              ? undefined
+              : backgroundType == "color"
                 ? `${hexToRgba(backgroundColor || "#fff", imgopacity || 0)}`
                 : undefined,
             backgroundImage:
@@ -281,18 +290,27 @@ export default class Save extends Component {
                     colorLocation2
                   )
                 : undefined,
-            boxShadow:
-              generateCSSUnit(boxShadowHOffset, "px") +
-              " " +
-              generateCSSUnit(boxShadowVOffset, "px") +
-              " " +
-              generateCSSUnit(boxShadowBlur, "px") +
-              " " +
-              generateCSSUnit(boxShadowSpread, "px") +
-              " " +
-              boxShadowColor +
-              " " +
-              boxShadowPositionCSS,
+            boxShadow: sktLegacy
+              ? generateCSSUnit(boxShadowHOffset, "px") +
+                " " +
+                generateCSSUnit(boxShadowVOffset, "px") +
+                " " +
+                generateCSSUnit(boxShadowBlur, "px") +
+                " " +
+                generateCSSUnit(boxShadowSpread, "px") +
+                " " +
+                boxShadowColor
+              : generateCSSUnit(boxShadowHOffset, "px") +
+                " " +
+                generateCSSUnit(boxShadowVOffset, "px") +
+                " " +
+                generateCSSUnit(boxShadowBlur, "px") +
+                " " +
+                generateCSSUnit(boxShadowSpread, "px") +
+                " " +
+                boxShadowColor +
+                " " +
+                boxShadowPositionCSS,
           }}
         >
           <div

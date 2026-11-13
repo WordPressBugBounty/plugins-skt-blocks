@@ -1,0 +1,75 @@
+/* Tabs — editor-only tweaks so the preview matches the front end. */
+/* Tabs in the editor are <div>s (RichText inside), so mirror what a front-end
+   <button> gets for free: border-box sizing and inherited typography. The
+   RichText wrapper would otherwise fall back to the editor's own font. */
+.skt-tabs > .skt-tabs__nav > .skt-tabs__tab {
+	cursor: pointer;
+	box-sizing: border-box;
+	min-width: 0;
+
+	.skt-tabs__title,
+	.skt-tabs__title.rich-text,
+	.rich-text {
+		font: inherit !important;
+		letter-spacing: inherit !important;
+		text-transform: inherit !important;
+		text-align: inherit !important;
+		line-height: inherit !important;
+		color: inherit !important;
+		min-width: 1ch;
+		outline: none;
+		overflow-wrap: anywhere;
+	}
+}
+
+.skt-tabs > .skt-tabs__nav > .skt-tabs__add {
+	align-self: center;
+	width: 32px;
+	height: 32px;
+	border: 1px dashed #8c8f94;
+	border-radius: 4px;
+	background: #fff;
+	color: #1e1e1e;
+	font-size: 18px;
+	line-height: 1;
+	cursor: pointer;
+	padding: 0;
+}
+
+/* Inspector labels (shared by the Tabs and Tab blocks). */
+.skt-tab-ctrl-label {
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	margin: 12px 0 4px;
+	color: #757575;
+}
+
+/* Device switcher (Desktop / Tablet / Mobile) synced to the editor preview. */
+.skt-device-tabs {
+	display: flex;
+	gap: 4px;
+	margin: 4px 0 12px;
+
+	.skt-device-tab {
+		flex: 1 1 0;
+		padding: 5px 8px;
+		font-size: 12px;
+		font-weight: 500;
+		line-height: 1.2;
+		cursor: pointer;
+		color: #1e1e1e;
+		background: #f0f0f0;
+		border: 1px solid #ddd;
+		border-radius: 3px;
+
+		&:hover {
+			border-color: var(--wp-admin-theme-color, #007cba);
+		}
+		&.is-active {
+			color: #fff;
+			background: var(--wp-admin-theme-color, #007cba);
+			border-color: var(--wp-admin-theme-color, #007cba);
+		}
+	}
+}

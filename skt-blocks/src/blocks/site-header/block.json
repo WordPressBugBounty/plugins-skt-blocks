@@ -1,0 +1,100 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "skt-blocks/site-header",
+  "title": "Site Header",
+  "category": "skt_blocks",
+  "description": "A flexible site header container. Drop a logo, navigation and buttons inside, and control the layout, sticky and transparent behaviour per device.",
+  "keywords": ["header", "site header", "navigation", "logo", "sticky", "nav"],
+  "textdomain": "skt-blocks",
+  "supports": {
+    "anchor": true,
+    "customClassName": true,
+    "html": false,
+    "align": ["wide", "full"],
+    "reusable": true
+  },
+  "attributes": {
+    "uniqueId": { "type": "string", "default": "" },
+    "tagName": { "type": "string", "default": "header" },
+
+    "contentWidth": { "type": "string", "default": "contained" },
+    "innerWidth": { "type": "number", "default": 1200 },
+    "innerWidthTablet": { "type": "number" },
+    "innerWidthMobile": { "type": "number" },
+
+    "horizontalAlignment": { "type": "string", "default": "space-between" },
+    "verticalAlignment": { "type": "string", "default": "center" },
+
+    "gap": { "type": "number", "default": 20 },
+    "gapTablet": { "type": "number" },
+    "gapMobile": { "type": "number" },
+
+    "minHeight": { "type": "number" },
+    "minHeightTablet": { "type": "number" },
+    "minHeightMobile": { "type": "number" },
+
+    "wrapMobile": { "type": "boolean", "default": true },
+
+    "stickyBehaviour": { "type": "string", "default": "none" },
+    "stickyOn": { "type": "string", "default": "all" },
+    "stickyThreshold": { "type": "number", "default": 0 },
+    "stickyBackground": { "type": "string" },
+    "stickyBoxShadow": { "type": "boolean", "default": true },
+    "stickyTransition": { "type": "boolean", "default": true },
+
+    "backgroundType": { "type": "string", "default": "none" },
+    "backgroundColor": { "type": "string" },
+    "backgroundGradient": { "type": "string" },
+    "backgroundImage": { "type": "string" },
+    "backgroundImageId": { "type": "number" },
+    "backgroundImageSize": { "type": "string", "default": "cover" },
+    "backgroundImagePosition": { "type": "string", "default": "center center" },
+    "backgroundImageRepeat": { "type": "string", "default": "no-repeat" },
+    "backgroundAttachment": { "type": "string", "default": "scroll" },
+    "backgroundOverlay": { "type": "string" },
+
+    "transparentEnable": { "type": "boolean", "default": false },
+    "transparentOn": { "type": "string", "default": "all" },
+    "transparentTextColor": { "type": "string" },
+    "transparentOverlay": { "type": "boolean", "default": false },
+
+    "borderStyle": { "type": "string", "default": "none" },
+    "borderWidth": { "type": "number", "default": 0 },
+    "borderColor": { "type": "string" },
+    "borderRadius": { "type": "number", "default": 0 },
+
+    "boxShadowEnable": { "type": "boolean", "default": false },
+    "boxShadowColor": { "type": "string", "default": "rgba(0,0,0,0.1)" },
+    "boxShadowH": { "type": "number", "default": 0 },
+    "boxShadowV": { "type": "number", "default": 4 },
+    "boxShadowBlur": { "type": "number", "default": 12 },
+    "boxShadowSpread": { "type": "number", "default": 0 },
+
+    "paddingTop": { "type": "number" },
+    "paddingRight": { "type": "number" },
+    "paddingBottom": { "type": "number" },
+    "paddingLeft": { "type": "number" },
+    "paddingTopTablet": { "type": "number" },
+    "paddingRightTablet": { "type": "number" },
+    "paddingBottomTablet": { "type": "number" },
+    "paddingLeftTablet": { "type": "number" },
+    "paddingTopMobile": { "type": "number" },
+    "paddingRightMobile": { "type": "number" },
+    "paddingBottomMobile": { "type": "number" },
+    "paddingLeftMobile": { "type": "number" },
+
+    "marginTop": { "type": "number" },
+    "marginBottom": { "type": "number" },
+    "marginTopTablet": { "type": "number" },
+    "marginBottomTablet": { "type": "number" },
+    "marginTopMobile": { "type": "number" },
+    "marginBottomMobile": { "type": "number" },
+
+    "hideOnDesktop": { "type": "boolean", "default": false },
+    "hideOnTablet": { "type": "boolean", "default": false },
+    "hideOnMobile": { "type": "boolean", "default": false },
+
+    "zIndex": { "type": "number" }
+  }
+}

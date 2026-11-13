@@ -165,6 +165,56 @@ export default class Edit extends Component {
 
     const formattingControls = ["bold", "italic", "strikethrough"];
 
+    // Responsive (tablet/mobile) padding + spacing preview. Scoped to this
+    // instance's item class; mirrors the frontend PHP output. Desktop stays in
+    // the block's own inline styles, so save.js is never touched.
+    const A = this.props.attributes;
+    const sktBox =
+      ".wp-block-skt-blocks-image-boxes-block-item.block-id-" + counterId;
+    const sktRespBuild = (sfx) => {
+      let css = "";
+      const num = (k) =>
+        A[k + sfx] !== undefined && A[k + sfx] !== "" && !isNaN(A[k + sfx])
+          ? parseFloat(A[k + sfx])
+          : null;
+      const pt = num("boxPaddingTop"),
+        pl = num("boxPaddingLeft"),
+        pr = num("boxPaddingRight"),
+        pb = num("boxPaddingBottom");
+      if (pt !== null || pl !== null || pr !== null || pb !== null) {
+        css += sktBox + "{";
+        if (pt !== null) css += "padding-top:" + pt + "px!important;";
+        if (pl !== null) css += "padding-left:" + pl + "px!important;";
+        if (pr !== null) css += "padding-right:" + pr + "px!important;";
+        if (pb !== null) css += "padding-bottom:" + pb + "px!important;";
+        css += "}";
+      }
+      const ts = num("titleSpacing");
+      if (ts !== null)
+        css +=
+          sktBox +
+          " .wp-block-skt-blocks-image-boxes-block-item__title{margin-top:" +
+          ts +
+          "px!important;margin-bottom:" +
+          ts +
+          "px!important;}";
+      const ds = num("descriptionSpacing");
+      if (ds !== null)
+        css +=
+          sktBox +
+          " .wp-block-skt-blocks-image-boxes-block-item__description{margin-top:" +
+          ds +
+          "px!important;margin-bottom:" +
+          ds +
+          "px!important;}";
+      return css;
+    };
+    const sktTablet = sktRespBuild("Tablet");
+    const sktMobile = sktRespBuild("Mobile");
+    let sktRespCss = "";
+    if (sktTablet) sktRespCss += "@media (max-width:1024px){" + sktTablet + "}";
+    if (sktMobile) sktRespCss += "@media (max-width:767px){" + sktMobile + "}";
+
     return [
       // Show the block controls on focus
 
@@ -213,6 +263,7 @@ export default class Edit extends Component {
 }
 `}
       </Style>,
+      sktRespCss ? <Style>{sktRespCss}</Style> : null,
       <div className={classes}>
         <div className={innerClasses}>
           {imageboxesBlock.map((test, index) => (

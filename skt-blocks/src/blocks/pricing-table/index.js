@@ -4,6 +4,7 @@
 
 // Import block dependencies and components
 import Edit from "./components/edit";
+import deprecated from "./deprecated";
 import Save from "./components/save";
 
 // Import CSS
@@ -637,6 +638,7 @@ registerBlockType("skt-blocks/pricing-table", {
   },
 
   /* Render the block in the editor. */
+  deprecated,
   edit: (props) => {
     return <Edit {...props} />;
   },

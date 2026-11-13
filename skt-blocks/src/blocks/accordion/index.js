@@ -3,6 +3,7 @@
  */
 
 import ResponsiveBlocksIcon from "../../ResponsiveBlocksIcon.json";
+import deprecated from "./deprecated";
 import edit from "./components/edit";
 import save from "./components/save";
 import icon from "./components/icon";
@@ -405,6 +406,7 @@ registerBlockType("skt-blocks/accordion", {
     html: false,
   },
   attributes,
+  deprecated,
   edit,
   supports: {
     anchor: true,

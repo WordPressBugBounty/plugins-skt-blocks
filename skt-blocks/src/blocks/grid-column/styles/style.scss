@@ -1,0 +1,39 @@
+/* Grid Column — frontend baseline. Width is set by the parent Grid's scoped
+   <style> (.skt-grid-<id> > .wp-block-skt-blocks-grid-column). */
+.wp-block-skt-blocks-grid-column.skt-grid-column {
+	box-sizing: border-box;
+	min-width: 0;
+
+	/* Blocks set to Full / Wide alignment must fill the COLUMN, not try to
+	   break out to the page width (which collapses them inside a column, e.g.
+	   the Shape Divider's SVG disappears). */
+	.alignfull,
+	.alignwide {
+		max-width: 100%;
+		width: 100%;
+		margin-left: 0;
+		margin-right: 0;
+		left: auto;
+		right: auto;
+	}
+
+	/* Shape Divider (and similar) can collapse to zero width inside a column.
+	   Force its wrappers to the full column width so the SVG renders. */
+	.wp-block-skt-blocks-shape-divider,
+	.wp-block-skt-blocks-shape-divider__svg-wrapper,
+	.wp-block-skt-blocks-shape-divider__alt-wrapper {
+		width: 100% !important;
+	}
+
+	/* Flipbox back/front button must stay sized to its text and not stretch to
+	   fill the (narrow) column or grow with the flex card. Scoped to the Grid
+	   Column so a standalone Flipbox is never affected. */
+	.wp-block-skt-blocks-flipbox-item__button {
+		display: inline-block !important;
+		width: auto !important;
+		max-width: 100% !important;
+		height: auto !important;
+		flex: 0 0 auto !important;
+		align-self: center !important;
+	}
+}

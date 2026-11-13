@@ -1,0 +1,18 @@
+/* Site Footer — editor-only tweaks so the preview matches the front end. */
+
+/* Inspector labels. */
+.skt-sf-ctrl-label {
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	margin: 12px 0 4px;
+	color: #757575;
+}
+
+/* The live flex layout (display/justify/align/gap + min-height + child sizing)
+   is injected per-instance by the block's scoped editor <style> (see
+   getSiteFooterEditorCSS in utils.js), so it previews exactly like the front
+   end. Here we only keep an empty footer visibly selectable. */
+.skt-site-footer__inner {
+	min-height: 40px;
+}

@@ -2,6 +2,7 @@
  * Internal dependencies
  */
 import edit from "./components/edit";
+import deprecated from "./deprecated";
 import metadata from "./block.json";
 import save from "./components/save";
 import { GalleryAttributes } from "../../utils/components/block-gallery/shared";
@@ -79,6 +80,7 @@ registerBlockType("skt-blocks/gallery-masonry", {
     },
   },
   attributes,
+  deprecated,
   edit,
   save,
 });

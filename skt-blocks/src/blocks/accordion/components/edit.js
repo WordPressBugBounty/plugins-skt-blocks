@@ -1448,9 +1448,15 @@ class ResponsiveBlockEditorAddonsAccordionEdit extends Component {
             onChange={(value) => setAttributes({ hideLoggedOut: value })}
           />
         </PanelBody>
-          {titleFontFamily && loadGoogleFont(titleFontFamily)}
-          {contentFontFamily && loadGoogleFont(contentFontFamily)}
         </InspectorControls>
+        {/*
+          Google Font <link> must render inside the block canvas (the iframe),
+          not inside <InspectorControls> (which renders in the editor sidebar /
+          top document). Rendered here it loads the @font-face in the iframe so
+          the Title / Content Font Family actually changes in the editor.
+        */}
+        {titleFontFamily && loadGoogleFont(titleFontFamily)}
+        {contentFontFamily && loadGoogleFont(contentFontFamily)}
         <Style>
           {`
       

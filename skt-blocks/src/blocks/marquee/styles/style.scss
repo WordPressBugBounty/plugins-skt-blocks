@@ -1,0 +1,49 @@
+/* Text Marquee — front-end baseline + the shared scroll keyframes.
+   Per-instance styling (direction, speed, colours, size) is injected by the
+   block's scoped <style> (see getMarqueeCSS in utils.js). */
+
+.skt-marquee {
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+	overflow: hidden;
+}
+
+.skt-marquee__track {
+	display: flex;
+	flex-direction: row;
+	width: max-content;
+	will-change: transform;
+}
+
+.skt-marquee__content {
+	flex: 0 0 auto;
+	box-sizing: border-box;
+	white-space: nowrap;
+}
+
+/* The track holds two identical copies, so moving by -50% loops seamlessly. */
+@keyframes skt-marquee-x {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-50%);
+	}
+}
+
+@keyframes skt-marquee-y {
+	from {
+		transform: translateY(0);
+	}
+	to {
+		transform: translateY(-50%);
+	}
+}
+
+/* Respect users who prefer no motion. */
+@media (prefers-reduced-motion: reduce) {
+	.skt-marquee__track {
+		animation: none !important;
+	}
+}

@@ -1,5 +1,4 @@
 {
-  "apiVersion": 3,
   "$schema": "https://schemas.wp.org/trunk/block.json",
   "apiVersion": 3,
   "name": "skt-blocks/skt-section",

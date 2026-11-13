@@ -63,7 +63,13 @@ function skt_new_blocks_block_assets() {
 	wp_enqueue_style(
 		'skt-new-blocks-style-css',
 		SKT_BLOCKS_URL . 'dist/style-skt-new-blocks.css',
-		array(),
+		// Depend on 'dashicons' so the icon font loads in BOTH the front end and
+		// the WP 6.x editor iframe. The editor canvas is iframed and does not
+		// inherit the admin's dashicons, so Flipbox back/front icons were
+		// invisible in the editor while fine on the front end. Listing it as a
+		// dependency here (enqueue_block_assets runs in both contexts) fixes the
+		// editor without touching any save output (no validation errors).
+		array( 'dashicons' ),
 		filemtime( $style_css )
 	);
 }
@@ -1518,3 +1524,159 @@ function skt_new_blocks_googlemap_responsive( $block_content, $block ) {
 	return '<style>' . $css . '</style>' . $block_content;
 }
 add_filter( 'render_block', 'skt_new_blocks_googlemap_responsive', 10, 2 );
+
+/**
+ * Advance Columns (skt-blocks/advance-columns): hide for logged-in / logged-out
+ * users. Output-only; save.js is never changed.
+ */
+function skt_new_blocks_advance_columns_login_visibility( $block_content, $block ) {
+	if ( empty( $block['blockName'] ) || 'skt-blocks/advance-columns' !== $block['blockName'] ) {
+		return $block_content;
+	}
+	$attrs = isset( $block['attrs'] ) ? $block['attrs'] : array();
+	if ( ! empty( $attrs['hideLoggedIn'] ) && is_user_logged_in() ) {
+		return '';
+	}
+	if ( ! empty( $attrs['hideLoggedOut'] ) && ! is_user_logged_in() ) {
+		return '';
+	}
+	return $block_content;
+}
+add_filter( 'render_block', 'skt_new_blocks_advance_columns_login_visibility', 10, 2 );
+
+/**
+ * Advance Columns (skt-blocks/advance-columns): device visibility (hide on
+ * desktop/tablet/mobile). Scoped to the block's existing .block-<blockId>
+ * wrapper class via @media; output-only, no markup/save change.
+ */
+function skt_new_blocks_advance_columns_visibility( $block_content, $block ) {
+	if ( empty( $block['blockName'] ) || 'skt-blocks/advance-columns' !== $block['blockName'] ) {
+		return $block_content;
+	}
+	$attrs = isset( $block['attrs'] ) ? $block['attrs'] : array();
+	$bid   = isset( $attrs['blockId'] ) ? $attrs['blockId'] : '';
+	if ( '' === $bid ) {
+		return $block_content;
+	}
+	$sel = '.block-' . preg_replace( '/[^a-zA-Z0-9_-]/', '', $bid );
+
+	$css = '';
+	if ( ! empty( $attrs['hideDesktop'] ) ) {
+		$css .= '@media (min-width:1025px){' . $sel . '{display:none !important;}}';
+	}
+	if ( ! empty( $attrs['hideTablet'] ) ) {
+		$css .= '@media (min-width:768px) and (max-width:1024px){' . $sel . '{display:none !important;}}';
+	}
+	if ( ! empty( $attrs['hideMobile'] ) ) {
+		$css .= '@media (max-width:767px){' . $sel . '{display:none !important;}}';
+	}
+	if ( '' === $css ) {
+		return $block_content;
+	}
+	return '<style type="text/css">' . $css . '</style>' . $block_content;
+}
+add_filter( 'render_block', 'skt_new_blocks_advance_columns_visibility', 10, 2 );
+
+/**
+ * Grid Block (skt-blocks/grid): hide for logged-in / logged-out users.
+ * Output-only; save.js is never changed. (Device hiding is handled by the
+ * block's own scoped <style>.)
+ */
+function skt_new_blocks_grid_login_visibility( $block_content, $block ) {
+	if ( empty( $block['blockName'] ) || 'skt-blocks/grid' !== $block['blockName'] ) {
+		return $block_content;
+	}
+	$attrs = isset( $block['attrs'] ) ? $block['attrs'] : array();
+	if ( ! empty( $attrs['hideLoggedIn'] ) && is_user_logged_in() ) {
+		return '';
+	}
+	if ( ! empty( $attrs['hideLoggedOut'] ) && ! is_user_logged_in() ) {
+		return '';
+	}
+	return $block_content;
+}
+add_filter( 'render_block', 'skt_new_blocks_grid_login_visibility', 10, 2 );
+
+/**
+ * Site Footer Block (skt-blocks/site-footer): hide for logged-in / logged-out
+ * users. Output-only; save.js is never changed. (Device hiding is handled by
+ * the block's own scoped <style>.)
+ */
+function skt_new_blocks_site_footer_login_visibility( $block_content, $block ) {
+	if ( empty( $block['blockName'] ) || ! in_array( $block['blockName'], array( 'skt-blocks/site-footer', 'skt-blocks/skt-tabs', 'skt-blocks/text-marquee', 'skt-blocks/before-after-slider' ), true ) ) {
+		return $block_content;
+	}
+	$attrs = isset( $block['attrs'] ) ? $block['attrs'] : array();
+	if ( ! empty( $attrs['hideLoggedIn'] ) && is_user_logged_in() ) {
+		return '';
+	}
+	if ( ! empty( $attrs['hideLoggedOut'] ) && ! is_user_logged_in() ) {
+		return '';
+	}
+	return $block_content;
+}
+add_filter( 'render_block', 'skt_new_blocks_site_footer_login_visibility', 10, 2 );
+
+/**
+ * Front-end: Site Header sticky behaviour script.
+ *
+ * Plain JS in assets/js/skt-site-header.js (NOT part of the webpack bundle, so
+ * it survives rebuilds). It does nothing unless a header with sticky enabled
+ * (data-sticky="sticky") is present, so it is safe to always enqueue.
+ */
+function skt_site_header_sticky_script() {
+	$path = SKT_BLOCKS_DIR . 'assets/js/skt-site-header.js';
+	if ( ! file_exists( $path ) ) {
+		return;
+	}
+	wp_enqueue_script(
+		'skt-site-header-sticky',
+		SKT_BLOCKS_URL . 'assets/js/skt-site-header.js',
+		array(),
+		filemtime( $path ),
+		true
+	);
+}
+add_action( 'wp_enqueue_scripts', 'skt_site_header_sticky_script' );
+
+/**
+ * Front-end: Tabs block behaviour script (tab switching, keyboard, ARIA).
+ *
+ * Plain JS in assets/js/skt-tabs.js (NOT part of the webpack bundle). It does
+ * nothing unless a .skt-tabs element is present, so it is safe to always enqueue.
+ */
+function skt_tabs_frontend_script() {
+	$path = SKT_BLOCKS_DIR . 'assets/js/skt-tabs.js';
+	if ( ! file_exists( $path ) ) {
+		return;
+	}
+	wp_enqueue_script(
+		'skt-tabs-frontend',
+		SKT_BLOCKS_URL . 'assets/js/skt-tabs.js',
+		array(),
+		filemtime( $path ),
+		true
+	);
+}
+add_action( 'wp_enqueue_scripts', 'skt_tabs_frontend_script' );
+
+/**
+ * Front-end: Before/After Slider dragging script.
+ *
+ * Plain JS in assets/js/skt-compare.js (NOT part of the webpack bundle). It does
+ * nothing unless a .skt-compare element is present, so it is safe to always enqueue.
+ */
+function skt_compare_frontend_script() {
+	$path = SKT_BLOCKS_DIR . 'assets/js/skt-compare.js';
+	if ( ! file_exists( $path ) ) {
+		return;
+	}
+	wp_enqueue_script(
+		'skt-compare-frontend',
+		SKT_BLOCKS_URL . 'assets/js/skt-compare.js',
+		array(),
+		filemtime( $path ),
+		true
+	);
+}
+add_action( 'wp_enqueue_scripts', 'skt_compare_frontend_script' );

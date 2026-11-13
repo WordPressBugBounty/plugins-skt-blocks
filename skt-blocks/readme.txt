@@ -4,7 +4,7 @@ Tags: gutenberg blocks, page builder, WordPress blocks, blocks, editor
 Requires at least: 5.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.8
+Stable tag: 2.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -75,7 +75,20 @@ e.g.
 6. Post-TimeLine Block
 
 == Changelog ==
+= 2.9 =
 
+* Added the new Grid Block and Grid Column block: choose columns per row and horizontal/vertical gap separately for Desktop, Tablet and Mobile, with padding and margin controls (px / % / em / rem / vw / vh units) and a Desktop/Tablet/Mobile preview in the editor.
+* Added the new Site Header block: Contained or Full Width layout, inner max width, horizontal and vertical alignment, gap, minimum height, wrap on mobile and HTML tag option, all with responsive controls.
+* Site Header Block: Added Sticky Header option (sticky on all devices, desktop only, tablet and mobile, or mobile only) with scroll threshold, sticky background, box shadow and transition.
+* Added the new Footer block with HTML tag, spacing, background and Visibility options.
+* Added the new Tabs and Tab blocks: 10 horizontal and vertical layout styles, number of tabs, tab icons, typography, normal/hover/active colors and borders, animations, text alignment, tabs background, responsive padding and margin, and Visibility option.
+* Added the new Text Marquee block: scrolling text with direction, loop duration, pause on hover, fade edges, separators, responsive typography, solid/dashed/dotted/double/outline text styles, colors, spacing and Visibility option.
+* Added the new Before/After Slider block: compare two images horizontally or vertically with start position, slide on hover, labels, handle styling, aspect ratio, responsive font/button/radius sizes, margin and Visibility option.
+* Advanced Columns Block: Added the Visibility option (hide on Desktop, Tablet, Mobile, Logged In and Logged Out).
+* Image Boxes Block: Padding and Spacing sections are now responsive for Desktop, Tablet and Mobile, with live preview in the editor and the Visibility option.
+* Accordion Block: Fixed Title and Content Font Family changes not showing in the editor.
+* Flip Box Block: Fixed the back icon not displaying in the editor.
+ 
 = 2.8 =
 
 * Fixed: JavaScript error "can't access lexical declaration before initialization" in the Info Box block that stopped template import after the WordPress update.

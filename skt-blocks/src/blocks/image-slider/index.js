@@ -2,6 +2,7 @@
  * Internal dependencies
  */
 import edit from "./components/edit";
+import deprecated from "./deprecated";
 import metadata from "./block.json";
 import save from "./components/save";
 
@@ -60,6 +61,7 @@ registerBlockType("skt-blocks/image-slider", {
       ],
     },
   },
+  deprecated,
   edit,
   save,
 });

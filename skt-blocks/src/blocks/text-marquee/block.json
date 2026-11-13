@@ -1,0 +1,219 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "skt-blocks/text-marquee",
+  "title": "Text Marquee",
+  "category": "skt_blocks",
+  "description": "Continuously scrolling text ticker. Control direction, speed, separators, typography, colors and spacing per device.",
+  "keywords": [
+    "marquee",
+    "ticker",
+    "scrolling text",
+    "news",
+    "announcement"
+  ],
+  "textdomain": "skt-blocks",
+  "supports": {
+    "anchor": true,
+    "customClassName": true,
+    "html": false,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "reusable": true
+  },
+  "attributes": {
+    "uniqueId": {
+      "type": "string",
+      "default": ""
+    },
+    "items": {
+      "type": "array",
+      "default": [
+        {
+          "text": "Welcome to our website"
+        },
+        {
+          "text": "Free shipping on all orders"
+        },
+        {
+          "text": "New collection is live now"
+        }
+      ]
+    },
+    "direction": {
+      "type": "string",
+      "default": "left"
+    },
+    "speed": {
+      "type": "number",
+      "default": 20
+    },
+    "pauseOnHover": {
+      "type": "boolean",
+      "default": true
+    },
+    "fadeEdges": {
+      "type": "boolean",
+      "default": false
+    },
+    "separator": {
+      "type": "string",
+      "default": "dot"
+    },
+    "separatorCustom": {
+      "type": "string",
+      "default": ""
+    },
+    "separatorColor": {
+      "type": "string"
+    },
+    "separatorSize": {
+      "type": "number"
+    },
+    "itemGap": {
+      "type": "number",
+      "default": 40
+    },
+    "itemGapTablet": {
+      "type": "number"
+    },
+    "itemGapMobile": {
+      "type": "number"
+    },
+    "fontFamily": {
+      "type": "string",
+      "default": ""
+    },
+    "fontWeight": {
+      "type": "string",
+      "default": "600"
+    },
+    "fontSize": {
+      "type": "number",
+      "default": 32
+    },
+    "fontSizeTablet": {
+      "type": "number"
+    },
+    "fontSizeMobile": {
+      "type": "number"
+    },
+    "lineHeight": {
+      "type": "number"
+    },
+    "lineHeightTablet": {
+      "type": "number"
+    },
+    "lineHeightMobile": {
+      "type": "number"
+    },
+    "letterSpacing": {
+      "type": "number"
+    },
+    "textTransform": {
+      "type": "string",
+      "default": "none"
+    },
+    "textColor": {
+      "type": "string",
+      "default": "#111111"
+    },
+    "textStyle": {
+      "type": "string",
+      "default": "solid"
+    },
+    "strokeWidth": {
+      "type": "number",
+      "default": 1
+    },
+    "strokeColor": {
+      "type": "string"
+    },
+    "backgroundType": {
+      "type": "string",
+      "default": "none"
+    },
+    "backgroundColor": {
+      "type": "string"
+    },
+    "gradientColor": {
+      "type": "string"
+    },
+    "borderRadius": {
+      "type": "number",
+      "default": 0
+    },
+    "paddingTop": {
+      "type": "number",
+      "default": 20
+    },
+    "paddingTopTablet": {
+      "type": "number"
+    },
+    "paddingTopMobile": {
+      "type": "number"
+    },
+    "paddingBottom": {
+      "type": "number",
+      "default": 20
+    },
+    "paddingBottomTablet": {
+      "type": "number"
+    },
+    "paddingBottomMobile": {
+      "type": "number"
+    },
+    "marginTop": {
+      "type": "number",
+      "default": 0
+    },
+    "marginTopTablet": {
+      "type": "number"
+    },
+    "marginTopMobile": {
+      "type": "number"
+    },
+    "marginBottom": {
+      "type": "number",
+      "default": 0
+    },
+    "marginBottomTablet": {
+      "type": "number"
+    },
+    "marginBottomMobile": {
+      "type": "number"
+    },
+    "hideDesktop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideTablet": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideMobile": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideLoggedIn": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideLoggedOut": {
+      "type": "boolean",
+      "default": false
+    },
+    "lineWidth": {
+      "type": "number",
+      "default": 2
+    },
+    "textHoverColor": {
+      "type": "string"
+    },
+    "backgroundHoverColor": {
+      "type": "string"
+    }
+  }
+}

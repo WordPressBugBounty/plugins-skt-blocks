@@ -1,0 +1,197 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "skt-blocks/before-after-slider",
+  "title": "Before/After Slider",
+  "category": "skt_blocks",
+  "description": "Compare two images with a draggable before/after slider. Horizontal or vertical, with labels and a customizable handle.",
+  "keywords": [
+    "before",
+    "after",
+    "comparison",
+    "compare",
+    "slider",
+    "image comparison"
+  ],
+  "textdomain": "skt-blocks",
+  "supports": {
+    "anchor": true,
+    "customClassName": true,
+    "html": false,
+    "align": [
+      "wide",
+      "full"
+    ],
+    "reusable": true
+  },
+  "attributes": {
+    "uniqueId": {
+      "type": "string",
+      "default": ""
+    },
+    "beforeUrl": {
+      "type": "string"
+    },
+    "beforeId": {
+      "type": "number"
+    },
+    "beforeAlt": {
+      "type": "string",
+      "default": ""
+    },
+    "afterUrl": {
+      "type": "string"
+    },
+    "afterId": {
+      "type": "number"
+    },
+    "afterAlt": {
+      "type": "string",
+      "default": ""
+    },
+    "orientation": {
+      "type": "string",
+      "default": "horizontal"
+    },
+    "position": {
+      "type": "number",
+      "default": 50
+    },
+    "sliderOnHover": {
+      "type": "boolean",
+      "default": false
+    },
+    "aspectRatio": {
+      "type": "string",
+      "default": "auto"
+    },
+    "objectFit": {
+      "type": "string",
+      "default": "cover"
+    },
+    "borderRadius": {
+      "type": "number",
+      "default": 0
+    },
+    "showLabels": {
+      "type": "boolean",
+      "default": true
+    },
+    "beforeLabel": {
+      "type": "string",
+      "default": "Before"
+    },
+    "afterLabel": {
+      "type": "string",
+      "default": "After"
+    },
+    "labelPosition": {
+      "type": "string",
+      "default": "start"
+    },
+    "labelFontSize": {
+      "type": "number",
+      "default": 14
+    },
+    "labelColor": {
+      "type": "string",
+      "default": "#ffffff"
+    },
+    "labelBg": {
+      "type": "string",
+      "default": "rgba(0,0,0,0.55)"
+    },
+    "labelRadius": {
+      "type": "number",
+      "default": 4
+    },
+    "handleColor": {
+      "type": "string",
+      "default": "#ffffff"
+    },
+    "handleIconColor": {
+      "type": "string",
+      "default": "#111111"
+    },
+    "handleLineWidth": {
+      "type": "number",
+      "default": 3
+    },
+    "handleSize": {
+      "type": "number",
+      "default": 44
+    },
+    "handleShape": {
+      "type": "string",
+      "default": "circle"
+    },
+    "showKnob": {
+      "type": "boolean",
+      "default": true
+    },
+    "marginTop": {
+      "type": "number",
+      "default": 0
+    },
+    "marginTopTablet": {
+      "type": "number"
+    },
+    "marginTopMobile": {
+      "type": "number"
+    },
+    "marginBottom": {
+      "type": "number",
+      "default": 0
+    },
+    "marginBottomTablet": {
+      "type": "number"
+    },
+    "marginBottomMobile": {
+      "type": "number"
+    },
+    "hideDesktop": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideTablet": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideMobile": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideLoggedIn": {
+      "type": "boolean",
+      "default": false
+    },
+    "hideLoggedOut": {
+      "type": "boolean",
+      "default": false
+    },
+    "labelFontSizeTablet": {
+      "type": "number"
+    },
+    "labelFontSizeMobile": {
+      "type": "number"
+    },
+    "handleSizeTablet": {
+      "type": "number"
+    },
+    "handleSizeMobile": {
+      "type": "number"
+    },
+    "borderRadiusTablet": {
+      "type": "number"
+    },
+    "borderRadiusMobile": {
+      "type": "number"
+    },
+    "labelRadiusTablet": {
+      "type": "number"
+    },
+    "labelRadiusMobile": {
+      "type": "number"
+    }
+  }
+}
